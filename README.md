@@ -14,19 +14,11 @@ Keep projects forks up to date to make merging simple.
 4. Create the webhook, and push some code to see Backstroke in action.
 
 ### FAQ
-- Why isn't Backstroke working?
+- **Why isn't Backstroke working?**: Take a look at the webhook response logs. Most likely, you'll see a self-explanitory error. Otherwise, open an issue.
 
-Take a look at the webhook response logs. Most likely, you'll see a self-explanitory error. Otherwise, open an issue.
-
-- Is Backstroke really all that useful?
-
-If you never merge upstream, then no, not really. Otherwise, if you hate
+- **Is Backstroke really all that useful?**: If you never merge upstream, then no, not really. Otherwise, if you hate
 resolving merge conflicts, then it's great.
 
-- Can I set a custom upstream?
+- **Can I set a custom upstream?**: No, not right now. 
 
-No, not right now. 
-
-- Does Backstroke work outside of Github?
-
-Not yet. If there's interest, I'd love to give it a go, though.
+- **Does Backstroke work outside of Github?**: Not yet. If there's interest, I'd love to give it a go, though.

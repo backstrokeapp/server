@@ -4,6 +4,3 @@ temp/npm-debug.log
 .idea
 docs/
 gh-pages
-
-public/bundle.css
-public/bundle.js

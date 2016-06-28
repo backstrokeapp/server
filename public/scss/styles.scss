@@ -1,3 +1,15 @@
+$main: #3a4881;
+$second: #82743b;
+
+.jumbotron {
+  background-color: $main;
+  color: #fff;
+  margin-bottom: 0em;
+
+  .container h2 {
+    margin-bottom: 1.8em;
+  }
+}
 
 .new-backstroke {
   ol li {
@@ -39,4 +51,13 @@
     margin-left: 1em;
     margin-top: 0.2em;
   }
+}
+
+.quote {
+  text-align: center;
+  padding-top: 2em;
+  padding-bottom: 2em;
+  background-color: $second;
+  color: #fff;
+  margin-bottom: 2em;
 }

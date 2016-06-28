@@ -1,0 +1,55 @@
+<DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <h1>Set up a new Repo</h1>
+
+    <h2>Which repository would you like to add?</h2>
+    http://github.com/
+    <input type="text" id="user" placeholder="Username" /> /
+    <input type="text" id="repo" placeholder="Repository" />
+
+    <p>
+      First, <a
+        class="new-webhook"
+        href
+      >Create a new webhook</a>.
+    </p>
+
+    <p>
+      <p>Enter the below into the boxes:</p>
+      <p>
+        <strong>Payload Url:</strong>
+        <code>
+        river.herokuapp.com/ping/github/<span class="user"></span>/<span class="repo"></span>
+        </code>
+      </p>
+      <p>
+        <strong>Content type:</strong>
+        <code>application/json</code>
+      </p>
+      <p>
+        <strong>Secret</strong>
+        <code>Blah,,,</code>
+      </p>
+      <p>
+        <strong>Which events:</strong>
+        <code>Send me everything.</code>
+      </p>
+      <p>Click Add webhook</p>
+    </p>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
+      $("#user, #repo").on('change', function() {
+        var user = $("#user").val();
+        var repo = $("#repo").val();
+        $(".user").html(user);
+        $(".repo").html(repo);
+
+        $(".new-webhook").attr("href", "https://github.com/"+user+"/"+repo+"/settings/hooks/new");
+      });
+    </script>
+  </body>
+</html>

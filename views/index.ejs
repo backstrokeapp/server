@@ -1,68 +1,27 @@
-<html>
-  <head>
-    <title>Add new repository | Backstroke</title>
-    <link rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
-      integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet" href="/bundle.css" />
-    <style>
-      #user, #repo { max-width: 200px; }
-      .input-slash {
-        display: block;
-        float: left;
-        font-size: 1.75em;
-        padding-left: 0.2em;
-        padding-right: 0.2em;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h2>Which repository would you like to add?</h2>
-
-      <div class="input-group">
-        <span class="input-slash">http://github.com/</span>
-        <input type="text" id="user" placeholder="Username" class="form-control" />
-        <span class="input-slash">/</span>
-        <input type="text" id="repo" placeholder="Repository" class="form-control"/>
-      </div>
-      <button id="next" class="btn btn-primary" disabled="disabled">Continue</button>
+<% include header %>
+<div class="jumbotron">
+  <div class="container">
+    <h1>Backstroke<h1>
+    <h2>Keep forks up to date with new changes automatically.</h2>
+  </div>
+</div>
+<div class="container new-backstroke-intro">
+  <form method="POST" action="/new">
+    <div class="github-leadin">http://github.com/</div>
+    <div class="col-md-3">
+      <input
+        type="text"
+        name="user"
+        id="user"
+        placeholder="Username"
+        class="form-control"
+      />
     </div>
-
-    <div class="rest" style="display: none; opacity: 0; height: 0;">
-      <p>
-        First, <a
-          target="_blank"
-          class="new-webhook"
-          href
-        >Create a new webhook</a>.
-      </p>
-
-      <p>Enter the below into the boxes:</p>
-      <p>
-        <strong>Payload Url:</strong>
-        <code>
-        http://backstroke.us/ping/github/<span class="user"></span>/<span class="repo"></span>
-        </code>
-      </p>
-      <p>
-        <strong>Content type:</strong>
-        <code>application/json</code>
-      </p>
-      <p>
-        <strong>Secret</strong>
-        <code>Blah,,,</code>
-      </p>
-      <p>
-        <strong>Which events:</strong>
-        <code>Send me everything.</code>
-      </p>
-      <p>Click Add webhook.</p>
-      <p>Then, you're done!</p>
+    <div class="input-slash hidden-xs hidden-sm">/</div>
+    <div class="col-md-3">
+      <input type="text" name="repo" id="repo" placeholder="Repository" class="form-control" />
     </div>
-
-    <script type="text/javascript" src="/bundle.js"></script>
-  </body>
-</html>
+    <input type="submit" id="next" class="btn btn-primary" disabled="disabled" value="Add to repository" />
+  </form>
+</div>
+<% include footer %>

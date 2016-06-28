@@ -11,8 +11,11 @@ app.use(bodyParser.urlencoded({extended: true}));
 import {webhook} from './remote';
 
 // add a repo to the system
-app.route("/new").get((req, res) => {
+app.get("/", (req, res) => {
   res.render("index");
+});
+app.route("/new").post((req, res) => {
+  res.render("finish", {data: req.body});
 });
 
 // the webhook route

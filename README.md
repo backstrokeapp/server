@@ -1,7 +1,7 @@
 ![logo](https://rawgit.com/1egoman/backstroke/master/assets/logo.svg)
 Backstroke
 ===
-Keep projects forks up to date to make merging simple.
+A Github bot to keep a fork up to date with it's upstream.
 
 ## Here's how it works:
 1. You push code to Github.

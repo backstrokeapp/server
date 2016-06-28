@@ -58,27 +58,6 @@
       <p>Then, you're done!</p>
     </div>
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <script>
-      $("#user, #repo").on('keyup', function() {
-        var user = $("#user").val();
-        var repo = $("#repo").val();
-        if (user.length && repo.length) {
-          $("#next").prop('disabled', false);
-        } else {
-          $("#next").prop('disabled', true);
-        }
-      });
-      $("#next").on('click', function() {
-        var user = $("#user").val();
-        var repo = $("#repo").val();
-        $(".user").html(user);
-        $(".repo").html(repo);
-
-        $(".new-webhook").attr("href", "https://github.com/"+user+"/"+repo+"/settings/hooks/new");
-        $(".rest").animate({opacity: 1}, 200);
-      });
-    </script>
+    <script type="text/javascript" src="/bundle.js"></script>
   </body>
 </html>

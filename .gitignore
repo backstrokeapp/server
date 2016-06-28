@@ -3,5 +3,7 @@ temp/npm-debug.log
 .DS_Store
 .idea
 docs/
-
 gh-pages
+
+public/bundle.css
+public/bundle.js

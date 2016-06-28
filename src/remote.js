@@ -1,19 +1,16 @@
 import Promise from 'bluebird';
 import GitHubApi from 'github';
 
-import express from 'express';
-let app = express();
-app.set('view engine', 'ejs');
-
-import bodyParser from 'body-parser';
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-
+// configure github api client
 let github = new GitHubApi({});
-github.authenticate({
-  type: "oauth",
-  token: process.env.GITHUB_TOKEN,
-});
+if (process.env.GITHUB_TOKEN) {
+  github.authenticate({
+    type: "oauth",
+    token: process.env.GITHUB_TOKEN,
+  });
+} else {
+  console.warn("Warning: No github token specified.");
+}
 
 let gh = {
   reposGet: Promise.promisify(github.repos.get),
@@ -119,15 +116,7 @@ export function postUpdate(platform, repo, upstreamSha) {
 // Routes
 // ----------------------------------------------------------------------------
 
-// add a repo to the system
-app.route("/new")
-.get((req, res) => {
-  res.render("index");
-});
-
-// the webhook route
-app.route("/ping/github/:user/:repo")
-.post((req, res) => {
+export function webhook(req, res) {
   hasDivergedFromUpstream(
     "github",
     req.body.repository.owner.login,
@@ -144,6 +133,4 @@ app.route("/ping/github/:user/:repo")
   }).catch(err => {
     res.send(`Uhh, error: ${err}`);
   });
-});
-
-app.listen(process.env.PORT || 8000);
+}

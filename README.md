@@ -1,3 +1,4 @@
+![logo](assets/logo.svg)
 Backstroke
 ===
 Keep projects forks up to date to make merging simple.

@@ -1,3 +1,4 @@
+![logo](https://cdn.rawgit.com/1egoman/backstroke/master/assets/logo.svg)
 Backstroke
 ===
 Keep projects forks up to date to make merging simple.

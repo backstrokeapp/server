@@ -7,12 +7,12 @@ A Github bot to keep a fork up to date with it's upstream.
 2. Backstroke will create a pull request with any unmerged upstream changes.
 3. You accept the pull request, and have updated code. Merging your code back upstream later on is painless.
 
-![Add a webhook](https://rawgit.com/1egoman/backstroke/master/assets/add_webhook.png)
 ### Setup:
 1. Fork an existing repository.
 2. Create a webhook in the fork (`Settings` => `Webhooks & Services` => `Add Webhook`)
 3. Input `http://backstroke.us/ping/github` as the payload url.
 4. Create the webhook, and push some code to see Backstroke in action.
+![Add a webhook](https://rawgit.com/1egoman/backstroke/master/assets/add_webhook.png)
 
 ### FAQ
 - **Why isn't Backstroke working?**: Take a look at the webhook response logs. Most likely, you'll see a self-explanitory error. Otherwise, open an issue.

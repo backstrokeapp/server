@@ -1,0 +1,22 @@
+{
+  "name": "forkupdater",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "babel-cli": "^6.10.1",
+    "babel-preset-es2017": "^1.4.0",
+    "bluebird": "^3.4.1",
+    "body-parser": "^1.15.2",
+    "ejs": "^2.4.2",
+    "express": "^4.14.0",
+    "github": "^2.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./node_modules/.bin/babel-node src/remote.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

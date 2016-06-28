@@ -22,3 +22,11 @@ Take a look at the webhook response logs. Most likely, you'll see a self-explani
 
 If you never merge upstream, then no, not really. Otherwise, if you hate
 resolving merge conflicts, then it's great.
+
+- Can I set a custom upstream?
+
+No, not right now. 
+
+- Does Backstroke work outside of Github?
+
+Not yet. If there's interest, I'd love to give it a go, though.

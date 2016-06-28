@@ -73,7 +73,7 @@ export function generateUpdateBody(fullRemote) {
 
   Have fun!
   --------
-  Created by River-bot.
+  Created by [Backstroke](http://backstroke.us)
   `
 }
 
@@ -115,41 +115,17 @@ export function postUpdate(platform, repo, upstreamSha) {
   }
 }
 
-export function addRepository(platform, user, repo) {
-  switch (platform) {
-    case "github":
-      return gh.reposCreateHook({
-        user, repo,
-        name: "web",
-        active: true,
-        events: ["push", "release", "pull_request"],
-        config: {
-          url: process.env.REMOTE_URL + `/ping/github/${user}/${repo}`,
-          content_type: "json",
-        },
-      }).then(hook => {
-        console.log(hook);
-      });
-    default:
-      return Promise.reject(`No such platform ${platform}`);
-  }
-}
-
-app.get("/", (req, res) => res.redirect("https://github.com/1egoman/forkupdater"));
+// ----------------------------------------------------------------------------
+// Routes
+// ----------------------------------------------------------------------------
 
 // add a repo to the system
-// app.route("/new/:user/:repo")
-// .post((req, res) => {
-//   addRepository("github", req.params.user, req.params.repo).then(ok => {
-//     res.send("Ok, cool, you're all set!");
-//   });
-// });
 app.route("/new")
 .get((req, res) => {
   res.render("index");
 });
 
-// suggest a merge
+// the webhook route
 app.route("/ping/github/:user/:repo")
 .post((req, res) => {
   hasDivergedFromUpstream(
@@ -158,6 +134,7 @@ app.route("/ping/github/:user/:repo")
     req.body.repository.name
   ).then(({repo, diverged, upstreamSha}) => {
     if (diverged) {
+      // make a pull request
       return postUpdate("github", repo, upstreamSha);
     } else {
       res.send("Thanks anyway, but we don't care about that event.");

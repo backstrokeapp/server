@@ -15,7 +15,7 @@ A Github bot to keep a fork up to date with it's upstream.
 ![Add a webhook](https://rawgit.com/1egoman/backstroke/master/assets/add_webhook.png)
 
 ### FAQ
-- **Why isn't Backstroke working?**: Take a look at the webhook response logs. Most likely, you'll see a self-explanitory error. Otherwise, open an issue.
+- **Why isn't Backstroke working?**: Take a look at the webhook response logs. Most likely, you'll see an error. Otherwise, open an issue.
 
 - **Is Backstroke really all that useful?**: If you never merge upstream, then no, not really. Otherwise, if you hate
 resolving merge conflicts, then it's great.

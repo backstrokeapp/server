@@ -9,7 +9,7 @@ A Github bot to keep a fork updated with any changes made to its upstream.
 4. Create the webhook, and push some code to the upstream repository to see Backstroke in action.
 
 ## How it works
-![How Backstroke Works](https://rawgit.com/1egoman/backstroke/master/assets/map.svg)
+![How Backstroke Works](https://raw.githubusercontent.com/1egoman/backstroke/master/assets/map.png)
 
 ### For a contributor
 1. You push code to Github.

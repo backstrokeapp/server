@@ -155,7 +155,7 @@ export function isParentFindForks(req, res) {
     let pullreqs = forks.map(fork => {
       return hasDivergedFromUpstream(
         "github",
-        rork.owner.login, // user
+        fork.owner.login, // user
         fork.name         // repo
       ).then(({repo, diverged, upstreamSha}) => {
         if (diverged) {

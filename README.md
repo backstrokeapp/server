@@ -19,7 +19,7 @@ A Github bot to keep a fork updated with any changes made to its upstream.
 ### For an open source maintainer
 1. You get a pull request from a contributor.
 2. Backstroke will create a pull request on their fork that lets them merge in
-   their changes.
+   your upstream changes.
 3. They accept Backstroke's pull request, and you merge in their code.
 
 ## FAQ

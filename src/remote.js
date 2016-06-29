@@ -120,10 +120,12 @@ export function postUpdate(platform, repo, upstreamSha) {
 export function webhook(req, res) {
   if (req.body && req.body.repository && req.body.repository.fork) {
     // Try to merge upstream changes into the passed repo
+    console.log("Merging upstream", req.body.repository.full_name);
     return isForkMergeUpstream(req, res);
   } else {
     // Find all forks of the current repo and merge the passed repo's changes
     // into each
+    console.log("Finding forks", req.body.repository.full_name);
     return isParentFindForks(req, res);
   }
 }
@@ -149,7 +151,7 @@ export function isForkMergeUpstream(req, res) {
 
 export function isParentFindForks(req, res) {
   gh.reposGetForks({
-    user: req.body.repository.owner.login,
+    user: req.body.repository.owner.name,
     repo: req.body.repository.name,
   }).then(forks => {
     let pullreqs = forks.map(fork => {

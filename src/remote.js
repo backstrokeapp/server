@@ -167,7 +167,7 @@ export function isParentFindForks(req, res) {
       });
     });
 
-    Promise.all(pullreqs).then(reqs => {
+    return Promise.all(pullreqs).then(reqs => {
       let madePRs = reqs.filter(i => i); // all truthy pull requests
       res.send(`Opened ${madePRs.length} pull requests on forks of this repository.`);
     });

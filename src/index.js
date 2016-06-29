@@ -10,17 +10,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 import {webhook} from './remote';
 
-// add a repo to the system
-app.get("/", (req, res) => {
-  res.render("index");
-});
-app.route("/new").post((req, res) => {
-  res.render("finish", {data: req.body});
-});
-
-// the webhook route
+// the old webhook route
 app.route("/ping/github/:user/:repo").get((req, res) => {
   res.redirect(`https://github.com/${req.params.user}/${req.params.repo}`);
+}).post(webhook);
+
+// the webhook route
+app.route("/").get((req, res) => {
+  res.redirect(`https://github.com/1egoman/backstroke`);
 }).post(webhook);
 
 let port = process.env.PORT || 8000;

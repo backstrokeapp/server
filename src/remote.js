@@ -83,12 +83,13 @@ export function postUpdate(platform, repo, upstreamSha) {
           return gh.pullRequestsGetAll({
             user: repo.owner.login,
             repo: repo.name,
+            state: "open",
             head: `${repo.parent.owner.login}:${repo.parent.default_branch}`,
           }).then(existingPulls => {
             // are we trying to reintroduce a pull request that has already been
             // cancelled by the user earlier?
             let duplicateRequests = existingPulls.find(pull => pull.head.sha === upstreamSha);
-            if (duplicateRequests === null) {
+            if (!duplicateRequests) {
               // create a pull request to merge in remote changes
               return gh.pullRequestsCreate({
                 user: repo.owner.login, repo: repo.name,
@@ -98,7 +99,7 @@ export function postUpdate(platform, repo, upstreamSha) {
                 body: generateUpdateBody(repo.parent.full_name),
               });
             } else {
-              throw new Error(`The PR already has been made. (May have been closed)`);
+              throw new Error(`The PR already has been made.`);
             }
           });
         } else {
@@ -117,6 +118,17 @@ export function postUpdate(platform, repo, upstreamSha) {
 // ----------------------------------------------------------------------------
 
 export function webhook(req, res) {
+  if (req.body && req.body.repository && req.body.repository.fork) {
+    // Try to merge upstream changes into the passed repo
+    return isForkMergeUpstream(req, res);
+  } else {
+    // Find all forks of the current repo and merge the passed repo's changes
+    // into each
+    return isParentFindForks(req, res);
+  }
+}
+
+export function isForkMergeUpstream(req, res) {
   hasDivergedFromUpstream(
     "github",
     req.body.repository.owner.login,
@@ -130,6 +142,35 @@ export function webhook(req, res) {
     }
   }).then(ok => {
     res.send("Cool, thanks github.");
+  }).catch(err => {
+    res.send(`Uhh, error: ${err}`);
+  });
+}
+
+export function isParentFindForks(req, res) {
+  gh.reposGetForks({
+    user: req.body.repository.owner.login,
+    repo: req.body.repository.name,
+  }).then(forks => {
+    let pullreqs = forks.map(fork => {
+      return hasDivergedFromUpstream(
+        "github",
+        rork.owner.login, // user
+        fork.name         // repo
+      ).then(({repo, diverged, upstreamSha}) => {
+        if (diverged) {
+          // make a pull request
+          return postUpdate("github", repo, upstreamSha);
+        } else {
+          return null;
+        }
+      });
+    });
+
+    Promise.all(pullreqs).then(reqs => {
+      let madePRs = reqs.filter(i => i); // all truthy pull requests
+      res.send(`Opened ${madePRs.length} pull requests on forks of this repository.`);
+    });
   }).catch(err => {
     res.send(`Uhh, error: ${err}`);
   });

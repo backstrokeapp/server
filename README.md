@@ -23,6 +23,9 @@ A Github bot to keep a fork updated with any changes made to its upstream.
 3. They accept Backstroke's pull request, and you merge in their code.
 
 ## FAQ
+- **Which I don't see any pull requests on the upstream....**: Pull requests are
+  always proposed on the forks. Take a look there.
+
 - **Why isn't Backstroke working?**: Take a look at the webhook response logs. Most likely, you'll see an error. Otherwise, open an issue.
 
 - **Is Backstroke really all that useful?**: If you never merge upstream, then no, not really. Otherwise, if you hate

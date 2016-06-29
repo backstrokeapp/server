@@ -3,6 +3,9 @@ Backstroke
 ===
 A Github bot to keep a fork updated with any changes made to its upstream.
 
+## How it works
+![How Backstroke Works](https://rawgit.com/1egoman/backstroke/master/assets/map.svg)
+
 ## For a contributor
 1. You push code to Github.
 2. Backstroke will create a pull request with any unmerged upstream changes.

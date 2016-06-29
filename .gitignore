@@ -4,3 +4,4 @@ temp/npm-debug.log
 .idea
 docs/
 gh-pages
+.creds

@@ -34,3 +34,6 @@ resolving merge conflicts, then it's great.
 - **Can I set a custom upstream?**: No, not right now. 
 
 - **Does Backstroke work outside of Github?**: Not yet. If there's interest, I'd love to give it a try, though.
+
+-------
+By [Ryan Gaus](http://rgaus.net)

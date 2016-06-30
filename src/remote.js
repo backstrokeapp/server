@@ -77,7 +77,7 @@ export function generateUpdateBody(fullRemote, tempRepoName) {
 
   Have fun!
   --------
-  Created by [Backstroke](http://backstroke.us)
+  Created by [Backstroke](http://backstroke.us). Oh yea, I'm a bot.
   `
 }
 
@@ -90,6 +90,13 @@ export function cloneParentToRepo(repo) {
     // organisation: "backstroke-upstream",
   }).then(fork => {
     // Get all repo contributors.
+    return gh.reposGetCollaborators({
+      user: repo.parent.owner.login,
+      repo: repo.parent.name,
+    });
+  }).then(collabs => {
+    // give all collaborators rights to the repo
+    return
   });
 }
 

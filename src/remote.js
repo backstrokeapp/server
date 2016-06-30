@@ -20,6 +20,8 @@ let gh = {
   pullRequestsGetAll: Promise.promisify(github.pullRequests.getAll),
 
   reposCreateHook: Promise.promisify(github.repos.createHook),
+  reposFork: Promise.promisify(github.repos.fork),
+  reposGetCollaborators: Promise.promisify(github.repos.getCollaborators),
 };
 
 // has the given fork diverged from its parent?
@@ -60,18 +62,35 @@ export function hasDivergedFromUpstream(platform, user, repo) {
   }
 }
 
-export function generateUpdateBody(fullRemote) {
+export function generateUpdateBody(fullRemote, tempRepoName) {
   return `Hello!
   The remote \`${fullRemote}\` has some new changes that aren't in this fork.
 
-  So, here they are, ready to be merged. :tada:
-  
-  If this pull request can be merged without conflict, you can publish your software with these new changes. If not, this branch is a great place to fix any issues.
+  So, here they are, ready to be merged! :tada:
+
+  If this pull request can be merged without conflict, you can publish your software with these new changes.
+
+  If not, we've taken the liberty of creating a new repository that mirrors
+  upstream, located at backstroke-bot/${tempRepoName}, and given all contributors
+  to this repository permisson to push to it. If you have merge conflicts, this
+  is the place to fix them.
 
   Have fun!
   --------
   Created by [Backstroke](http://backstroke.us)
   `
+}
+
+// take the parent and create a new repo to mirror its contents.
+export function cloneParentToRepo(repo) {
+  // Fork the upstream repo.
+  gh.reposFork({
+    user: repo.parent.owner.login,
+    repo: repo.parent.name,
+    // organisation: "backstroke-upstream",
+  }).then(fork => {
+    // Get all repo contributors.
+  });
 }
 
 // given a platform and a repository, open the pr to update it to its upstream.

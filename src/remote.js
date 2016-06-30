@@ -12,17 +12,9 @@ if (process.env.GITHUB_TOKEN) {
   console.warn("Warning: No github token specified.");
 }
 
-let gh = {
-  reposGet: Promise.promisify(github.repos.get),
-  reposGetBranch: Promise.promisify(github.repos.getBranch),
-  reposGetForks: Promise.promisify(github.repos.getForks),
-  pullRequestsCreate: Promise.promisify(github.pullRequests.create),
-  pullRequestsGetAll: Promise.promisify(github.pullRequests.getAll),
-
-  reposCreateHook: Promise.promisify(github.repos.createHook),
-  reposFork: Promise.promisify(github.repos.fork),
-  reposGetCollaborators: Promise.promisify(github.repos.getCollaborators),
-};
+// import the libraries that are required for communication
+import * as ghFactory from './github';
+let gh = ghFactory.constructor(github);
 
 // has the given fork diverged from its parent?
 export function hasDivergedFromUpstream(platform, user, repo) {

@@ -17,7 +17,10 @@
   "devDependencies": {
     "babelify": "^7.3.0",
     "browserify": "^13.0.1",
-    "node-sass": "^3.8.0"
+    "node-sass": "^3.8.0",
+    "proxyquire": "^1.7.10",
+    "sinon": "^1.17.4",
+    "sinon-as-promised": "^4.0.0"
   },
   "scripts": {
     "start": "./node_modules/.bin/babel-node src/index.js",
@@ -25,7 +28,7 @@
     "build:css": "./node_modules/.bin/node-sass --source-map true public/scss/styles.scss > public/bundle.css",
     "serve": "npm run build:js && npm run build:css && npm start",
     "watch": "nodemon --exec 'npm run serve' -e 'js scss' -w src/ -w public/js -w public/scss",
-    "test": "mocha --recursive --compilers js:babel-register -R nyan"
+    "test": "mocha --recursive --compilers js:babel-register,js:sinon-as-promised -R nyan"
   },
   "author": "",
   "license": "ISC"

@@ -90,6 +90,7 @@ export function postUpdate(platform, repo, upstreamSha) {
             // cancelled by the user earlier?
             let duplicateRequests = existingPulls.find(pull => pull.head.sha === upstreamSha);
             if (!duplicateRequests) {
+              console.log("Making pull to", repo.owner.login, repo.name);
               // create a pull request to merge in remote changes
               return gh.pullRequestsCreate({
                 user: repo.owner.login, repo: repo.name,

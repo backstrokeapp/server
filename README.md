@@ -2,6 +2,7 @@
 Backstroke
 ===
 A Github bot to keep a fork updated with any changes made to its upstream.
+Heavily inspired by Greenkeeper.
 
 ## Add Backstroke to a repository
 1. Create a webhook in either a fork or a upstream repository. (`Settings` => `Webhooks & Services` => `Add Webhook`)

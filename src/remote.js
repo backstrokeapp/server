@@ -94,7 +94,7 @@ export function postUpdate(platform, repo, upstreamSha) {
             head: `${repo.parent.owner.login}:${repo.parent.default_branch}`,
           }).then(existingPulls => {
             // are we trying to reintroduce a pull request that has already been
-            // cancelled by the user earlier?
+            // made previously?
             let duplicateRequests = existingPulls.find(pull => pull.head.sha === upstreamSha);
             if (!duplicateRequests) {
               console.log("Making pull to", repo.owner.login, repo.name);

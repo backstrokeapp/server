@@ -81,25 +81,6 @@ export function generateUpdateBody(fullRemote, tempRepoName) {
   `
 }
 
-// take the parent and create a new repo to mirror its contents.
-export function cloneParentToRepo(repo) {
-  // Fork the upstream repo.
-  gh.reposFork({
-    user: repo.parent.owner.login,
-    repo: repo.parent.name,
-    // organisation: "backstroke-upstream",
-  }).then(fork => {
-    // Get all repo contributors.
-    return gh.reposGetCollaborators({
-      user: repo.parent.owner.login,
-      repo: repo.parent.name,
-    });
-  }).then(collabs => {
-    // give all collaborators rights to the repo
-    return
-  });
-}
-
 // given a platform and a repository, open the pr to update it to its upstream.
 export function postUpdate(platform, repo, upstreamSha) {
   switch (platform) {

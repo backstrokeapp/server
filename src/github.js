@@ -11,5 +11,6 @@ export function constructor(github) {
     reposCreateHook: Promise.promisify(github.repos.createHook),
     reposFork: Promise.promisify(github.repos.fork),
     reposGetCollaborators: Promise.promisify(github.repos.getCollaborators),
+    searchIssues: Promise.promisify(github.search.issues),
   };
 }

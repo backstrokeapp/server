@@ -127,6 +127,27 @@ export function postUpdate(platform, repo, upstreamSha) {
   }
 }
 
+// get the upstream user and repo name to check changes relative from
+export function getUpstream(req) {
+  let upstream = req.query.upstream && req.query.upstream.split("/");
+  if (upstream && upstream.length === 2) {
+    // a custom upstream
+    return {user: upstream[0], repo: upstream[1]};
+  } else if (req.body.repository && req.body.repository.fork && req.body.repository.parent) {
+    // this is a fork, so the upstream is the parent repo
+    return {
+      user: req.body.repository.parent.owner.name || req.body.repository.parent.owner.login,
+      repo: req.body.repository.parent.name,
+    }
+  } else {
+    // this is the upstream, so just grab the current repo infirmation
+    return {
+      user: req.body.repository.owner.name || req.body.repository.owner.login,
+      repo: req.body.repository.name,
+    }
+  }
+}
+
 // ----------------------------------------------------------------------------
 // Routes
 // ----------------------------------------------------------------------------
@@ -145,8 +166,9 @@ export function webhook(req, res) {
 }
 
 export function isForkMergeUpstream(req, res) {
-  let userName = req.body.repository.owner.name || req.body.repository.owner.login,
-      repoName = req.body.repository.name;
+  // get the upstream to merge into
+  let {user: userName, repo: repoName} = getUpstream(req);
+
   didUserOptOut("github", userName, repoName).then(didOptOut => {
     // don't bug opted out users
     if (didOptOut) {

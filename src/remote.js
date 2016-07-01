@@ -174,8 +174,8 @@ export function isParentFindForks(req, res) {
   let userName = req.body.repository.owner.name || req.body.repository.owner.login,
       repoName = req.body.repository.name;
   gh.reposGetForks({
-    user: req.body.repository.owner.name,
-    repo: req.body.repository.name,
+    user: userName,
+    repo: repoName,
   }).then(forks => {
     let pullreqs = forks.map(fork => {
       didUserOptOut("github", fork.owner.login, fork.name).then(didOptOut => {

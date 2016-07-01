@@ -178,7 +178,7 @@ export function isParentFindForks(req, res) {
     repo: repoName,
   }).then(forks => {
     let pullreqs = forks.map(fork => {
-      didUserOptOut("github", fork.owner.login, fork.name).then(didOptOut => {
+      return didUserOptOut("github", fork.owner.login, fork.name).then(didOptOut => {
         // don't bug opted out users
         if (didOptOut) {
           console.log(`Repo ${fork.owner.login}/${fork.name} opted out D:`);

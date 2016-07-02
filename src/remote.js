@@ -120,10 +120,31 @@ export function postUpdate(platform, repo, upstreamSha) {
           throw new Error(`The repository ${repo.full_name} isn't a fork.`);
         }
       } else {
-        throw new Error(`No repository found for ${repo.full_name}`);
+        throw new Error(`No repository found`);
       }
     default:
       return Promise.reject(`No such platform ${platform}`);
+  }
+}
+
+// get the upstream user and repo name to check changes relative from
+export function getUpstream(repository, opts={}) {
+  let upstream = opts.upstream && opts.upstream.split("/");
+  if (upstream && upstream.length === 2) {
+    // a custom upstream
+    return {user: upstream[0], repo: upstream[1]};
+  } else if (repository && repository.fork && repository.parent) {
+    // this is a fork, so the upstream is the parent repo
+    return {
+      user: repository.parent.owner.name || repository.parent.owner.login,
+      repo: repository.parent.name,
+    }
+  } else {
+    // this is the upstream, so just grab the current repo infirmation
+    return {
+      user: repository.owner.name || repository.owner.login,
+      repo: repository.name,
+    }
   }
 }
 
@@ -132,23 +153,45 @@ export function postUpdate(platform, repo, upstreamSha) {
 // ----------------------------------------------------------------------------
 
 export function webhook(req, res) {
-  if (req.body && req.body.repository && req.body.repository.fork) {
+  // the repo is a fork, or the user has manually specified an upstream to merge into
+  if (
+    (req.body && req.body.repository && req.body.repository.fork) ||
+    req.query.upstream
+  ) {
     // Try to merge upstream changes into the passed repo
     console.log("Merging upstream", req.body.repository.full_name);
-    return isForkMergeUpstream(req, res);
+    return isForkMergeUpstream(req.body.repository, req.query).then(msg => {
+      if (typeof msg === "string") {
+        res.send(msg);
+      } else {
+        res.send("Success!");
+      }
+    }).catch(err => {
+      res.send(`Uhh, error: ${err}`);
+    });
   } else {
     // Find all forks of the current repo and merge the passed repo's changes
     // into each
     console.log("Finding forks", req.body.repository.full_name);
-    return isParentFindForks(req, res);
+    return isParentFindForks(req.body.repository, req.query).then(msg => {
+      if (typeof msg === "string") {
+        res.send(msg);
+      } else {
+        res.send("Success!");
+      }
+    }).catch(err => {
+      res.send(`Uhh, error: ${err}`);
+    });
   }
 }
 
-export function isForkMergeUpstream(req, res) {
-  let userName = req.body.repository.owner.name || req.body.repository.owner.login,
-      repoName = req.body.repository.name;
-  didUserOptOut("github", userName, repoName).then(didOptOut => {
-    // don't bug opted out users
+// given a fork, create a pull request to merge in upstream changes
+export function isForkMergeUpstream(repository, opts={}) {
+  // get the upstream to merge into
+  let {user: userName, repo: repoName} = getUpstream(repository, opts);
+
+  // don't bug opted out users
+  return didUserOptOut("github", userName, repoName).then(didOptOut => {
     if (didOptOut) {
       console.log(`Repo ${userName}/${repoName} opted out D:`);
       return {repo: null, diverged: false};
@@ -160,52 +203,26 @@ export function isForkMergeUpstream(req, res) {
     if (diverged) {
       // make a pull request
       return postUpdate("github", repo, upstreamSha).then(ok => {
-        res.send("Cool, thanks github.");
+        return true; // success
       });
     } else {
-      res.send("Thanks anyway, but the user either opted out or this isn't an imporant event.");
+      return "Thanks anyway, but the user either opted out or this isn't an imporant event.";
     }
-  }).catch(err => {
-    res.send(`Uhh, error: ${err}`);
   });
 }
 
-export function isParentFindForks(req, res) {
-  let userName = req.body.repository.owner.name || req.body.repository.owner.login,
-      repoName = req.body.repository.name;
+export function isParentFindForks(repository, opts={}) {
   gh.reposGetForks({
-    user: userName,
-    repo: repoName,
+    user: repository.owner.name || repository.owner.login,
+    repo: repository.name,
   }).then(forks => {
     let pullreqs = forks.map(fork => {
-      return didUserOptOut("github", fork.owner.login, fork.name).then(didOptOut => {
-        // don't bug opted out users
-        if (didOptOut) {
-          console.log(`Repo ${fork.owner.login}/${fork.name} opted out D:`);
-          return {repo: null, diverged: false};
-        } else {
-          // otherwise, keep going...
-          return hasDivergedFromUpstream(
-            "github",
-            fork.owner.login, // user
-            fork.name         // repo
-          );
-        }
-      }).then(({repo, diverged, upstreamSha}) => {
-        if (diverged) {
-          // make a pull request
-          return postUpdate("github", repo, upstreamSha);
-        } else {
-          res.send("User opted out or upstream doesn't diverge.");
-        }
-      });
+      return isForkMergeUpstream(fork, opts);
     });
 
     return Promise.all(pullreqs).then(reqs => {
       let madePRs = reqs.filter(i => i); // all truthy pull requests
-      res.send(`Opened ${madePRs.length} pull requests on forks of this repository.`);
+      return `Opened ${madePRs.length} pull requests on forks of this repository.`;
     });
-  }).catch(err => {
-    res.send(`Uhh, error: ${err}`);
   });
 }

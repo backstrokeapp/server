@@ -120,7 +120,7 @@ export function postUpdate(platform, repo, upstreamSha) {
           throw new Error(`The repository ${repo.full_name} isn't a fork.`);
         }
       } else {
-        throw new Error(`No repository found for ${repo.full_name}`);
+        throw new Error(`No repository found`);
       }
     default:
       return Promise.reject(`No such platform ${platform}`);
@@ -128,7 +128,7 @@ export function postUpdate(platform, repo, upstreamSha) {
 }
 
 // get the upstream user and repo name to check changes relative from
-export function getUpstream(repository, opts) {
+export function getUpstream(repository, opts={}) {
   let upstream = opts.upstream && opts.upstream.split("/");
   if (upstream && upstream.length === 2) {
     // a custom upstream

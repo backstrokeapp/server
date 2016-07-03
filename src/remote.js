@@ -103,7 +103,7 @@ export function postUpdate(platform, repo, upstreamSha) {
             // made previously?
             let duplicateRequests = existingPulls.find(pull => pull.head.sha === upstreamSha);
             if (!duplicateRequests) {
-              console.log("Making pull to", repo.owner.login, repo.name);
+              console.info("Making pull to", repo.owner.login, repo.name);
               // create a pull request to merge in remote changes
               return gh.pullRequestsCreate({
                 user: repo.owner.login, repo: repo.name,
@@ -117,10 +117,10 @@ export function postUpdate(platform, repo, upstreamSha) {
             }
           });
         } else {
-          throw new Error(`The repository ${repo.full_name} isn't a fork.`);
+          return Promise.reject(new Error(`The repository ${repo.full_name} isn't a fork.`));
         }
       } else {
-        throw new Error(`No repository found`);
+        return Promise.reject(new Error(`No repository found`));
       }
     default:
       return Promise.reject(`No such platform ${platform}`);
@@ -159,7 +159,7 @@ export function webhook(req, res) {
     req.query.upstream
   ) {
     // Try to merge upstream changes into the passed repo
-    console.log("Merging upstream", req.body.repository.full_name);
+    console.info("Merging upstream", req.body.repository.full_name);
     return isForkMergeUpstream(req.body.repository, req.query).then(msg => {
       if (typeof msg === "string") {
         res.send(msg);
@@ -172,7 +172,7 @@ export function webhook(req, res) {
   } else {
     // Find all forks of the current repo and merge the passed repo's changes
     // into each
-    console.log("Finding forks", req.body.repository.full_name);
+    console.info("Finding forks", req.body.repository.full_name);
     return isParentFindForks(req.body.repository, req.query).then(msg => {
       if (typeof msg === "string") {
         res.send(msg);
@@ -193,7 +193,7 @@ export function isForkMergeUpstream(repository, opts={}) {
   // don't bug opted out users
   return didUserOptOut("github", userName, repoName).then(didOptOut => {
     if (didOptOut) {
-      console.log(`Repo ${userName}/${repoName} opted out D:`);
+      console.info(`Repo ${userName}/${repoName} opted out D:`);
       return {repo: null, diverged: false};
     } else {
       // otherwise, keep going...

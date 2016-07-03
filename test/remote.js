@@ -5,6 +5,7 @@ import {
   getUpstream,
   postUpdate,
 } from "../src/remote";
+import Promise from 'bluebird';
 
 describe("github", function() {
 
@@ -163,8 +164,6 @@ describe("github", function() {
   });
 
   describe("postUpdate", function() {
-
-    // TODO: FIX THESE
     it("should not continue if passed repo isn't a fork", function() {
       return postUpdate("github", {
         fork: false,

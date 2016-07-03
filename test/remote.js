@@ -330,3 +330,12 @@ describe("github", function() {
   });
 
 });
+
+describe("routes", function() {
+  describe("with an upstream repo", function() {
+    it("should update all forks when pushed to");
+  });
+  describe("with a forked repo", function() {
+    it("should update the specific fork");
+  });
+});

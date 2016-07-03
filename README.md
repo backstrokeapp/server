@@ -24,12 +24,14 @@ Heavily inspired by Greenkeeper.
    your upstream changes.
 3. They accept Backstroke's pull request, and you merge in their code.
 
+<!--
 ## Advanced Usage
 - `upstream`: A string following the format `user/repo` corresponding to a
   custom upstream to merge from into a fork. For example, adding a webhook on a
   fork with `http://backstroke.us/?upstream=foo/upstream` will create a pull
   request (on the fork) that merge in new changes from the custom upstream
   (`foo/upstream`).
+-->
 
 ## FAQ
 - **I don't see any pull requests on the upstream....**: Pull requests are

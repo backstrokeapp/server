@@ -15,7 +15,8 @@ Heavily inspired by Greenkeeper.
 ### For a contributor
 1. You push code to Github.
 2. Backstroke will create a pull request with any unmerged upstream changes.
-3. You accept Backstroke's pull request, and have updated code. Merging your code back upstream later on is painless.
+3. You accept Backstroke's pull request, and have updated code. Merging your
+   code back upstream later on is painless.
 
 ### For an open source maintainer
 1. You get a pull request from a contributor.
@@ -23,11 +24,12 @@ Heavily inspired by Greenkeeper.
    your upstream changes.
 3. They accept Backstroke's pull request, and you merge in their code.
 
-### Advanced Usage
+## Advanced Usage
 - `upstream`: A string following the format `user/repo` corresponding to a
-  custom upstream to merge from into a fork. For example, adding a webhook on
-  a fork with `http://backstroke.us/?upstream=foo/upstream` will create pull
-  requests (on the fork) that merge in new changes from the custom upstream (`foo/upstream`).
+  custom upstream to merge from into a fork. For example, adding a webhook on a
+  fork with `http://backstroke.us/?upstream=foo/upstream` will create a pull
+  request (on the fork) that merge in new changes from the custom upstream
+  (`foo/upstream`).
 
 ## FAQ
 - **I don't see any pull requests on the upstream....**: Pull requests are
@@ -37,8 +39,6 @@ Heavily inspired by Greenkeeper.
 
 - **Is Backstroke really all that useful?**: If you never merge upstream, then no, not really. Otherwise, if you hate
 resolving merge conflicts, then it's great.
-
-- **Can I set a custom upstream?**: No, not right now. 
 
 - **Does Backstroke work outside of Github?**: Not yet. If there's interest, I'd love to give it a try, though.
 

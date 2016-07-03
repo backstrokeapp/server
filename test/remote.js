@@ -8,7 +8,6 @@ import {
 import Promise from 'bluebird';
 
 describe("github", function() {
-
   describe("hasDivergedFromUpstream", function() {
     describe("diverging repo and upstream", function() {
       let remote, gh;
@@ -328,7 +327,6 @@ describe("github", function() {
       assert.deepEqual(out, {user: "userParent", repo: "parent"});
     });
   });
-
 });
 
 describe("routes", function() {

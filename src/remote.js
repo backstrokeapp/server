@@ -188,16 +188,17 @@ export function webhook(req, res) {
 // given a fork, create a pull request to merge in upstream changes
 export function isForkMergeUpstream(repository, opts={}) {
   // get the upstream to merge into
-  let {user: userName, repo: repoName} = getUpstream(repository, opts);
+  let {user: upstreamName, repo: upstreamRepo} = getUpstream(repository, opts);
+  let repoName = repository.name, repoUser = repository.owner.name;
 
-  // don't bug opted out users
-  return didUserOptOut("github", userName, repoName).then(didOptOut => {
+  // don't bug opted out users (opt out happens on the fork)
+  return didUserOptOut("github", repoUser, repoName).then(didOptOut => {
     if (didOptOut) {
-      console.info(`Repo ${userName}/${repoName} opted out D:`);
+      console.info(`Repo ${repoUser}/${repoName} opted out D:`);
       return {repo: null, diverged: false};
     } else {
       // otherwise, keep going...
-      return hasDivergedFromUpstream("github", userName, repoName);
+      return hasDivergedFromUpstream("github", repoUser, repoName);
     }
   }).then(({repo, diverged, upstreamSha}) => {
     if (diverged) {

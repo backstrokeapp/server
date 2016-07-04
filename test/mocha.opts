@@ -1,0 +1,3 @@
+ --recursive
+ --compilers js:babel-register,js:sinon-as-promised
+ -R nyan

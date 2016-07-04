@@ -30,8 +30,8 @@
     "build:css": "./node_modules/.bin/node-sass --source-map true public/scss/styles.scss > public/bundle.css",
     "serve": "npm run build:js && npm run build:css && npm start",
     "watch": "nodemon --exec 'npm run serve' -e 'js scss' -w src/ -w public/js -w public/scss",
-    "test": "mocha --recursive --compilers js:babel-register,js:sinon-as-promised -R nyan",
-    "coverage": "node_modules/.bin/babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha --recursive --compilers js:babel-register,js:sinon-as-promised -R nyan"
+    "test": "mocha",
+    "coverage": "node_modules/.bin/babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha"
   },
   "author": "",
   "license": "ISC"

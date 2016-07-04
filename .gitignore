@@ -5,3 +5,4 @@ temp/npm-debug.log
 docs/
 gh-pages
 .creds
+coverage/

@@ -37,6 +37,12 @@ Heavily inspired by Greenkeeper.
 - **I don't see any pull requests on the upstream....**: Pull requests are
   always proposed on forks. Take a look there instead.
 
+- **I didn't sign up for this and now I'm getting pull requests. What's going
+  on?**: This is because the upstream added backstroke to their repository.
+  Some project maintainers use backstroke as an easy way to keep contributor's
+  local forks up-to-date with later changes, but if you'd rather tackle that
+  unassisted, here's how to [disable backstroke on a fork](https://github.com/1egoman/backstroke/blob/master/assets/disable-on-a-fork.md).
+
 - **Why isn't Backstroke working?**: Take a look at the webhook response logs. Most likely, you'll see an error. Otherwise, open an issue.
 
 - **Is Backstroke really all that useful?**: If you never merge upstream, then no, not really. Otherwise, if you hate

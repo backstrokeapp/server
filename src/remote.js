@@ -210,7 +210,7 @@ export function isForkMergeUpstream(repository, opts={}) {
 }
 
 export function isParentFindForks(repository, opts={}) {
-  gh.reposGetForks({
+  return gh.reposGetForks({
     user: repository.owner.name || repository.owner.login,
     repo: repository.name,
   }).then(forks => {

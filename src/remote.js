@@ -188,6 +188,8 @@ export function isForkMergeUpstream(repository, opts={}) {
   let {user: upstreamName, repo: upstreamRepo} = getUpstream(repository, opts);
   let repoName = repository.name, repoUser = repository.owner.name;
 
+  console.log(userName, repoName)
+
   // don't bug opted out users (opt out happens on the fork)
   return didUserOptOut("github", repoUser, repoName).then(didOptOut => {
     if (didOptOut) {

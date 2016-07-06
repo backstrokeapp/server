@@ -60,11 +60,8 @@ export function generateUpdateBody(fullRemote, tempRepoName) {
 
   So, here they are, ready to be merged! :tada:
 
-  If this pull request can be merged without conflict, you can publish your software with these new changes.
-
-  If not, we've taken the liberty of creating a new repository that mirrors
-  upstream, located at backstroke-bot/${tempRepoName}, and given all contributors
-  to this repository permisson to push to it. If you have merge conflicts, this
+  If this pull request can be merged without conflict, you can publish your software
+  with these new changes.  Otherwise, if you have merge conflicts, this
   is the place to fix them.
 
   Have fun!

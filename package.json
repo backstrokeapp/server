@@ -19,6 +19,7 @@
     "babel-istanbul": "^0.11.0",
     "babelify": "^7.3.0",
     "browserify": "^13.0.1",
+    "mocha": "^2.5.3",
     "node-sass": "^3.8.0",
     "proxyquire": "^1.7.10",
     "sinon": "^1.17.4",

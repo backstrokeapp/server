@@ -91,7 +91,7 @@ export function postUpdate(platform, repo, upstreamSha) {
       if (repo) {
         if (repo.parent) {
           return gh.pullRequestsGetAll({
-            user: repo.owner.login,
+            user: repo.owner.login || repo.owner.name,
             repo: repo.name,
             state: "open",
             head: `${repo.parent.owner.login}:${repo.parent.default_branch}`,
@@ -99,6 +99,7 @@ export function postUpdate(platform, repo, upstreamSha) {
             // are we trying to reintroduce a pull request that has already been
             // made previously?
             let duplicateRequests = existingPulls.find(pull => pull.head.sha === upstreamSha);
+            console.log(repo.owner.login, !!duplicateRequests)
             if (!duplicateRequests) {
               console.info("Making pull to", repo.owner.login, repo.name);
               // create a pull request to merge in remote changes
@@ -186,9 +187,7 @@ export function webhook(req, res) {
 export function isForkMergeUpstream(repository, opts={}) {
   // get the upstream to merge into
   let {user: upstreamName, repo: upstreamRepo} = getUpstream(repository, opts);
-  let repoName = repository.name, repoUser = repository.owner.name;
-
-  console.log(userName, repoName)
+  let repoName = repository.name, repoUser = repository.owner.name || repository.owner.login;
 
   // don't bug opted out users (opt out happens on the fork)
   return didUserOptOut("github", repoUser, repoName).then(didOptOut => {

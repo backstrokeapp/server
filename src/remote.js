@@ -99,7 +99,6 @@ export function postUpdate(platform, repo, upstreamSha) {
             // are we trying to reintroduce a pull request that has already been
             // made previously?
             let duplicateRequests = existingPulls.find(pull => pull.head.sha === upstreamSha);
-            console.log(repo.owner.login, !!duplicateRequests)
             if (!duplicateRequests) {
               console.info("Making pull to", repo.owner.login, repo.name);
               // create a pull request to merge in remote changes

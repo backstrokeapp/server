@@ -6,3 +6,4 @@ docs/
 gh-pages
 .creds
 coverage/
+*.sw*

@@ -1,1 +1,1 @@
-{"presets": ["es2017"]}
+{"presets": ["es2015", "react"]}

@@ -1,0 +1,31 @@
+{
+  "name": "net-pipe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:js": "./node_modules/.bin/browserify js/index.js -t [babelify] -d > bundle.js",
+    "build:css": "./node_modules/.bin/node-sass --source-map true scss/styles.scss > bundle.css",
+    "serve": "npm run build:js && npm run build:css && python -m SimpleHTTPServer",
+    "watch": "nodemon --exec 'npm run serve' -e 'js scss' -w js/ -w scss/"
+  },
+  "dependencies": {
+    "babel-preset-es2017": "^1.4.0",
+    "node-sass": "^3.8.0",
+    "react": "^15.1.0",
+    "react-bootstrap": "^0.29.5",
+    "react-dom": "^15.1.0",
+    "react-redux": "^4.4.5",
+    "react-router": "^2.4.1",
+    "redux": "^3.5.2",
+    "redux-form": "^5.2.5"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.0.1"
+  },
+  "author": "",
+  "license": "ISC"
+}

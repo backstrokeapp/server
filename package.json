@@ -21,7 +21,8 @@
     "react-redux": "^4.4.5",
     "react-router": "^2.7.0",
     "react-router-redux": "^4.0.5",
-    "redux": "^3.5.2"
+    "redux": "^3.5.2",
+    "redux-thunk": "^2.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.10.1",
@@ -36,7 +37,7 @@
   },
   "scripts": {
     "start": "babel-node src/index.js",
-    "build:js": "browserify public/js -t [babelify] > public/bundle.js",
+    "build:js": "NODE_PATH=public/js browserify public/js -t [babelify] > public/bundle.js",
     "build:css": "node-sass --source-map true public/scss/styles.scss > public/bundle.css",
     "serve": "npm run build:js && npm run build:css && npm start",
     "watch": "nodemon --exec 'npm run serve' -e 'js scss' -w src/ -w public/js -w public/scss",

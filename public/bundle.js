@@ -45720,6 +45720,84 @@ function userInfo(user) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.Repository = Repository;
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = require('react-redux');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function Repository(_ref) {
+  var repo = _ref.repo;
+
+  if (repo) {
+    return _react2.default.createElement(
+      'div',
+      { className: 'repo repo-view' },
+      _react2.default.createElement(
+        'header',
+        { className: 'repo-header' },
+        _react2.default.createElement(
+          'h1',
+          null,
+          repo.repository.name
+        )
+      ),
+      _react2.default.createElement(
+        'ul',
+        null,
+        _react2.default.createElement(
+          'li',
+          null,
+          'Provider: ',
+          repo.provider
+        ),
+        _react2.default.createElement(
+          'li',
+          null,
+          'Type: ',
+          repo.type
+        ),
+        _react2.default.createElement(
+          'li',
+          null,
+          'Enabled: ',
+          repo.enabled ? 'yes' : 'no'
+        ),
+        _react2.default.createElement(
+          'li',
+          null,
+          'Private: ',
+          repo.repository.private
+        )
+      )
+    );
+  } else {
+    return _react2.default.createElement(
+      'span',
+      null,
+      'Loading repository...'
+    );
+  }
+}
+
+exports.default = (0, _reactRedux.connect)(function (state, props) {
+  return {
+    repo: state.activeRepository
+  };
+}, function (dispatch) {
+  return {};
+})(Repository);
+
+},{"react":491,"react-redux":306}],512:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _react = require('react');
 
@@ -45741,7 +45819,7 @@ var App = function App() {
 
 exports.default = App;
 
-},{"./route":512,"react":491}],512:[function(require,module,exports){
+},{"./route":513,"react":491}],513:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -45886,7 +45964,7 @@ exports.default = (0, _reactRedux.connect)(function (state, props) {
   };
 })(routeMethod);
 
-},{"../actions/blocks":508,"react":491,"react-bootstrap":258,"react-redux":306}],513:[function(require,module,exports){
+},{"../actions/blocks":508,"react":491,"react-bootstrap":258,"react-redux":306}],514:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -45905,7 +45983,7 @@ function activeRepository() {
   }
 }
 
-},{}],514:[function(require,module,exports){
+},{}],515:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -45933,7 +46011,7 @@ var reducers = (0, _redux.combineReducers)({
 
 exports.default = reducers;
 
-},{"reducers/activeRepository":513,"reducers/user":515,"redux":498}],515:[function(require,module,exports){
+},{"reducers/activeRepository":514,"reducers/user":516,"redux":498}],516:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -45952,7 +46030,7 @@ function user() {
   }
 }
 
-},{}],516:[function(require,module,exports){
+},{}],517:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -45978,6 +46056,10 @@ var _reducer2 = _interopRequireDefault(_reducer);
 var _app = require('components/app');
 
 var _app2 = _interopRequireDefault(_app);
+
+var _Repository = require('components/Repository');
+
+var _Repository2 = _interopRequireDefault(_Repository);
 
 var _fetchUser = require('actions/fetchUser');
 
@@ -46021,8 +46103,8 @@ history.listen(function (event) {
     _reactRouter.Router,
     { history: history },
     _react2.default.createElement(_reactRouter.Route, { path: '/', component: _app2.default }),
-    _react2.default.createElement(_reactRouter.Route, { path: '/repo/:provider/:user/:repo', component: _app2.default })
+    _react2.default.createElement(_reactRouter.Route, { path: '/repo/:provider/:user/:repo', component: _Repository2.default })
   )
 ), document.getElementById('root'));
 
-},{"actions/fetchRepo":509,"actions/fetchUser":510,"components/app":511,"react":491,"react-dom":283,"react-redux":306,"react-router":340,"reducers/reducer":514,"redux":498,"redux-thunk":492}]},{},[516]);
+},{"actions/fetchRepo":509,"actions/fetchUser":510,"components/Repository":511,"components/app":512,"react":491,"react-dom":283,"react-redux":306,"react-router":340,"reducers/reducer":515,"redux":498,"redux-thunk":492}]},{},[517]);

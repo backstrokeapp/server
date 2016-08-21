@@ -21,6 +21,7 @@ app.get('/api/v1/whoami', (req, res) => {
   });
 });
 
+// get a repository's data
 app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
   res.status(200).json({
     _id: `unique-repo-id-${req.params.provider}-${req.params.user}-${req.params.repo}`,

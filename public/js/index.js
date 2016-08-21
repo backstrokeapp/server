@@ -7,6 +7,7 @@ import reduxThunk from 'redux-thunk';
 
 import reducer from 'reducers/reducer';
 import App from 'components/app';
+import Repository from 'components/Repository';
 import fetchUser from 'actions/fetchUser';
 import fetchRepo from 'actions/fetchRepo';
 
@@ -40,7 +41,7 @@ render(
   <Provider store={store}>
     <Router history={history}>
       <Route path="/" component={App} />
-      <Route path="/repo/:provider/:user/:repo" component={App} />
+      <Route path="/repo/:provider/:user/:repo" component={Repository} />
     </Router>
   </Provider>,
   document.getElementById('root')

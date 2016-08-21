@@ -1,7 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-export function Repository({repo}) {
+export function Repository({
+  repo,
+  children,
+}) {
   if (repo) {
     return <div className="repo repo-view">
       <header className="repo-header">
@@ -13,9 +16,14 @@ export function Repository({repo}) {
         <li>Enabled: {repo.enabled ? 'yes' : 'no'}</li>
         <li>Private: {repo.repository.private ? 'yes' : 'no'}</li>
       </ul>
+
+      {children}
     </div>;
   } else {
-    return <span>Loading repository...</span>;
+    return <div className="repo">
+      <span>Loading repository...</span>
+      {children}
+    </div>;
   }
 }
 

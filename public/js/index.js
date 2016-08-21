@@ -7,7 +7,7 @@ import reduxThunk from 'redux-thunk';
 import {routerMiddleware} from 'react-router-redux';
 
 import reducer from 'reducers/reducer';
-import App from 'components/app';
+import App from 'components/App';
 import Repository from 'components/Repository';
 import RepositoryList from 'components/RepositoryList';
 
@@ -53,9 +53,11 @@ history.listen(event => {
 render(
   <Provider store={store}>
     <Router history={history}>
-      <Route path="/" component={App} />
-      <Route path="/repos" component={RepositoryList} />
-      <Route path="/repos/:provider/:user/:repo" component={Repository} />
+      <Route path="/" component={App}>
+        <Route path="/repos" component={RepositoryList}>
+          <Route path="/repos/:provider/:user/:repo" component={Repository} />
+        </Route>
+      </Route>
     </Router>
   </Provider>,
   document.getElementById('root')

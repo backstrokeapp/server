@@ -4,6 +4,7 @@ import {push} from 'react-router-redux';
 
 export function RepositoryList({
   repos,
+  children,
 
   onMoveToRepo,
 }) {
@@ -14,9 +15,13 @@ export function RepositoryList({
           return <li key={ct} onClick={onMoveToRepo.bind(null, repo)}>{repo.name}</li>;
         })}
       </ul>
+      {children}
     </div>;
   } else {
-    return <span>Loading repositories...</span>;
+    return <div className="repo-list">
+      <span>Loading repositories...</span>
+      {children}
+    </div>;
   }
 }
 

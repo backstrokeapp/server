@@ -1,4 +1,4 @@
-export default function activeRepository(store=null, action) {
+export default function repositoryList(store=null, action) {
   switch (action.type) {
     case 'PROJECTS_INFO':
       return action.data;

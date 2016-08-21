@@ -4,6 +4,7 @@ import {Provider} from 'react-redux';
 import {createStore, compose, applyMiddleware} from 'redux';
 import {Router, Route, hashHistory} from 'react-router';
 import reduxThunk from 'redux-thunk';
+import {routerMiddleware} from 'react-router-redux';
 
 import reducer from 'reducers/reducer';
 import App from 'components/app';
@@ -14,12 +15,14 @@ import fetchUser from 'actions/fetchUser';
 import fetchRepo from 'actions/fetchRepo';
 import fetchProjects from 'actions/fetchProjects';
 
+// Which history store to use?
+const history = hashHistory;
+
+// Configure Store
 let store = createStore(reducer, {}, compose(
-  applyMiddleware(reduxThunk),
+  applyMiddleware(reduxThunk, routerMiddleware(history)),
   window.devToolsExtension ? window.devToolsExtension() : f => f
 ));
-
-const history = hashHistory;
 
 // On route change, fire actions.
 history.listen(event => {
@@ -46,6 +49,7 @@ history.listen(event => {
   }
 });
 
+// Render it all.
 render(
   <Provider store={store}>
     <Router history={history}>

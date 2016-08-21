@@ -11,7 +11,7 @@ export function Repository({repo}) {
         <li>Provider: {repo.provider}</li>
         <li>Type: {repo.type}</li>
         <li>Enabled: {repo.enabled ? 'yes' : 'no'}</li>
-        <li>Private: {repo.repository.private}</li>
+        <li>Private: {repo.repository.private ? 'yes' : 'no'}</li>
       </ul>
     </div>;
   } else {

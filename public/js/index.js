@@ -8,8 +8,11 @@ import reduxThunk from 'redux-thunk';
 import reducer from 'reducers/reducer';
 import App from 'components/app';
 import Repository from 'components/Repository';
+import RepositoryList from 'components/RepositoryList';
+
 import fetchUser from 'actions/fetchUser';
 import fetchRepo from 'actions/fetchRepo';
+import fetchProjects from 'actions/fetchProjects';
 
 let store = createStore(reducer, {}, compose(
   applyMiddleware(reduxThunk),
@@ -28,11 +31,17 @@ history.listen(event => {
   if (state.user === null) {
     dispatch(fetchUser());
   }
-
-  // /repo/:provider/:user/:repo
-  // When navigating to a new repo's page, fetch its details
   let match;
-  if (match = pathname.match(/^\/repo\/(github)\/(.+)\/(.+)\/?$/)) {
+
+  // /repos
+  // Get a list of all repos that the user has configured.
+  if (match = pathname.indexOf('/repos') === 0) {
+    dispatch(fetchProjects());
+  }
+
+  // /repos/:provider/:user/:repo
+  // When navigating to a new repo's page, fetch its details
+  if (match = pathname.match(/^\/repos\/(github)\/(.+)\/(.+)\/?$/)) {
     dispatch(fetchRepo(match[1], match[2], match[3]));
   }
 });
@@ -41,7 +50,8 @@ render(
   <Provider store={store}>
     <Router history={history}>
       <Route path="/" component={App} />
-      <Route path="/repo/:provider/:user/:repo" component={Repository} />
+      <Route path="/repos" component={RepositoryList} />
+      <Route path="/repos/:provider/:user/:repo" component={Repository} />
     </Router>
   </Provider>,
   document.getElementById('root')

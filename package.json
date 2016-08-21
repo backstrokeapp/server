@@ -11,6 +11,7 @@
     "bluebird": "^3.4.1",
     "body-parser": "^1.15.2",
     "bootstrap": "^3.3.6",
+    "classname": "0.0.0",
     "ejs": "^2.4.2",
     "express": "^4.14.0",
     "github": "^2.0.1",

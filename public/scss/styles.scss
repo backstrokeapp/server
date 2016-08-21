@@ -1,3 +1,25 @@
 @import "bootstrap";
+@import "fontawesome/font-awesome";
 
-// styles here
+@mixin list-header {
+  background-color: $brand-primary;
+  color: #fff;
+  font-size: 0.75em;
+}
+
+// The repo container layout grid
+.repo-container {
+  @extend .container;
+  display: flex;
+}
+
+.column.side-bar {
+  max-width: 400px;
+  width: 300px;
+}
+
+.column.repo {
+  flex: 1;
+}
+
+@import "sidebar";

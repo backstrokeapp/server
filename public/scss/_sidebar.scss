@@ -1,0 +1,53 @@
+.side-bar {
+  height: 100%;
+
+  & > ul {
+    padding-left: 0px;
+    list-style-type: none;
+    font-size: $font-size-base * 1.2;
+
+    .list-header {
+      @include list-header;
+    }
+
+    // each repo
+    & > li {
+      padding: $padding-large-vertical $padding-base-horizontal;
+      font-size: 1em;
+
+      border-bottom: 1px solid $gray-lighter;
+      &:first-child {
+        border-top: 1px solid $gray-lighter;
+      }
+
+      // The repo name
+      .item-title {
+        cursor: pointer;
+        &:hover, &:focus, &:active { text-decoration: underline; }
+      }
+
+      // status lines with icons (provider, enabled/disabled)
+      .icon-tray {
+        height: 2em;
+        margin-top: 0.5em;
+        margin-bottom: 1em;
+        
+        & > ul {
+          list-style-type: none;
+          padding-left: 0px;
+
+          & > li {
+
+            // The label for each status item
+            span {
+              margin-left: 0.5em;
+            }
+
+            i.enabled { color: $brand-success; } // When enabled
+            i.disabled { color: $brand-danger; } // When disabled
+          }
+        }
+      }
+    }
+  }
+}

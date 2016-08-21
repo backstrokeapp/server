@@ -6,7 +6,7 @@ export function Repository({
   children,
 }) {
   if (repo) {
-    return <div className="repo repo-view">
+    return <div className="column repo">
       <header className="repo-header">
         <h1>{repo.repository.name}</h1>
       </header>
@@ -20,7 +20,7 @@ export function Repository({
       {children}
     </div>;
   } else {
-    return <div className="repo">
+    return <div className="column repo">
       <span>Loading repository...</span>
       {children}
     </div>;

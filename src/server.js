@@ -10,6 +10,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 import morgan from 'morgan';
 app.use(morgan('tiny'));
 
+// Disable cors (for now, while in development)
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 // identify the currently logged in user
 app.get('/api/v1/whoami', (req, res) => {
   res.status(200).json({
@@ -45,6 +52,7 @@ app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
       fork: false,
       html_url: "https://github.com/octocat/Hello-World",
       provider: 'github',
+      branches: ['master', 'dev', 'feature/someting-else'],
     },
     changes: [
       {
@@ -55,6 +63,7 @@ app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
           fork: false,
           html_url: "https://github.com/propose-to/this-repo",
           provider: 'github',
+          branches: ['master', 'dev', 'feature/someting-else'],
         },
         branch: 'master',
       },
@@ -72,6 +81,6 @@ app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
 //   res.redirect(`https://github.com/1egoman/backstroke`);
 // }).post(webhook);
 
-let port = process.env.PORT || 8000;
+let port = process.env.PORT || 8001;
 app.listen(port);
 console.log("Listening on port", port, "...");

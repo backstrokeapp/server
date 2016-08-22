@@ -23,7 +23,7 @@ export function RepositoryList({
                 {repo.name}
               </div>
               {/* Enabled or disabled? */}
-              <Switch checked={"enabled"} />
+              <Switch checked={repo.enabled ? "enabled" : "disabled"} />
             </li>;
           })}
         </ul>

@@ -3,3 +3,4 @@
 name=backstroke
 GITHUB_TOKEN=
 PORT=8000
+BACKSTROKE_SERVER=http://localhost:8001

@@ -9,6 +9,7 @@ export function RepositoryList({
   children,
 
   onMoveToRepo,
+  onRepoEnable,
 }) {
   if (repos) {
     return <div className="repo-container">
@@ -16,14 +17,12 @@ export function RepositoryList({
         <ul>
           <li className="list-header">My Repositories</li>
           {repos.data.map((repo, ct) => {
-            return <li key={ct}>
+            return <li key={ct} onClick={onMoveToRepo.bind(null, repo)} className="move-to-repo">
               {/* Provider (Github, Bitbucket, Gitlab, etc) */}
-              <i className={classname('fa', 'fa-'+repo.provider)} />
-              <div className="item-title" onClick={onMoveToRepo.bind(null, repo)}>
-                {repo.name}
-              </div>
+              <i className={classname('fa', 'fa-'+repo.provider, 'move-to-repo')} />
+              <div className="item-title move-to-repo">{repo.name}</div>
               {/* Enabled or disabled? */}
-              <Switch checked={repo.enabled ? "enabled" : "disabled"} />
+              <Switch onChange={onRepoEnable} checked={repo.enabled ? "enabled" : "disabled"} />
             </li>;
           })}
         </ul>
@@ -44,9 +43,15 @@ export default connect((state, props) => {
   };
 }, dispatch => {
   return {
-    onMoveToRepo(repo) {
-      let [user, reponame] = repo.name.split('/');
-      dispatch(push(`/repos/${repo.provider}/${user}/${reponame}`));
+    onMoveToRepo(repo, event) {
+      // only move if the user didn't click on the switch
+      if (event.target.className.indexOf('move-to-repo') !== -1) {
+        let [user, reponame] = repo.name.split('/');
+        dispatch(push(`/repos/${repo.provider}/${user}/${reponame}`));
+      }
+    },
+    onRepoEnable(repo, enable=false) {
+      console.log(repo, enable)
     },
   };
 })(RepositoryList);

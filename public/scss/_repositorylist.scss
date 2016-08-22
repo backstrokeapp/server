@@ -23,11 +23,19 @@
       // The repo name
       .item-title {
         cursor: pointer;
+        display: inline-block;
         &:hover, &:focus, &:active { text-decoration: underline; }
       }
 
       i {
         font-size: 1.5em;
+        vertical-align: middle;
+        display: inline-block;
+        margin-right: 0.2em;
+      }
+
+      .rsbc-switch-button {
+        float: right;
       }
     }
   }

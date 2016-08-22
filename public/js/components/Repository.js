@@ -1,12 +1,14 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
+import RepositoryBox from 'components/RepositoryBox';
+
 export function Repository({
   repo,
   children,
 }) {
   if (repo) {
-    return <div className="column repo">
+    return <div className="repo container">
       <header className="repo-header">
         <h1>{repo.repository.name}</h1>
       </header>
@@ -20,6 +22,7 @@ export function Repository({
       <ul>
         {repo.changes.map((change, ct) => {
           return <li key={ct}>
+            <RepositoryBox repository={change.repository} branch={change.branch} />
             <h3>{change.type}</h3>
             Issue to <strong>{change.repository.name}</strong>
             on branch <strong>{change.branch}</strong>.

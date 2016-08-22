@@ -1,0 +1,18 @@
+.repository-box {
+  border: 1px solid $gray-light;
+  border-radius: $border-radius-base;
+  padding: $padding-large-vertical $padding-large-horizontal;
+
+  .icon-wrapper {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 1em;
+    i {
+      font-size: 72px;
+    }
+  }
+
+  .repo-name-box {
+    margin-bottom: 0.5em;
+  }
+}

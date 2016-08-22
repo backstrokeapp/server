@@ -2,7 +2,7 @@ import 'whatwg-fetch';
 
 export default function fetchRepo(provider, user, repo) {
   return dispatch => {
-    return fetch(`/api/v1/repos/${provider}/${user}/${repo}`)
+    return fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/repos/${provider}/${user}/${repo}`)
     .then(response => response.json())
     .then(json => {
       dispatch(repoInfo(provider, user, repo, json));

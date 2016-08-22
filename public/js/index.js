@@ -54,9 +54,8 @@ render(
   <Provider store={store}>
     <Router history={history}>
       <Route path="/" component={App}>
-        <Route path="/repos" component={RepositoryList}>
-          <Route path="/repos/:provider/:user/:repo" component={Repository} />
-        </Route>
+        <Route path="/repos" component={RepositoryList} />
+        <Route path="/repos/:provider/:user/:repo" component={Repository} />
       </Route>
     </Router>
   </Provider>,

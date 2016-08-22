@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
 import classname from 'classname';
+import Switch from 'react-switch-button';
 
 export function RepositoryList({
   repos,
@@ -11,20 +12,18 @@ export function RepositoryList({
 }) {
   if (repos) {
     return <div className="repo-container">
-      <div className="column side-bar">
+      <div className="repo-list container">
         <ul>
           <li className="list-header">My Repositories</li>
           {repos.data.map((repo, ct) => {
-            return <li key={ct} onClick={onMoveToRepo.bind(null, repo)}>
-              <div className="item-title">{repo.name}</div>
-              <div className="icon-tray">
-                <ul>
-                  {/* Provider (Github, Bitbucket, Gitlab, etc) */}
-                  <li><Provider provider={repo.provider} /></li>
-                  {/* Enabled or disabled? */}
-                  <li><EnabledCheck enabled={repo.enabled} /></li>
-                </ul>
+            return <li key={ct}>
+              {/* Provider (Github, Bitbucket, Gitlab, etc) */}
+              <i className={classname('fa', 'fa-'+repo.provider)} />
+              <div className="item-title" onClick={onMoveToRepo.bind(null, repo)}>
+                {repo.name}
               </div>
+              {/* Enabled or disabled? */}
+              <Switch checked={"enabled"} />
             </li>;
           })}
         </ul>
@@ -37,32 +36,6 @@ export function RepositoryList({
       {children}
     </div>;
   }
-}
-
-// Is the given repo enabled or disabled?
-export function EnabledCheck({enabled}) {
-  if (enabled) {
-    return <span>
-      <i className={classname('fa', 'fa-check-square', 'enabled')} />
-      <span>Enabled</span>
-    </span>;
-  } else {
-    return <span>
-      <i className={classname('fa', 'fa-square', 'disabled')} />
-      <span>Disabled</span>
-    </span>;
-  }
-}
-
-// The provider for a repo (github, bitbucket, gitlab, etc)
-export function Provider({provider}) {
-  return <span>
-    <i className={classname('fa', 'fa-'+provider)} />
-    <span>
-      {provider[0].toUpperCase()}
-      {provider.slice(1)}
-    </span>
-  </span>;
 }
 
 export default connect((state, props) => {

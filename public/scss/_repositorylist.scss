@@ -1,4 +1,4 @@
-.side-bar {
+.repo-list {
   height: 100%;
 
   & > ul {
@@ -26,27 +26,8 @@
         &:hover, &:focus, &:active { text-decoration: underline; }
       }
 
-      // status lines with icons (provider, enabled/disabled)
-      .icon-tray {
-        height: 2em;
-        margin-top: 0.5em;
-        margin-bottom: 1em;
-        
-        & > ul {
-          list-style-type: none;
-          padding-left: 0px;
-
-          & > li {
-
-            // The label for each status item
-            span {
-              margin-left: 0.5em;
-            }
-
-            i.enabled { color: $brand-success; } // When enabled
-            i.disabled { color: $brand-danger; } // When disabled
-          }
-        }
+      i {
+        font-size: 1.5em;
       }
     }
   }

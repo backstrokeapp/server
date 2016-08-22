@@ -11,10 +11,20 @@ export function Repository({
         <h1>{repo.repository.name}</h1>
       </header>
       <ul>
-        <li>Provider: {repo.provider}</li>
+        <li>Provider: {repo.repository.provider}</li>
         <li>Type: {repo.type}</li>
         <li>Enabled: {repo.enabled ? 'yes' : 'no'}</li>
         <li>Private: {repo.repository.private ? 'yes' : 'no'}</li>
+      </ul>
+
+      <ul>
+        {repo.changes.map((change, ct) => {
+          return <li key={ct}>
+            <h3>{change.type}</h3>
+            Issue to <strong>{change.repository.name}</strong>
+            on branch <strong>{change.branch}</strong>.
+          </li>;
+        })}
       </ul>
 
       {children}

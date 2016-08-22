@@ -39,13 +39,26 @@ app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
     enabled: true,
     blacklistedForks: [],
     type: 'upstream', // or 'fork'
-    provider: 'github',
     repository: {
       name: `${req.params.user}/${req.params.repo}`,
       private: false,
       fork: false,
       html_url: "https://github.com/octocat/Hello-World",
+      provider: 'github',
     },
+    changes: [
+      {
+        type: "pull_request",
+        repository: {
+          name: `propose-to/this-repo`,
+          private: false,
+          fork: false,
+          html_url: "https://github.com/propose-to/this-repo",
+          provider: 'github',
+        },
+        branch: 'master',
+      },
+    ],
   });
 });
 

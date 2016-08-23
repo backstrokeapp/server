@@ -16,6 +16,11 @@ export default function RepositoryBox({repository: repo, branch}) {
       value={repo.name}
       className="repo-name-box form-control"
     />
-    <Select options={branchOptions} value={branch} className="branch-name-box" />
+    <Select
+      options={branchOptions}
+      value={branch}
+      className="branch-name-box"
+      clearable={false}
+    />
   </div>;
 }

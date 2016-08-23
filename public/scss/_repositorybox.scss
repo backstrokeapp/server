@@ -1,7 +1,5 @@
 .repository-box {
-  border: 1px solid $gray-light;
-  border-radius: $border-radius-base;
-  padding: $padding-large-vertical $padding-large-horizontal;
+  @include repo-box;
 
   .icon-wrapper {
     width: 100%;

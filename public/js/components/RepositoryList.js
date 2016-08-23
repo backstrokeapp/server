@@ -14,7 +14,7 @@ export function RepositoryList({
   onRepoEnable,
 }) {
   if (repos) {
-    return <div className="repo-container">
+    return <div className="repo container">
       <div className="repo-list container">
         <ul>
           <li className="list-header">My Repositories</li>

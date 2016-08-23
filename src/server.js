@@ -56,16 +56,33 @@ app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
     },
     changes: [
       {
-        type: "pull_request",
-        repository: {
-          name: `propose-to/this-repo`,
-          private: false,
-          fork: false,
-          html_url: "https://github.com/propose-to/this-repo",
-          provider: 'github',
-          branches: ['master', 'dev', 'feature/someting-else'],
-        },
-        branch: 'master',
+        fromBranch: "master",
+        items: [
+          {
+            type: "pull_request",
+            repository: {
+              name: `propose-to/this-repo`,
+              private: false,
+              fork: false,
+              html_url: "https://github.com/propose-to/this-repo",
+              provider: 'github',
+              branches: ['master', 'dev', 'feature/someting-else'],
+            },
+            branch: 'master',
+          },
+          {
+            type: "pull_request",
+            repository: {
+              name: `propose-to/this-other-repo`,
+              private: false,
+              fork: false,
+              html_url: "https://github.com/propose-to/this-other-repo",
+              provider: 'github',
+              branches: ['master', 'dev', 'feature/someting-else'],
+            },
+            branch: 'another-branch',
+          },
+        ],
       },
     ],
   });

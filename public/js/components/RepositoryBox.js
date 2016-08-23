@@ -1,6 +1,7 @@
 import React from 'react';
 import Select from 'react-select';
 import {connect} from 'react-redux';
+import {InputGroup, FormControl, OverlayTrigger, Tooltip} from 'react-bootstrap';
 
 import verifyRepositoryName from 'actions/verifyRepositoryName';
 import repoBranch from 'actions/repoBranch';
@@ -20,13 +21,23 @@ export function RepositoryBox({
     <div className="icon-wrapper">
       <i className={'fa fa-'+repo.provider} />
     </div>
-    <input
-      type="text"
-      placeholder="username/repo"
-      value={repo.name}
-      className="repo-name-box form-control"
-      onChange={onVerifyRepositoryName.bind(null, repo)}
-    />
+    <InputGroup className="repo-name-box">
+      <FormControl
+        type="text"
+        placeholder="username/repo"
+        value={repo.name}
+        onChange={onVerifyRepositoryName.bind(null, repo)}
+      />
+      <InputGroup.Addon>
+        <OverlayTrigger placement="top" overlay={
+          <Tooltip id="is-enabled">
+            {repo._nameValid ? "This repo is valid!" : "This repo doesn't exist."}
+          </Tooltip>
+        }>
+          {repo._nameValid ? <i className="fa fa-check" /> : <i className="fa fa-times" />}
+        </OverlayTrigger>
+      </InputGroup.Addon>
+    </InputGroup>
     <Select
       options={branchOptions}
       value={branch}

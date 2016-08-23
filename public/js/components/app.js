@@ -19,9 +19,7 @@ export function MainNav() {
     </Navbar.Header>
     <Navbar.Collapse>
       <Nav>
-        <NavItem eventKey={2}>
-          <Link to="/links">Links</Link>
-        </NavItem>
+        <NavItem eventKey={2} href="#/links">Links</NavItem>
       </Nav>
       <Nav pullRight>
         <NavItem eventKey={1} href="//github.com/1egoman/backstroke">

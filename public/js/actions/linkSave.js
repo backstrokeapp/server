@@ -1,4 +1,5 @@
 import 'whatwg-fetch';
+import {push} from 'react-router-redux';
 
 export default function linkSave(link) {
   return dispatch => {
@@ -9,6 +10,7 @@ export default function linkSave(link) {
       body: JSON.stringify({link}),
     }).then(response => response.json()).then(json => {
       dispatch(linkSaveAction(link, json.status));
+      dispatch(push('/links'));
     });
   };
 }

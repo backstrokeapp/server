@@ -22,7 +22,6 @@ export default function activeLink(state=null, action) {
     case 'REPO_VALID':
       return updateRepo(state, action.data, repo => {
         return Object.assign({}, repo, {
-          name: action.name,
           branches: action.branches, // branches come back in the validation
           _nameValid: true,
         });
@@ -31,7 +30,6 @@ export default function activeLink(state=null, action) {
     case 'REPO_INVALID':
       return updateRepo(state, action.data, repo => {
         return Object.assign({}, repo, {
-          name: action.name,
           _nameValid: false,
         });
       });

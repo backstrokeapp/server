@@ -61,7 +61,7 @@ app.get('/api/v1/links', (req, res) => {
 });
 
 // return the branches for a given repo
-app.get('/api/v1/repos/:provider/:user/:repo/branches', (req, res) => {
+app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
   return res.status(200).json({
     branches: ["master", "branch-1", "branch-2"],
   });
@@ -91,6 +91,12 @@ app.get('/api/v1/links/:id', (req, res) => {
       branches: ['master', 'dev', 'feature/someting-else'],
       branch: 'master',
     },
+  });
+});
+
+app.post('/api/v1/links/:linkId', (req, res) => {
+  res.status(200).send({
+    status: 'ok',
   });
 });
 

@@ -41,6 +41,17 @@ export default function activeLink(state=null, action) {
         return Object.assign({}, repo, {branch: action.branch});
       });
 
+    case 'LINK_SAVE_IN_PROGRESS':
+      return Object.assign({}, state, {
+        _saveInProgress: true,
+      });
+
+    case 'LINK_SAVE':
+      return Object.assign({}, state, {
+        _saveInProgress: false,
+        _saveStatus: action.status,
+      });
+
     default:
       return state;
   }

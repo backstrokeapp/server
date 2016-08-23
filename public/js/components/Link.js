@@ -4,9 +4,13 @@ import Select from 'react-select';
 
 import RepositoryBox from 'components/RepositoryBox';
 
+import linkSave from 'actions/linkSave';
+
 export function Link({
   link,
   children,
+
+  onLinkSave,
 }) {
   if (link) {
     let fromBranchOptions = link.from.branches.map(branch => {
@@ -25,6 +29,12 @@ export function Link({
       <RepositoryBox repository={link.from} branch={link.from.branch} />
       <h3>To</h3>
       <RepositoryBox repository={link.to} branch={link.to.branch} />
+
+      {
+        link._saveInProgress ? 
+        <button className="btn btn-primary disabled">Loading</button> :
+        <button className="btn btn-primary" onClick={onLinkSave.bind(null, link)}>Save</button>
+      }
 
       {children}
     </div>;
@@ -50,5 +60,9 @@ export default connect((state, props) => {
     link: state.activeLink,
   };
 }, dispatch => {
-  return {};
+  return {
+    onLinkSave(repo) {
+      dispatch(linkSave(repo));
+    },
+  };
 })(Link);

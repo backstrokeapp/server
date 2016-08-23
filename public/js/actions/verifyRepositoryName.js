@@ -4,16 +4,18 @@ export default function verifyRepositoryName(repo, name) {
   return dispatch => {
     if (repo.provider === 'github') {
       dispatch(repoName(repo, name));
-      return fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/repos/${repo.provider}/${name}/branches`)
-      .then(response => {
-        if (response.status < 400) {
-          return response.json().then(({branches}) => {
-            return dispatch(repoValid(Object.assign({}, repo, {name}), branches));
-          });
-        } else {
-          dispatch(repoInvalid(Object.assign({}, repo, {name})));
-        }
-      });
+      if (name.indexOf('/') !== -1) { // if there isn't a slash, its not worth searching for a failure
+        return fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/repos/${repo.provider}/${name}`)
+        .then(response => {
+          if (response.status < 400) {
+            return response.json().then(({branches}) => {
+              return dispatch(repoValid(Object.assign({}, repo, {name}), branches));
+            });
+          } else {
+            dispatch(repoInvalid(Object.assign({}, repo, {name})));
+          }
+        });
+      }
     }
   };
 }

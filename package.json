@@ -21,11 +21,13 @@
     "react": "^15.3.1",
     "react-bootstrap": "^0.30.3",
     "react-dom": "^15.3.1",
+    "react-ios-switch": "^0.1.10",
     "react-redux": "^4.4.5",
     "react-router": "^2.7.0",
     "react-router-redux": "^4.0.5",
     "react-select": "^1.0.0-beta14",
     "react-switch-button": "1egoman/react-switch-button",
+    "react-toggle-switch": "^2.1.2",
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0",
     "whatwg-fetch": "^1.0.0"

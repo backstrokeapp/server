@@ -2,7 +2,9 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
 import classname from 'classname';
-import Switch from 'react-switch-button';
+import Switch from 'react-ios-switch';
+
+import enableDisableRepository from 'actions/enableDisableRepository';
 
 export function RepositoryList({
   repos,
@@ -17,12 +19,20 @@ export function RepositoryList({
         <ul>
           <li className="list-header">My Repositories</li>
           {repos.data.map((repo, ct) => {
-            return <li key={ct} onClick={onMoveToRepo.bind(null, repo)} className="move-to-repo">
+            return <li
+              key={ct}
+              onClick={onMoveToRepo.bind(null, repo)}
+              className={classname('move-to-repo', {grayed: !repo.enabled})}
+            >
               {/* Provider (Github, Bitbucket, Gitlab, etc) */}
               <i className={classname('fa', 'fa-'+repo.provider, 'move-to-repo')} />
               <div className="item-title move-to-repo">{repo.name}</div>
               {/* Enabled or disabled? */}
-              <Switch onChange={onRepoEnable} checked={repo.enabled ? "enabled" : "disabled"} />
+              <Switch
+                onChange={onRepoEnable.bind(null, repo, !repo.enabled)}
+                checked={repo.enabled}
+                disabled={repo._pending}
+              />
             </li>;
           })}
         </ul>
@@ -50,8 +60,8 @@ export default connect((state, props) => {
         dispatch(push(`/repos/${repo.provider}/${user}/${reponame}`));
       }
     },
-    onRepoEnable(repo, enable=false) {
-      console.log(repo, enable)
+    onRepoEnable(repo, enabled) {
+      dispatch(enableDisableRepository(repo, enabled));
     },
   };
 })(RepositoryList);

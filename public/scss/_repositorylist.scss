@@ -20,6 +20,11 @@
         border-top: 1px solid $gray-lighter;
       }
 
+      &.grayed {
+        opacity: 0.8;
+        background-color: $gray-lighter;
+      }
+
       // The repo name
       .item-title {
         cursor: pointer;
@@ -34,7 +39,7 @@
         margin-right: 0.2em;
       }
 
-      .rsbc-switch-button {
+      .react-ios-switch-Switch-switch {
         float: right;
       }
     }

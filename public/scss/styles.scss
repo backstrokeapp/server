@@ -1,6 +1,7 @@
 @import "bootstrap";
 @import "fontawesome/font-awesome";
 @import "react-select";
+@import "switch";
 
 @mixin list-header {
   background-color: $brand-primary;
@@ -26,4 +27,3 @@
 @import "repositorylist";
 @import "repo";
 @import "repositorybox";
-@import "switch";

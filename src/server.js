@@ -31,9 +31,9 @@ app.get('/api/v1/whoami', (req, res) => {
 app.get('/api/v1/repos', (req, res) => {
   res.status(200).json({
     data: [
-      {name: 'octocat/Hello-World', provider: 'github', enabled: true},
-      {name: '1egoman/backstroke', provider: 'github', enabled: true},
-      {name: 'some-other/repo-here', provider: 'github', enabled: true},
+      {_id: 'one', name: 'octocat/Hello-World', provider: 'github', enabled: true},
+      {_id: 'two', name: '1egoman/backstroke', provider: 'github', enabled: true},
+      {_id: 'three', name: 'some-other/repo-here', provider: 'github', enabled: true},
     ],
     lastId: `unique-repo-id-github-some-other-repo-here`,
   });
@@ -69,6 +69,11 @@ app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
       },
     ],
   });
+});
+
+// enable or disable a repository
+app.post('/api/v1/repos/:provider/:user/:repo/enable', (req, res) => {
+  res.status(200).json({success: true});
 });
 
 // the old webhook route

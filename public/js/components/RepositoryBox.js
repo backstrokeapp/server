@@ -1,8 +1,16 @@
 import React from 'react';
 import Select from 'react-select';
+import {connect} from 'react-redux';
+
+import verifyRepositoryName from 'actions/verifyRepositoryName';
 
 // A representation of a repository
-export default function RepositoryBox({repository: repo, branch}) {
+export function RepositoryBox({
+  repository: repo,
+  branch,
+
+  onVerifyRepositoryName,
+}) {
   let branchOptions = repo.branches.map(branch => {
     return {value: branch, label: branch};
   });
@@ -15,6 +23,7 @@ export default function RepositoryBox({repository: repo, branch}) {
       placeholder="username/repo"
       value={repo.name}
       className="repo-name-box form-control"
+      onChange={onVerifyRepositoryName.bind(null, repo)}
     />
     <Select
       options={branchOptions}
@@ -24,3 +33,13 @@ export default function RepositoryBox({repository: repo, branch}) {
     />
   </div>;
 }
+
+export default connect((state, props) => {
+  return {};
+}, dispatch => {
+  return {
+    onVerifyRepositoryName(repo, event) {
+      dispatch(verifyRepositoryName(repo, event.target.value));
+    },
+  };
+})(RepositoryBox);

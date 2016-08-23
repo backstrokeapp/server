@@ -60,6 +60,13 @@ app.get('/api/v1/links', (req, res) => {
   });
 });
 
+// return the branches for a given repo
+app.get('/api/v1/repos/:provider/:user/:repo/branches', (req, res) => {
+  return res.status(200).json({
+    branches: ["master", "branch-1", "branch-2"],
+  });
+});
+
 app.get('/api/v1/links/:id', (req, res) => {
   res.status(200).json({
     _id: 'link-one',
@@ -86,65 +93,65 @@ app.get('/api/v1/links/:id', (req, res) => {
 });
 
 
-app.get('/api/v1/repos', (req, res) => {
-  res.status(200).json({
-    data: [
-      {_id: 'one', name: 'octocat/Hello-World', provider: 'github', enabled: true},
-      {_id: 'two', name: '1egoman/backstroke', provider: 'github', enabled: true},
-      {_id: 'three', name: 'some-other/repo-here', provider: 'github', enabled: true},
-    ],
-    lastId: `unique-repo-id-github-some-other-repo-here`,
-  });
-});
+// app.get('/api/v1/repos', (req, res) => {
+//   res.status(200).json({
+//     data: [
+//       {_id: 'one', name: 'octocat/Hello-World', provider: 'github', enabled: true},
+//       {_id: 'two', name: '1egoman/backstroke', provider: 'github', enabled: true},
+//       {_id: 'three', name: 'some-other/repo-here', provider: 'github', enabled: true},
+//     ],
+//     lastId: `unique-repo-id-github-some-other-repo-here`,
+//   });
+// });
 
 // get a repository's data
-app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
-  res.status(200).json({
-    _id: `unique-repo-id-${req.params.provider}-${req.params.user}-${req.params.repo}`,
-    enabled: true,
-    blacklistedForks: [],
-    type: 'upstream', // or 'fork'
-    repository: {
-      name: `${req.params.user}/${req.params.repo}`,
-      private: false,
-      fork: false,
-      html_url: "https://github.com/octocat/Hello-World",
-      provider: 'github',
-      branches: ['master', 'dev', 'feature/someting-else'],
-    },
-    changes: [
-      {
-        fromBranch: "master",
-        items: [
-          {
-            type: "pull_request",
-            repository: {
-              name: `propose-to/this-repo`,
-              private: false,
-              fork: false,
-              html_url: "https://github.com/propose-to/this-repo",
-              provider: 'github',
-              branches: ['master', 'dev', 'feature/someting-else'],
-            },
-            branch: 'master',
-          },
-          {
-            type: "pull_request",
-            repository: {
-              name: `propose-to/this-other-repo`,
-              private: false,
-              fork: false,
-              html_url: "https://github.com/propose-to/this-other-repo",
-              provider: 'github',
-              branches: ['master', 'dev', 'feature/someting-else'],
-            },
-            branch: 'another-branch',
-          },
-        ],
-      },
-    ],
-  });
-});
+// app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
+//   res.status(200).json({
+//     _id: `unique-repo-id-${req.params.provider}-${req.params.user}-${req.params.repo}`,
+//     enabled: true,
+//     blacklistedForks: [],
+//     type: 'upstream', // or 'fork'
+//     repository: {
+//       name: `${req.params.user}/${req.params.repo}`,
+//       private: false,
+//       fork: false,
+//       html_url: "https://github.com/octocat/Hello-World",
+//       provider: 'github',
+//       branches: ['master', 'dev', 'feature/someting-else'],
+//     },
+//     changes: [
+//       {
+//         fromBranch: "master",
+//         items: [
+//           {
+//             type: "pull_request",
+//             repository: {
+//               name: `propose-to/this-repo`,
+//               private: false,
+//               fork: false,
+//               html_url: "https://github.com/propose-to/this-repo",
+//               provider: 'github',
+//               branches: ['master', 'dev', 'feature/someting-else'],
+//             },
+//             branch: 'master',
+//           },
+//           {
+//             type: "pull_request",
+//             repository: {
+//               name: `propose-to/this-other-repo`,
+//               private: false,
+//               fork: false,
+//               html_url: "https://github.com/propose-to/this-other-repo",
+//               provider: 'github',
+//               branches: ['master', 'dev', 'feature/someting-else'],
+//             },
+//             branch: 'another-branch',
+//           },
+//         ],
+//       },
+//     ],
+//   });
+// });
 
 // enable or disable a repository
 app.post('/api/v1/link/:id/enable', (req, res) => {

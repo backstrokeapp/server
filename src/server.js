@@ -80,6 +80,7 @@ app.get('/api/v1/links/:id', (req, res) => {
       fork: false,
       html_url: "https://github.com/octocat/Hello-World",
       branches: ['master', 'dev', 'feature/someting-else'],
+      branch: 'master',
     },
     to: {
       private: true,
@@ -88,6 +89,7 @@ app.get('/api/v1/links/:id', (req, res) => {
       fork: true,
       html_url: "https://github.com/octocat/Hello-World",
       branches: ['master', 'dev', 'feature/someting-else'],
+      branch: 'master',
     },
   });
 });

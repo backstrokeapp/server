@@ -20,7 +20,7 @@ export function MainNav() {
     <Navbar.Collapse>
       <Nav>
         <NavItem eventKey={2}>
-          <Link to="/repos">Repositories</Link>
+          <Link to="/links">Links</Link>
         </NavItem>
       </Nav>
       <Nav pullRight>

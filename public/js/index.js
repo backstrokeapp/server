@@ -8,12 +8,12 @@ import {routerMiddleware} from 'react-router-redux';
 
 import reducer from 'reducers/reducer';
 import App from 'components/App';
-import Repository from 'components/Repository';
-import RepositoryList from 'components/RepositoryList';
+import Link from 'components/Link';
+import LinkList from 'components/LinkList';
 
 import fetchUser from 'actions/fetchUser';
-import fetchRepo from 'actions/fetchRepo';
-import fetchProjects from 'actions/fetchProjects';
+import fetchLink from 'actions/fetchLink';
+import fetchLinks from 'actions/fetchLinks';
 
 // Which history store to use?
 const history = hashHistory;
@@ -36,16 +36,16 @@ history.listen(event => {
   }
   let match;
 
-  // /repos
-  // Get a list of all repos that the user has configured.
-  if (match = pathname.indexOf('/repos') === 0) {
-    dispatch(fetchProjects());
+  // /links
+  // Get a list of all links that the user has configured.
+  if (match = pathname.indexOf('/links') === 0) {
+    dispatch(fetchLinks());
   }
 
-  // /repos/:provider/:user/:repo
-  // When navigating to a new repo's page, fetch its details
-  if (match = pathname.match(/^\/repos\/(github)\/(.+)\/(.+)\/?$/)) {
-    dispatch(fetchRepo(match[1], match[2], match[3]));
+  // /links/:linkId
+  // When navigating to a new link's page, fetch its details
+  if (match = pathname.match(/^\/links\/(.+)\/?$/)) {
+    dispatch(fetchLink({_id: match[1]}));
   }
 });
 
@@ -54,8 +54,8 @@ render(
   <Provider store={store}>
     <Router history={history}>
       <Route path="/" component={App}>
-        <Route path="/repos" component={RepositoryList} />
-        <Route path="/repos/:provider/:user/:repo" component={Repository} />
+        <Route path="/links" component={LinkList} />
+        <Route path="/links/:linkId" component={Link} />
       </Route>
     </Router>
   </Provider>,

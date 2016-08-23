@@ -1,13 +1,13 @@
 import {combineReducers} from 'redux';
 import user from 'reducers/user';
-import activeRepository from 'reducers/activeRepository';
-import repositoryList from 'reducers/repositoryList';
+import activeLink from 'reducers/activeLink';
+import linkList from 'reducers/linkList';
 import {routerReducer as routing} from 'react-router-redux';
 
 const reducers = combineReducers({
-  activeRepository, // the repository that is currently selected
+  activeLink, // the link that is currently selected
   user, // logged in user
-  repositoryList, // minimal repo info
+  linkList, // minimal link info
 
   routing,
 });

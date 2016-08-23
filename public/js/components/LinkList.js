@@ -4,34 +4,34 @@ import {push} from 'react-router-redux';
 import classname from 'classname';
 import Switch from 'react-ios-switch';
 
-import enableDisableRepository from 'actions/enableDisableRepository';
+import enableDisableLink from 'actions/enableDisableLink';
 
-export function RepositoryList({
-  repos,
+export function LinkList({
+  links,
   children,
 
   onMoveToRepo,
-  onRepoEnable,
+  onLinkEnable,
 }) {
-  if (repos) {
+  if (links) {
     return <div className="repo container">
       <div className="repo-list container">
         <ul>
           <li className="list-header">My Repositories</li>
-          {repos.data.map((repo, ct) => {
+          {links.data.map((link, ct) => {
             return <li
               key={ct}
-              onClick={onMoveToRepo.bind(null, repo)}
-              className={classname('move-to-repo', {grayed: !repo.enabled})}
+              onClick={onMoveToRepo.bind(null, link)}
+              className={classname('move-to-repo', {grayed: !link.enabled})}
             >
               {/* Provider (Github, Bitbucket, Gitlab, etc) */}
-              <i className={classname('fa', 'fa-'+repo.provider, 'move-to-repo')} />
-              <div className="item-title move-to-repo">{repo.name}</div>
+              <i className={classname('fa', 'fa-'+link.provider, 'move-to-repo')} />
+              <div className="item-title move-to-repo">{link.name}</div>
               {/* Enabled or disabled? */}
               <Switch
-                onChange={onRepoEnable.bind(null, repo, !repo.enabled)}
-                checked={repo.enabled}
-                disabled={repo._pending}
+                onChange={onLinkEnable.bind(null, link, !link.enabled)}
+                checked={link.enabled}
+                disabled={link._pending}
               />
             </li>;
           })}
@@ -49,19 +49,18 @@ export function RepositoryList({
 
 export default connect((state, props) => {
   return {
-    repos: state.repositoryList,
+    links: state.linkList,
   };
 }, dispatch => {
   return {
-    onMoveToRepo(repo, event) {
+    onMoveToRepo(link, event) {
       // only move if the user didn't click on the switch
       if (event.target.className.indexOf('move-to-repo') !== -1) {
-        let [user, reponame] = repo.name.split('/');
-        dispatch(push(`/repos/${repo.provider}/${user}/${reponame}`));
+        dispatch(push(`/links/${link._id}`));
       }
     },
-    onRepoEnable(repo, enabled) {
-      dispatch(enableDisableRepository(repo, enabled));
+    onLinkEnable(link, enabled) {
+      dispatch(enableDisableLink(link, enabled));
     },
   };
-})(RepositoryList);
+})(LinkList);

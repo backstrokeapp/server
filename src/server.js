@@ -28,6 +28,64 @@ app.get('/api/v1/whoami', (req, res) => {
   });
 });
 
+app.get('/api/v1/links', (req, res) => {
+  res.status(200).json({
+    data: [
+      {
+        _id: 'link-one',
+        name: 'Link Name',
+        paid: true,
+        enabled: true,
+        from: {
+          private: false,
+          name: 'octocat/Hello-World',
+          provider: 'github',
+          fork: false,
+          html_url: "https://github.com/octocat/Hello-World",
+          branches: ['master', 'dev', 'feature/someting-else'],
+          branch: 'master',
+        },
+        to: {
+          private: true,
+          name: '1egoman/some-mirror',
+          provider: 'github',
+          fork: true,
+          html_url: "https://github.com/octocat/Hello-World",
+          branches: ['master', 'dev', 'feature/someting-else'],
+          branch: 'master',
+        },
+      },
+    ],
+    lastId: `link-one`,
+  });
+});
+
+app.get('/api/v1/links/:id', (req, res) => {
+  res.status(200).json({
+    _id: 'link-one',
+    name: 'Link Name',
+    paid: true,
+    enabled: true,
+    from: {
+      private: false,
+      name: 'octocat/Hello-World',
+      provider: 'github',
+      fork: false,
+      html_url: "https://github.com/octocat/Hello-World",
+      branches: ['master', 'dev', 'feature/someting-else'],
+    },
+    to: {
+      private: true,
+      name: '1egoman/some-mirror',
+      provider: 'github',
+      fork: true,
+      html_url: "https://github.com/octocat/Hello-World",
+      branches: ['master', 'dev', 'feature/someting-else'],
+    },
+  });
+});
+
+
 app.get('/api/v1/repos', (req, res) => {
   res.status(200).json({
     data: [
@@ -37,7 +95,7 @@ app.get('/api/v1/repos', (req, res) => {
     ],
     lastId: `unique-repo-id-github-some-other-repo-here`,
   });
-})
+});
 
 // get a repository's data
 app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
@@ -89,7 +147,7 @@ app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
 });
 
 // enable or disable a repository
-app.post('/api/v1/repos/:provider/:user/:repo/enable', (req, res) => {
+app.post('/api/v1/link/:id/enable', (req, res) => {
   res.status(200).json({success: true});
 });
 

@@ -1,6 +1,6 @@
-export default function activeRepository(store=null, action) {
+export default function activeLink(store=null, action) {
   switch (action.type) {
-    case 'REPO_INFO':
+    case 'LINK_INFO':
       return action.data;
     default:
       return store;

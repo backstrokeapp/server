@@ -4,6 +4,7 @@ import Select from 'react-select';
 
 import RepositoryBox from 'components/RepositoryBox';
 import ForkAllBox from 'components/ForkAllBox';
+import BoxProperties from 'components/BoxProperties';
 
 import linkSave from 'actions/linkSave';
 
@@ -13,11 +14,14 @@ export function Link({
 
   onLinkSave,
 }) {
-  if (link && link.from && link.to) {
-    if (link && link.from.branches && link.to.branches) {
+  if (link) {
+    // fetch branches, if required
+    if (link.from && link.from.branches) {
       let fromBranchOptions = link.from.branches.map(branch => {
         return {value: branch, label: branch};
       });
+    }
+    if (link.to && link.to.branches) {
       let toBranchOptions = link.to.branches.map(branch => {
         return {value: branch, label: branch};
       });
@@ -51,9 +55,13 @@ export function Link({
 
 export function RepoWrapper({repository, branch, from}) {
   if (repository.type === 'repo') {
-    return <RepositoryBox repository={repository} branch={branch} />;
-  } else {
-    return <ForkAllBox repository={repository} from={from} />;
+    return <BoxProperties repository={repository}>
+      <RepositoryBox repository={repository} branch={branch} />
+    </BoxProperties>;
+  } else if (repository.type === 'fork-all') {
+    return <BoxProperties repository={repository}>
+      <ForkAllBox repository={repository} from={from} />
+    </BoxProperties>;
   }
 }
 

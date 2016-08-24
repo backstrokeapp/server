@@ -50,6 +50,17 @@ export default function activeLink(state=null, action) {
         _saveStatus: action.status,
       });
 
+    // Operations on the repo
+    case 'IS_DELETING_REPO':
+      return updateRepo(state, action.data, repo => {
+        return Object.assign({}, repo, {_deleting: true});
+      });
+
+    case 'DELETE_REPO':
+      return updateRepo(state, action.data, repo => {
+        return null;
+      });
+
     default:
       return state;
   }

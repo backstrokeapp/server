@@ -1,13 +1,14 @@
 .repository-box {
   @include repo-box;
+  background-color: $brand-success;
+  color: #FFF;
+  position: relative;
 
-  .icon-wrapper {
-    width: 100%;
-    text-align: center;
-    padding-bottom: 1em;
-    i {
-      font-size: 72px;
-    }
+  &:before {
+    content: "Repository";
+
+    position: absolute;
+    top: 1em;
   }
 
   .repo-name-box {
@@ -15,5 +16,20 @@
 
     i.fa-check { color: $brand-success; }
     i.fa-times { color: $brand-danger; }
+  }
+}
+
+.fork-box {
+  @include repo-box;
+  background-color: $brand-info;
+  color: #FFF;
+
+  &:before {
+    content: "All Forks";
+  }
+
+  .big-text {
+    text-align: center;
+    font-size: 1.5em;
   }
 }

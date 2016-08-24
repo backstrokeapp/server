@@ -2,4 +2,21 @@
   border: 1px solid $gray-light;
   border-radius: $border-radius-base;
   padding: $padding-large-vertical $padding-large-horizontal;
+  position: relative;
+
+  // label for the container
+  &:before {
+    content: "";
+    position: absolute;
+    top: 1em;
+  }
+
+  .icon-wrapper {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 1em;
+    i {
+      font-size: 72px;
+    }
+  }
 }

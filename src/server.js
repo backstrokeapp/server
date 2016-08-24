@@ -37,6 +37,7 @@ app.get('/api/v1/links', (req, res) => {
         paid: true,
         enabled: true,
         from: {
+          type: 'repo',
           private: false,
           name: 'octocat/Hello-World',
           provider: 'github',
@@ -46,6 +47,7 @@ app.get('/api/v1/links', (req, res) => {
           branch: 'master',
         },
         to: {
+          type: 'repo',
           private: true,
           name: '1egoman/some-mirror',
           provider: 'github',
@@ -53,6 +55,26 @@ app.get('/api/v1/links', (req, res) => {
           html_url: "https://github.com/octocat/Hello-World",
           branches: ['master', 'dev', 'feature/someting-else'],
           branch: 'master',
+        },
+      },
+      {
+        _id: 'link-two',
+        name: 'Link Name (maps to all forks)',
+        paid: true,
+        enabled: true,
+        from: {
+          type: 'repo',
+          private: false,
+          name: 'octocat/Hello-World',
+          provider: 'github',
+          fork: false,
+          html_url: "https://github.com/octocat/Hello-World",
+          branches: ['master', 'dev', 'feature/someting-else'],
+          branch: 'master',
+        },
+        to: {
+          provider: 'github',
+          type: 'all-forks',
         },
       },
     ],
@@ -74,6 +96,7 @@ app.get('/api/v1/links/:id', (req, res) => {
     paid: true,
     enabled: true,
     from: {
+      type: 'repo',
       private: false,
       name: 'octocat/Hello-World',
       provider: 'github',
@@ -83,13 +106,16 @@ app.get('/api/v1/links/:id', (req, res) => {
       branch: 'master',
     },
     to: {
-      private: true,
-      name: '1egoman/some-mirror',
+      type: 'fork-all',
       provider: 'github',
-      fork: true,
-      html_url: "https://github.com/octocat/Hello-World",
-      branches: ['master', 'dev', 'feature/someting-else'],
-      branch: 'master',
+      // type: 'repo',
+      // private: true,
+      // name: '1egoman/some-mirror',
+      // provider: 'github',
+      // fork: true,
+      // html_url: "https://github.com/octocat/Hello-World",
+      // branches: ['master', 'dev', 'feature/someting-else'],
+      // branch: 'master',
     },
   });
 });

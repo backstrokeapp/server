@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import Select from 'react-select';
 
 import RepositoryBox from 'components/RepositoryBox';
+import ForkAllBox from 'components/ForkAllBox';
 
 import linkSave from 'actions/linkSave';
 
@@ -12,13 +13,15 @@ export function Link({
 
   onLinkSave,
 }) {
-  if (link) {
-    let fromBranchOptions = link.from.branches.map(branch => {
-      return {value: branch, label: branch};
-    });
-    let toBranchOptions = link.to.branches.map(branch => {
-      return {value: branch, label: branch};
-    });
+  if (link && link.from && link.to) {
+    if (link && link.from.branches && link.to.branches) {
+      let fromBranchOptions = link.from.branches.map(branch => {
+        return {value: branch, label: branch};
+      });
+      let toBranchOptions = link.to.branches.map(branch => {
+        return {value: branch, label: branch};
+      });
+    }
 
     return <div className="repo-item container">
       <header className="repo-header">
@@ -26,9 +29,9 @@ export function Link({
       </header>
 
       <h3>From</h3>
-      <RepositoryBox repository={link.from} branch={link.from.branch} />
+      <RepoWrapper repository={link.from} branch={link.from.branch} />
       <h3>To</h3>
-      <RepositoryBox repository={link.to} branch={link.to.branch} />
+      <RepoWrapper repository={link.to} branch={link.to.branch} from={link.from} />
 
       {
         link._saveInProgress ? 
@@ -46,12 +49,11 @@ export function Link({
   }
 }
 
-export function ChangeDescription({slug}) {
-  switch(slug) {
-    case 'pull_request':
-      return <span className="change-description">Propose a change in a pull request</span>;
-    default:
-      return null;
+export function RepoWrapper({repository, branch, from}) {
+  if (repository.type === 'repo') {
+    return <RepositoryBox repository={repository} branch={branch} />;
+  } else {
+    return <ForkAllBox repository={repository} from={from} />;
   }
 }
 

@@ -105,9 +105,11 @@ app.get('/api/v1/links/:id', (req, res) => {
       branches: ['master', 'dev', 'feature/someting-else'],
       branch: 'master',
     },
-    to: {
-      type: 'fork-all',
-      provider: 'github',
+    to: null,
+    // to: {
+      // type: 'fork-all',
+      // provider: 'github',
+
       // type: 'repo',
       // private: true,
       // name: '1egoman/some-mirror',
@@ -116,7 +118,7 @@ app.get('/api/v1/links/:id', (req, res) => {
       // html_url: "https://github.com/octocat/Hello-World",
       // branches: ['master', 'dev', 'feature/someting-else'],
       // branch: 'master',
-    },
+    // },
   });
 });
 
@@ -125,7 +127,6 @@ app.post('/api/v1/links/:linkId', (req, res) => {
     status: 'ok',
   });
 });
-
 
 // app.get('/api/v1/repos', (req, res) => {
 //   res.status(200).json({

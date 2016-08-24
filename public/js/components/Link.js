@@ -5,6 +5,7 @@ import Select from 'react-select';
 import RepositoryBox from 'components/RepositoryBox';
 import ForkAllBox from 'components/ForkAllBox';
 import BoxProperties from 'components/BoxProperties';
+import AddNewBox from 'components/AddNewBox';
 
 import linkSave from 'actions/linkSave';
 
@@ -33,9 +34,9 @@ export function Link({
       </header>
 
       <h3>From</h3>
-      <RepoWrapper repository={link.from} branch={link.from.branch} />
+      <RepoWrapper repository={link.from} branch={link.from && link.from.branch} />
       <h3>To</h3>
-      <RepoWrapper repository={link.to} branch={link.to.branch} from={link.from} />
+      <RepoWrapper repository={link.to} branch={link.to && link.to.branch} from={link.from} />
 
       {
         link._saveInProgress ? 
@@ -54,14 +55,19 @@ export function Link({
 }
 
 export function RepoWrapper({repository, branch, from}) {
-  if (repository.type === 'repo') {
+  if (repository && repository.type === 'repo') {
+    // A bare repository / branch combo
     return <BoxProperties repository={repository}>
       <RepositoryBox repository={repository} branch={branch} />
     </BoxProperties>;
-  } else if (repository.type === 'fork-all') {
+  } else if (repository && repository.type === 'fork-all') {
+    // All forks for the upstream
     return <BoxProperties repository={repository}>
       <ForkAllBox repository={repository} from={from} />
     </BoxProperties>;
+  } else {
+    // add a new item
+    return <AddNewBox type={from ? 'to' : 'from'} />;
   }
 }
 

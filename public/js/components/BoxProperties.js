@@ -7,36 +7,25 @@ import deleteRepo from 'actions/deleteRepo';
 
 export default function BoxProperties({repository, children}) {
   return <div className="box-properties">
+    <DeleteItem repository={repository} />
     {children}
-    <div className="box-items">
-      <ul>
-        <DeleteItem repository={repository} />
-        <li className="disabled">
-          <i className="fa fa-wpforms" />
-          <OverlayTrigger placement="right" overlay={
-            <Tooltip id="is-coming-soon">Coming soon!</Tooltip>
-          }>
-            <span>Change Provider</span>
-          </OverlayTrigger>
-        </li>
-      </ul>
-    </div>
   </div>;
 }
 
 
 export function DeleteItemComponent({repository, onDelete, onIsSure}) {
-  let text;
+  let item;
   if (repository._deleting) {
-    text = <span onClick={onIsSure.bind(null, repository)}>Sure?</span>;
+    return <div
+      className="btn btn-delete btn-delete-expanded"
+      onClick={onIsSure.bind(null, repository)}
+    >Are you sure?</div>
   } else {
-    text = <span onClick={onDelete.bind(null, repository)}>Delete</span>;
+    return <div
+      className="btn btn-delete"
+      onClick={onDelete.bind(null, repository)}
+    >&times;</div>
   }
-
-  return <li className="text-danger">
-    <i className="fa fa-times" />
-    {text}
-  </li>;
 }
 
 export const DeleteItem = connect((state, props) => {

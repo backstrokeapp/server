@@ -1,39 +1,26 @@
 .box-properties {
-  .box-items {
-    @include repo-box;
-    border-top: 1px;
-    width: 90%;
-    margin-left: 5%;
-    font-size: $font-size-base;
+  position: relative;
 
-    // reset a few styles
-    height: auto;
-    margin-top: 0px;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
+  $delete-size: 24px;
+  .btn.btn-delete {
+    position: absolute;
+    top: -$delete-size / 2;
+    right: -$delete-size / 2;
+    width: $delete-size;
+    height: $delete-size;
 
-    ul {
-      padding-left: 0px;
-      li {
-        font-size: 1.1em;
-        line-height: 1.8em;
+    background-color: $gray-darker;
+    z-index: 5;
+    border-radius: $delete-size/2;
+    color: #FFF;
+    font-size: 1.2em;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease-in;
 
-        span {
-          margin-left: 0.5em;
-          cursor: pointer;
-        }
-        span:hover, span:focus, span:active {
-          text-decoration: underline;
-        }
-
-        &.disabled {
-          color: $gray-light;
-          span:hover, span:focus, span:active {
-            text-decoration: none;
-            cursor: default;
-          }
-        }
-      }
+    &.btn-delete-expanded {
+      width: 8em;
+      font-size: 1em;
     }
   }
 }

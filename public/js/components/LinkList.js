@@ -15,18 +15,19 @@ export function LinkList({
 }) {
   if (links) {
     return <div className="repo container">
-      <div className="repo-list container">
-        <ul>
-          <li className="list-header">My Repositories</li>
+      <div className="link-list container">
+        <ul className="list-group">
+          <li className="list-header">My links</li>
           {links.data.map((link, ct) => {
             return <li
               key={ct}
               onClick={onMoveToRepo.bind(null, link)}
-              className={classname('move-to-repo', {grayed: !link.enabled})}
+              className={classname('move-to-repo', 'list-group-item', {grayed: !link.enabled})}
             >
               {/* Provider (Github, Bitbucket, Gitlab, etc) */}
               <i className={classname('fa', 'fa-'+link.provider, 'move-to-repo')} />
               <div className="item-title move-to-repo">{link.name}</div>
+
               {/* Enabled or disabled? */}
               <Switch
                 onChange={onLinkEnable.bind(null, link, !link.enabled)}
@@ -41,7 +42,7 @@ export function LinkList({
     </div>;
   } else {
     return <div className="repo-list">
-      <span>Loading repositories...</span>
+      <span>Loading...</span>
       {children}
     </div>;
   }

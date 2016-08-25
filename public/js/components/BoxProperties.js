@@ -4,13 +4,27 @@ import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 
 import isDeletingRepo from 'actions/isDeletingRepo';
 import deleteRepo from 'actions/deleteRepo';
+import cancelRepoDelete from 'actions/cancelRepoDelete';
 
-export default function BoxProperties({repository, children}) {
-  return <div className="box-properties">
+// this doesn't have a conenct ---- add one.
+export function BoxProperties({repository, onCancelRepoDelete, children}) {
+  return <div className="box-properties" onClick={onCancelRepoDelete.bind(null, repository)}>
     <DeleteItem repository={repository} />
     {children}
   </div>;
 }
+
+export default connect(state => {
+  return {};
+}, dispatch => {
+  return {
+    onCancelRepoDelete(data) {
+      if (data._deleting) {
+        dispatch(cancelRepoDelete(data));
+      }
+    },
+  };
+})(BoxProperties);
 
 
 export function DeleteItemComponent({repository, onDelete, onIsSure}) {

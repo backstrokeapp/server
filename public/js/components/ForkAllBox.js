@@ -6,7 +6,9 @@ export default function ForkAllBox({repository, from}) {
       <i className={'fa fa-'+repository.provider} />
     </div>
     <p className="big-text">
-      Propose changes to <strong>all forks</strong> of the upstream <strong>{from.name}</strong>
+      Propose changes
+      to <strong>all forks</strong> of the
+      upstream <strong>{from ? from.name : null}</strong>
     </p>
   </div>;
 }

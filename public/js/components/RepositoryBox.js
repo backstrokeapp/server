@@ -5,7 +5,6 @@ import {InputGroup, FormControl, OverlayTrigger, Tooltip} from 'react-bootstrap'
 
 import verifyRepositoryName from 'actions/verifyRepositoryName';
 import repoBranch from 'actions/repoBranch';
-import cancelRepoDelete from 'actions/cancelRepoDelete';
 
 // A representation of a repository
 export function RepositoryBox({
@@ -14,12 +13,11 @@ export function RepositoryBox({
 
   onVerifyRepositoryName,
   onRepoBranch,
-  onCancelRepoDelete,
 }) {
   let branchOptions = repo.branches.map(branch => {
     return {value: branch, label: branch};
   });
-  return <div className="repository-box" onClick={onCancelRepoDelete.bind(null, repo)}>
+  return <div className="repository-box">
     <div className="icon-wrapper">
       <i className={'fa fa-'+repo.provider} />
     </div>
@@ -62,10 +60,5 @@ export default connect((state, props) => {
     onRepoBranch(repo, event) {
       dispatch(repoBranch(repo, event.value));
     },
-    onCancelRepoDelete(data) {
-      if (data._deleting) {
-        dispatch(cancelRepoDelete(data));
-      }
-    }
   };
 })(RepositoryBox);

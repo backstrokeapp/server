@@ -1,6 +1,9 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
+import addAllForks from 'actions/addAllForks';
+import addNewRepository from 'actions/addNewRepository';
+
 // Add a new repository. A repo is the only thing that can go in a from slot.
 export function AddNewBox({type, onAddNewRepository, onAddAllForks}) {
   return <div className="add-new-box">
@@ -25,11 +28,11 @@ export default connect((state, props) => {
 }, dispatch => {
   return {
     onAddNewRepository(slot) {
-      console.log('adding a new repository');
+      dispatch(addNewRepository(slot));
     },
     onAddAllForks(slot) {
       if (slot === 'to') {
-        console.log('adding all forks');
+        dispatch(addAllForks('to'));
       }
     },
   };

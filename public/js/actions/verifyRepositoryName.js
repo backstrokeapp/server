@@ -8,8 +8,8 @@ export default function verifyRepositoryName(repo, name) {
         return fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/repos/${repo.provider}/${name}`)
         .then(response => {
           if (response.status < 400) {
-            return response.json().then(({branches}) => {
-              return dispatch(repoValid(Object.assign({}, repo, {name}), branches));
+            return response.json().then(({branches, private: _private, fork}) => {
+              return dispatch(repoValid(Object.assign({}, repo, {name}), branches, _private, fork));
             });
           } else {
             dispatch(repoInvalid(Object.assign({}, repo, {name})));
@@ -20,8 +20,8 @@ export default function verifyRepositoryName(repo, name) {
   };
 }
 
-export function repoValid(data, branches) {
-  return {type: 'REPO_VALID', data, branches};
+export function repoValid(data, branches, _private, fork) {
+  return {type: 'REPO_VALID', data, branches, private: _private, fork};
 }
 export function repoInvalid(data) {
   return {type: 'REPO_INVALID', data};

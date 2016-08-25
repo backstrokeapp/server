@@ -34,9 +34,9 @@ export function Link({
       </header>
 
       <h3>From</h3>
-      <RepoWrapper repository={link.from} branch={link.from && link.from.branch} />
+      <RepoWrapper slot="from" repository={link.from} branch={link.from && link.from.branch} />
       <h3>To</h3>
-      <RepoWrapper repository={link.to} branch={link.to && link.to.branch} from={link.from} />
+      <RepoWrapper slot="to" repository={link.to} branch={link.to && link.to.branch} from={link.from} />
 
       {
         link._saveInProgress ? 
@@ -54,7 +54,7 @@ export function Link({
   }
 }
 
-export function RepoWrapper({repository, branch, from}) {
+export function RepoWrapper({repository, branch, from, slot}) {
   if (repository && repository.type === 'repo') {
     // A bare repository / branch combo
     return <BoxProperties repository={repository}>
@@ -67,7 +67,7 @@ export function RepoWrapper({repository, branch, from}) {
     </BoxProperties>;
   } else {
     // add a new item
-    return <AddNewBox type={from ? 'to' : 'from'} />;
+    return <AddNewBox type={slot} />;
   }
 }
 

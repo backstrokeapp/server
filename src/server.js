@@ -74,7 +74,7 @@ app.get('/api/v1/links', (req, res) => {
         },
         to: {
           provider: 'github',
-          type: 'all-forks',
+          type: 'fork-all',
         },
       },
     ],
@@ -86,6 +86,8 @@ app.get('/api/v1/links', (req, res) => {
 app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
   return res.status(200).json({
     branches: ["master", "branch-1", "branch-2"],
+    private: true,
+    fork: true,
   });
 });
 

@@ -44,6 +44,7 @@ export function RepositoryBox({
       className="branch-name-box"
       clearable={false}
       onChange={onRepoBranch.bind(null, repo)}
+      disabled={branchOptions.length === 0}
     />
   </div>;
 }

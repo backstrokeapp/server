@@ -1,8 +1,8 @@
 // if `data` is one of the repos represented, update it
 function updateRepo(state, data, cb) {
-  if (state.to.provider === data.provider && state.to.name === data.name) {
+  if (state.to && state.to.provider === data.provider && state.to.name === data.name) {
     return Object.assign({}, state, {to: cb(state.to)});
-  } else if (state.from.provider === data.provider && state.from.name === data.name) {
+  } else if (state.from && state.from.provider === data.provider && state.from.name === data.name) {
     return Object.assign({}, state, {from: cb(state.from)});
   } else {
     return state;
@@ -23,6 +23,8 @@ export default function activeLink(state=null, action) {
       return updateRepo(state, action.data, repo => {
         return Object.assign({}, repo, {
           branches: action.branches, // branches come back in the validation
+          private: action.private,
+          fork: action.fork,
           _nameValid: true,
         });
       });
@@ -50,7 +52,7 @@ export default function activeLink(state=null, action) {
         _saveStatus: action.status,
       });
 
-    // Operations on the repo
+    // Delete a repo
     case 'IS_DELETING_REPO':
       return updateRepo(state, action.data, repo => {
         return Object.assign({}, repo, {_deleting: true});
@@ -60,6 +62,29 @@ export default function activeLink(state=null, action) {
       return updateRepo(state, action.data, repo => {
         return null;
       });
+
+    // Add a new repo / all forks / box / etc
+    case 'ADD_NEW_REPOSITORY':
+      return Object.assign({}, state, {
+        [action.slot]: {
+          type: 'repo',
+          name: '',
+          provider: 'github',
+          branches: [],
+        },
+      });
+
+    case 'ADD_ALL_FORKS':
+      if (action.slot === 'to') {
+        return Object.assign({}, state, {
+          [action.slot]: {
+            type: 'fork-all',
+            provider: 'github',
+          },
+        });
+      } else {
+        return state;
+      }
 
     default:
       return state;

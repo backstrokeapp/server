@@ -63,6 +63,11 @@ export default function activeLink(state=null, action) {
         return null;
       });
 
+    case 'CANCEL_REPO_DELETE':
+      return updateRepo(state, action.data, repo => {
+        return Object.assign({}, repo, {_deleting: false});
+      });
+
     // Add a new repo / all forks / box / etc
     case 'ADD_NEW_REPOSITORY':
       return Object.assign({}, state, {

@@ -24,7 +24,7 @@ export function RepositoryBox({
     <InputGroup className="repo-name-box">
       <FormControl
         type="text"
-        placeholder="username/repo"
+        placeholder="Start typing a username/repo"
         value={repo.name}
         onChange={onVerifyRepositoryName.bind(null, repo)}
       />
@@ -42,6 +42,7 @@ export function RepositoryBox({
       options={branchOptions}
       value={branch}
       className="branch-name-box"
+      placeholder={branchOptions.length === 0 ? "Type a valid repo for a list of branches" : "Select a branch"}
       clearable={false}
       onChange={onRepoBranch.bind(null, repo)}
       disabled={branchOptions.length === 0}

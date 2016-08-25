@@ -1,13 +1,16 @@
 .box-properties {
-
   .box-items {
     @include repo-box;
     border-top: 1px;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
     width: 90%;
     margin-left: 5%;
     font-size: $font-size-base;
+
+    // reset a few styles
+    height: auto;
+    margin-top: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
 
     ul {
       padding-left: 0px;

@@ -1,0 +1,26 @@
+.add-new-box {
+  @extend .row;
+
+  .add-new-option {
+    @include make-xs-column(12);
+    @include make-md-column(6);
+    margin-bottom: 1em;
+
+    // only 1 option
+    &:only-child {
+      @include make-md-column(12);
+    }
+
+    button {
+      @include repo-box;
+      width: 100%;
+      background-color: #FFF;
+      font-size: 1.5em;
+      font-weight: 300;
+
+      i {
+        margin-right: 0.25em;
+      }
+    }
+  }
+}

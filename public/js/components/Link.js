@@ -33,10 +33,25 @@ export function Link({
         <h1>{link.name}</h1>
       </header>
 
-      <h3>From</h3>
-      <RepoWrapper slot="from" repository={link.from} branch={link.from && link.from.branch} />
-      <h3>To</h3>
-      <RepoWrapper slot="to" repository={link.to} branch={link.to && link.to.branch} from={link.from} />
+      <div className="slot-container">
+        <div className="slot from-slot">
+          <h1>From</h1>
+          <RepoWrapper
+            slot="from"
+            repository={link.from}
+            branch={link.from && link.from.branch}
+          />
+        </div>
+        <div className="slot to-slot">
+          <h1>To</h1>
+          <RepoWrapper
+            slot="to"
+            repository={link.to}
+            branch={link.to && link.to.branch}
+            from={link.from}
+          />
+        </div>
+      </div>
 
       {
         link._saveInProgress ? 

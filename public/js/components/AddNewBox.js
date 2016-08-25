@@ -7,15 +7,20 @@ import addNewRepository from 'actions/addNewRepository';
 // Add a new repository. A repo is the only thing that can go in a from slot.
 export function AddNewBox({type, onAddNewRepository, onAddAllForks}) {
   return <div className="add-new-box">
-    Add new:
-    <button className="btn btn-primary" onClick={onAddNewRepository.bind(null, type)}>
-      Repository
-    </button>
+    <div className="add-new-option">
+      <button className="btn" onClick={onAddNewRepository.bind(null, type)}>
+        <i className="fa fa-plus-square-o" />
+        Repository
+      </button>
+    </div>
     {
       type === 'to' ?
-      <button className="btn btn-primary" onClick={onAddAllForks.bind(null, type)}>
-        All Forks
-      </button>:
+      <div className="add-new-option">
+        <button className="btn" onClick={onAddAllForks.bind(null, type)}>
+          <i className="fa fa-plus-square-o" />
+          All Forks
+        </button>
+      </div>:
       null
     }
   </div>;

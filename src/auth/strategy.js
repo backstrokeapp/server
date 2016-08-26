@@ -1,0 +1,28 @@
+import GithubStrategy from 'passport-github2';
+
+export default function strategy(User) {
+  return new GithubStrategy({
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: process.env.GITHUB_CALLBACK_URL,
+    },
+    function(accessToken, refreshToken, profile, cb) {
+      console.log(accessToken, refreshToken, profile)
+      User.findOne({provider_id: profile.id, provider: profile.provider}, (err, model) => {
+        if (err) {
+          return cb(err);
+        } else if (model) {
+          return cb(null, model);
+        } else {
+          return new User({
+            accessToken, refreshToken,
+            provider_id: profile.id,
+            user: profile.username,
+            provider: profile.provider,
+            picture: profile._json.avatar_url,
+          }).save(cb.bind(null, null));
+        }
+      });
+    }
+  );
+}

@@ -3,6 +3,26 @@ let app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
+// ----------------------------------------------------------------------------
+// Mongo stuff
+// ----------------------------------------------------------------------------
+import mongoose from 'mongoose';
+mongoose.connect(process.env.MONGO_URI);
+import User from 'models/User';
+
+// ----------------------------------------------------------------------------
+// Passport stuff
+// ----------------------------------------------------------------------------
+import passport from 'passport';
+import session from 'express-session';
+import strategy from 'auth/strategy';
+import serialize from 'auth/serialize';
+app.use(session({secret: process.env.SESSION_SECRET}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(strategy(User));
+serialize(User, passport);
+
 import bodyParser from 'body-parser';
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -17,6 +37,20 @@ app.use(function(req, res, next) {
   next();
 });
 
+// Authenticate a user
+app.get('/setup/login', passport.authenticate('github', {
+  successRedirect: '/',
+  failureRedirect: '/setup/login',
+  scope: ["repo", "write:repo_hook"],
+}));
+
+app.get("/auth/github/callback", passport.authenticate("github", {
+  failureRedirect: '/login',
+  failureFlash: true,
+}), (req, res) => {
+  res.redirect('/'); // on success
+});
+
 // identify the currently logged in user
 app.get('/api/v1/whoami', (req, res) => {
   res.status(200).json({
@@ -28,6 +62,7 @@ app.get('/api/v1/whoami', (req, res) => {
   });
 });
 
+// get all links
 app.get('/api/v1/links', (req, res) => {
   res.status(200).json({
     data: [
@@ -101,6 +136,7 @@ app.post('/api/v1/repos', (req, res) => {
   });
 });
 
+// GET a given link
 app.get('/api/v1/links/:id', (req, res) => {
   res.status(200).json({
     _id: 'link-one',
@@ -134,71 +170,10 @@ app.get('/api/v1/links/:id', (req, res) => {
   });
 });
 
+// POST link updates
 app.post('/api/v1/links/:linkId', (req, res) => {
-  res.status(200).send({
-    status: 'ok',
-  });
+  res.status(200).send({status: 'ok'});
 });
-
-// app.get('/api/v1/repos', (req, res) => {
-//   res.status(200).json({
-//     data: [
-//       {_id: 'one', name: 'octocat/Hello-World', provider: 'github', enabled: true},
-//       {_id: 'two', name: '1egoman/backstroke', provider: 'github', enabled: true},
-//       {_id: 'three', name: 'some-other/repo-here', provider: 'github', enabled: true},
-//     ],
-//     lastId: `unique-repo-id-github-some-other-repo-here`,
-//   });
-// });
-
-// get a repository's data
-// app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
-//   res.status(200).json({
-//     _id: `unique-repo-id-${req.params.provider}-${req.params.user}-${req.params.repo}`,
-//     enabled: true,
-//     blacklistedForks: [],
-//     type: 'upstream', // or 'fork'
-//     repository: {
-//       name: `${req.params.user}/${req.params.repo}`,
-//       private: false,
-//       fork: false,
-//       html_url: "https://github.com/octocat/Hello-World",
-//       provider: 'github',
-//       branches: ['master', 'dev', 'feature/someting-else'],
-//     },
-//     changes: [
-//       {
-//         fromBranch: "master",
-//         items: [
-//           {
-//             type: "pull_request",
-//             repository: {
-//               name: `propose-to/this-repo`,
-//               private: false,
-//               fork: false,
-//               html_url: "https://github.com/propose-to/this-repo",
-//               provider: 'github',
-//               branches: ['master', 'dev', 'feature/someting-else'],
-//             },
-//             branch: 'master',
-//           },
-//           {
-//             type: "pull_request",
-//             repository: {
-//               name: `propose-to/this-other-repo`,
-//               private: false,
-//               fork: false,
-//               html_url: "https://github.com/propose-to/this-other-repo",
-//               provider: 'github',
-//               branches: ['master', 'dev', 'feature/someting-else'],
-//             },
-//             branch: 'another-branch',
-//           },
-//         ],
-//       },
-//     ],
-//   });
-// });
 
 // enable or disable a repository
 app.post('/api/v1/link/:id/enable', (req, res) => {

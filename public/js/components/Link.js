@@ -45,7 +45,6 @@ export function Link({
   onChangeLinkName,
 }) {
   if (link) {
-    console.log(link.name, onChangeLinkName)
     // fetch branches, if required
     if (link.from && link.from.branches) {
       let fromBranchOptions = link.from.branches.map(branch => {

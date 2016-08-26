@@ -1,12 +1,23 @@
 import mongoose from 'mongoose';
 
+const RepoSchema = {
+  type: {type: 'string'},
+  private: 'boolean',
+  name: 'string',
+  provider: {type: 'string', enum: ['github']},
+  fork: 'boolean',
+  html_url: 'string',
+  branches: ['string'],
+  branch: 'string',
+};
+
 const link = new mongoose.Schema({
   name: 'string',
   paid: 'boolean',
   enabled: 'boolean',
   owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-  from: {type: mongoose.Schema.Types.ObjectId, ref: 'Repo'},
-  to: {type: mongoose.Schema.Types.ObjectId, ref: 'Repo'},
+  from: RepoSchema,
+  to: RepoSchema,
 });
 
 link.methods.format = function format() {

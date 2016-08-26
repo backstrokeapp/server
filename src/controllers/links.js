@@ -1,37 +1,30 @@
 export function index(Link, req, res) {
-  if (req.isAuthenticated()) {
-    return Link.find({user: req.user}).exec((err, links) => {
-      if (err) {
-        console.trace(err);
-        return res.status(500).send({error: 'Database error.'});
-      }
+  return Link.find({}).exec((err, links) => {
+    if (err) {
+      console.trace(err);
+      return res.status(500).send({error: 'Database error.'});
+    }
 
-      let lastId = links.length > 0 ? links.slice(-1)[0]._id : null
-      res.status(200).send({
-        data: links.map(link => {
-          return {_id: link._id, name: link.name, enabled: link.enabled};
-        }),
-        lastId,
-      });
+    let lastId = links.length > 0 ? links.slice(-1)[0]._id : null
+    res.status(200).send({
+      data: links.map(link => {
+        return {_id: link._id, name: link.name, enabled: link.enabled};
+      }),
+      lastId,
     });
-  } else {
-    res.status(403).send({error: 'Not authenticated.'});
-  }
+  });
+  // res.status(403).send({error: 'Not authenticated.'});
 }
 
 export function get(Link, req, res) {
-  if (req.isAuthenticated()) {
-    return Link.findOne({user: req.user, _id: req.params.id}).exec((err, link) => {
-      if (err) {
-        console.trace(err);
-        return res.status(500).send({error: 'Database error.'});
-      }
+  return Link.findOne({_id: req.params.id}).exec((err, link) => {
+    if (err) {
+      console.trace(err);
+      return res.status(500).send({error: 'Database error.'});
+    }
 
-      res.status(200).send(link);
-    });
-  } else {
-    res.status(500).send({error: 'Database error.'});
-  }
+    res.status(200).send(link);
+  });
 }
 
 export function create(Link, req, res) {
@@ -50,9 +43,39 @@ export function create(Link, req, res) {
   }
 }
 
+
+
+
+
+function formatLink(data) {
+  delete data._id;
+  return data;
+}
+
 export function update(Link, req, res) {
   if (req.isAuthenticated()) {
-    Link.update({_id: req.params.linkId, user: req.user}, req.body).exec((err, data) => {
+    let link = formatLink(req.body.link);
+
+    Link.update({_id: req.params.linkId}, link).exec((err, data) => {
+      if (err) {
+        console.trace(err);
+        return res.status(500).send({error: 'Database error.'});
+      }
+
+      res.status(200).send({status: 'ok'});
+    });
+  } else {
+    res.status(403).send({error: 'Not authenticated'});
+  }
+}
+
+export function enable(Link, req, res) {
+  if (!req.isAuthenticated()) {
+    res.status(403).send({error: 'Not authenticated'});
+  } else if (typeof req.body.enabled !== 'boolean') {
+    res.status(500).send({error: 'Enabled property not specified in the body.'});
+  } else {
+    Link.update({_id: req.params.linkId}, {enabled: req.body.enabled}).exec((err, data) => {
       if (err) {
         console.trace(err);
         return res.status(500).send({error: 'Database error.'});

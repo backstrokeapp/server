@@ -50,5 +50,10 @@ resolving merge conflicts, then it's great.
 
 - **Does Backstroke work outside of Github?**: Not yet. If there's interest, I'd love to give it a try, though.
 
+## How to hack on Backstroke
+1. Clone this repo locally.
+2. Run `npm install`, then start gulp with `PORT=3000 gulp`.
+3. Lastly, start the server with `npm start`.
+
 -------
 By [Ryan Gaus](http://rgaus.net)

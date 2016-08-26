@@ -12,8 +12,13 @@ import * as links from 'controllers/links';
 import mongoose from 'mongoose';
 mongoose.connect(process.env.MONGO_URI);
 import User from 'models/User';
-import Repo from 'models/Repo';
 import Link from 'models/Link';
+
+// ----------------------------------------------------------------------------
+// Set up session store
+// ----------------------------------------------------------------------------
+const MongoStore = require('connect-mongo')(session),
+mongoStore = new MongoStore({mongooseConnection: mongoose.connection});
 
 // ----------------------------------------------------------------------------
 // Passport stuff
@@ -22,7 +27,10 @@ import passport from 'passport';
 import session from 'express-session';
 import strategy from 'auth/strategy';
 import serialize from 'auth/serialize';
-app.use(session({secret: process.env.SESSION_SECRET}));
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  store: mongoStore,
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(strategy(User));
@@ -78,14 +86,10 @@ app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
 app.post('/api/v1/links', links.create.bind(null, Link));
 
 // POST link updates
-app.post('/api/v1/links/:linkId', (req, res) => {
-  res.status(200).send({status: 'ok'});
-});
+app.post('/api/v1/links/:linkId', links.update.bind(null, Link));
 
 // enable or disable a repository
-app.post('/api/v1/link/:id/enable', (req, res) => {
-  res.status(200).json({success: true});
-});
+app.post('/api/v1/link/:linkId/enable', links.enable.bind(null, Link));
 
 // the old webhook route
 // app.route("/ping/github/:user/:repo").get((req, res) => {

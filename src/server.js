@@ -91,6 +91,16 @@ app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
   });
 });
 
+// create a new repo
+app.post('/api/v1/repos', (req, res) => {
+  res.status(200).send({
+    _id: 'brand-spaking-new-repo',
+    enabled: false,
+    to: null,
+    from: null,
+  });
+});
+
 app.get('/api/v1/links/:id', (req, res) => {
   res.status(200).json({
     _id: 'link-one',

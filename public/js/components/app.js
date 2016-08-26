@@ -14,7 +14,7 @@ export default function App({children}) {
 export function MainNav() {
   return <Navbar>
     <Navbar.Header>
-      <Navbar.Brand>Backstroke</Navbar.Brand>
+      <img className="navbar-mark" src="/assets/img/logo.png" alt="Backstroke" />
       <Navbar.Toggle />
     </Navbar.Header>
     <Navbar.Collapse>

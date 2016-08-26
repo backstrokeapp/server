@@ -11,8 +11,16 @@ function updateRepo(state, data, cb) {
 
 export default function activeLink(state=null, action) {
   switch (action.type) {
+    case 'NEW_LINK':
     case 'LINK_INFO':
       return action.data;
+
+    // enable or disable a link
+    case 'ENABLE_DISABLE_LINK':
+      return Object.assign({}, state, {enabled: action.enabled, _pending: false});
+
+    case 'ENABLE_DISABLE_LINK_PENDING':
+      return Object.assign({}, state, {_pending: true});
 
     case 'REPO_NAME':
       return updateRepo(state, action.data, repo => {
@@ -90,6 +98,9 @@ export default function activeLink(state=null, action) {
       } else {
         return state;
       }
+
+    case 'CHANGE_LINK_NAME':
+      return Object.assign({}, state, {name: action.change});
 
     default:
       return state;

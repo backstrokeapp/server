@@ -5,6 +5,7 @@ import classname from 'classname';
 import Switch from 'react-ios-switch';
 
 import enableDisableLink from 'actions/enableDisableLink';
+import newLink from 'actions/newLink';
 
 export function LinkList({
   links,
@@ -12,10 +13,11 @@ export function LinkList({
 
   onMoveToRepo,
   onLinkEnable,
+  onNewLink,
 }) {
   if (links) {
     return <div className="repo container">
-      <div className="link-list container">
+      <div className="link-list">
         <ul className="list-group">
           <li className="list-header">My links</li>
           {links.data.map((link, ct) => {
@@ -37,7 +39,9 @@ export function LinkList({
             </li>;
           })}
         </ul>
+        <button className="btn btn-success" onClick={onNewLink}>Add new link</button>
       </div>
+
       {children}
     </div>;
   } else {
@@ -62,6 +66,9 @@ export default connect((state, props) => {
     },
     onLinkEnable(link, enabled) {
       dispatch(enableDisableLink(link, enabled));
+    },
+    onNewLink() {
+      dispatch(newLink());
     },
   };
 })(LinkList);

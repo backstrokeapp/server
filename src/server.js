@@ -1,9 +1,10 @@
 import express from 'express';
 let app = express();
 app.set('view engine', 'ejs');
-app.use(express.static('public'));
+app.use(express.static('build'));
 
 import whoami from 'controllers/whoami';
+import * as links from 'controllers/links';
 
 // ----------------------------------------------------------------------------
 // Mongo stuff
@@ -59,59 +60,10 @@ app.get("/auth/github/callback", passport.authenticate("github", {
 app.get('/api/v1/whoami', whoami);
 
 // get all links
-app.get('/api/v1/links', (req, res) => {
-  res.status(200).json({
-    data: [
-      {
-        _id: 'link-one',
-        name: 'Link Name',
-        paid: true,
-        enabled: true,
-        from: {
-          type: 'repo',
-          private: false,
-          name: 'octocat/Hello-World',
-          provider: 'github',
-          fork: false,
-          html_url: "https://github.com/octocat/Hello-World",
-          branches: ['master', 'dev', 'feature/someting-else'],
-          branch: 'master',
-        },
-        to: {
-          type: 'repo',
-          private: true,
-          name: '1egoman/some-mirror',
-          provider: 'github',
-          fork: true,
-          html_url: "https://github.com/octocat/Hello-World",
-          branches: ['master', 'dev', 'feature/someting-else'],
-          branch: 'master',
-        },
-      },
-      {
-        _id: 'link-two',
-        name: 'Link Name (maps to all forks)',
-        paid: true,
-        enabled: true,
-        from: {
-          type: 'repo',
-          private: false,
-          name: 'octocat/Hello-World',
-          provider: 'github',
-          fork: false,
-          html_url: "https://github.com/octocat/Hello-World",
-          branches: ['master', 'dev', 'feature/someting-else'],
-          branch: 'master',
-        },
-        to: {
-          provider: 'github',
-          type: 'fork-all',
-        },
-      },
-    ],
-    lastId: `link-one`,
-  });
-});
+app.get('/api/v1/links', links.index.bind(null, Link));
+
+// GET a given link
+app.get('/api/v1/links/:id', links.get.bind(null, Link));
 
 // return the branches for a given repo
 app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
@@ -122,49 +74,8 @@ app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
   });
 });
 
-// create a new repo
-app.post('/api/v1/repos', (req, res) => {
-  res.status(200).send({
-    _id: 'brand-spaking-new-repo',
-    enabled: false,
-    to: null,
-    from: null,
-  });
-});
-
-// GET a given link
-app.get('/api/v1/links/:id', (req, res) => {
-  res.status(200).json({
-    _id: 'link-one',
-    name: 'Link Name',
-    paid: true,
-    enabled: true,
-    from: {
-      type: 'repo',
-      private: false,
-      name: 'octocat/Hello-World',
-      provider: 'github',
-      fork: false,
-      html_url: "https://github.com/octocat/Hello-World",
-      branches: ['master', 'dev', 'feature/someting-else'],
-      branch: 'master',
-    },
-    to: null,
-    // to: {
-      // type: 'fork-all',
-      // provider: 'github',
-
-      // type: 'repo',
-      // private: true,
-      // name: '1egoman/some-mirror',
-      // provider: 'github',
-      // fork: true,
-      // html_url: "https://github.com/octocat/Hello-World",
-      // branches: ['master', 'dev', 'feature/someting-else'],
-      // branch: 'master',
-    // },
-  });
-});
+// create a new link
+app.post('/api/v1/links', links.create.bind(null, Link));
 
 // POST link updates
 app.post('/api/v1/links/:linkId', (req, res) => {

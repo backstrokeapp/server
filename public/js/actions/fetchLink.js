@@ -2,7 +2,9 @@ import 'whatwg-fetch';
 
 export default function fetchLink(link) {
   return dispatch => {
-    return fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/links/${link._id}`)
+    return fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/links/${link._id}`, {
+      credentials: 'include',
+    })
     .then(response => response.json())
     .then(json => {
       dispatch(linkInfo(json));

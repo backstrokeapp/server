@@ -7,6 +7,7 @@ export default function enableDisableLink(link, enabled) {
       method: 'POST',
       headers: {'content-type': 'application/json'},
       body: JSON.stringify({enabled}),
+      credentials: 'include',
     }).then(response => response.json()).then(json => {
       dispatch(enableDisableLinkAction(link, enabled));
     });

@@ -8,6 +8,7 @@ export default function linkSave(link) {
       method: 'POST',
       headers: {'content-type': 'application/json'},
       body: JSON.stringify({link}),
+      credentials: 'include',
     }).then(response => response.json()).then(json => {
       dispatch(linkSaveAction(link, json.status));
       dispatch(push('/links'));

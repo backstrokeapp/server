@@ -3,12 +3,16 @@ let app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
+import whoami from 'controllers/whoami';
+
 // ----------------------------------------------------------------------------
 // Mongo stuff
 // ----------------------------------------------------------------------------
 import mongoose from 'mongoose';
 mongoose.connect(process.env.MONGO_URI);
 import User from 'models/User';
+import Repo from 'models/Repo';
+import Link from 'models/Link';
 
 // ----------------------------------------------------------------------------
 // Passport stuff
@@ -41,7 +45,7 @@ app.use(function(req, res, next) {
 app.get('/setup/login', passport.authenticate('github', {
   successRedirect: '/',
   failureRedirect: '/setup/login',
-  scope: ["repo", "write:repo_hook"],
+  scope: ["repo", "write:repo_hook", "user:email"],
 }));
 
 app.get("/auth/github/callback", passport.authenticate("github", {
@@ -52,15 +56,7 @@ app.get("/auth/github/callback", passport.authenticate("github", {
 });
 
 // identify the currently logged in user
-app.get('/api/v1/whoami', (req, res) => {
-  res.status(200).json({
-    _id: 'unique-user-id',
-    provider: 'github',
-    user: '1egoman',
-    picture: 'https://avatars.githubusercontent.com/u/1704236?v=3',
-    email: 'rsg1egoman@gmail.com',
-  });
-});
+app.get('/api/v1/whoami', whoami);
 
 // get all links
 app.get('/api/v1/links', (req, res) => {

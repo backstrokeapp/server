@@ -7,7 +7,6 @@ export default function strategy(User) {
       callbackURL: process.env.GITHUB_CALLBACK_URL,
     },
     function(accessToken, refreshToken, profile, cb) {
-      console.log(accessToken, refreshToken, profile)
       User.findOne({provider_id: profile.id, provider: profile.provider}, (err, model) => {
         if (err) {
           return cb(err);
@@ -20,6 +19,7 @@ export default function strategy(User) {
             user: profile.username,
             provider: profile.provider,
             picture: profile._json.avatar_url,
+            email: profile._json.email,
           }).save(cb.bind(null, null));
         }
       });

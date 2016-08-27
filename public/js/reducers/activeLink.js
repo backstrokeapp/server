@@ -12,7 +12,12 @@ function updateRepo(state, data, cb) {
 export default function activeLink(state=null, action) {
   switch (action.type) {
     case 'NEW_LINK':
+      return action.data;
+
     case 'LINK_INFO':
+      // Validate each name when it comes from the server
+      action.data.to._nameValid = true;
+      action.data.from._nameValid = true;
       return action.data;
 
     // enable or disable a link

@@ -19,6 +19,7 @@
     "express-session": "^1.14.1",
     "github": "^2.0.1",
     "jquery": "^3.0.0",
+    "jsonschema": "^1.1.0",
     "mongoose": "^4.5.10",
     "morgan": "^1.7.0",
     "passport": "^0.3.2",

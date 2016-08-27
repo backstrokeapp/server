@@ -1,4 +1,5 @@
-
+import isLinkPaid from 'helpers/isLinkPaid';
+import validateLinkFormat from 'helpers/validateLinkFormat';
 
 // A utility function to check if a user is authenticated, and if so, return
 // the authenticated user. Otherwise, this function will throw an error
@@ -74,14 +75,11 @@ function formatLink(data) {
   return data;
 }
 
-function isLinkPaid(link) {
-  return link.to.private || link.from.private;
-}
-
 // Update a Link. This method requires a body with a link property.
 // Responds with {"status": "ok"} on success.
 export function update(Link, req, res) {
   let user = assertLoggedIn(req, res);
+  let formatErrors = validateLinkFormat(req.body.link).errors;
 
   if (!req.isAuthenticated()) {
     res.status(403).send({error: 'Not authenticated'});
@@ -89,16 +87,23 @@ export function update(Link, req, res) {
     res.status(400).send({error: 'No link field in json body.'});
   } else if (!req.body.link.to || !req.body.link.from) {
     res.status(400).send({error: 'To or from props are null'});
+  } else if (formatErrors.length > 0) {
+    res.status(400).send(formatErrors);
   } else {
     let link = formatLink(req.body.link);
 
-    Link.update({_id: req.params.linkId, owner: user}, link).exec((err, data) => {
-      if (err) {
-        console.trace(err);
-        return res.status(500).send({error: 'Database error.'});
-      }
+    // is a link paid? Calculate this ourselves.
+    isLinkPaid(req.user, link).then(paid => {
+      link.paid = paid;
 
-      res.status(200).send({status: 'ok'});
+      Link.update({_id: req.params.linkId, owner: user}, link).exec((err, data) => {
+        if (err) {
+          console.trace(err);
+          return res.status(500).send({error: 'Database error.'});
+        }
+
+        res.status(200).send({status: 'ok'});
+      });
     });
   }
 }

@@ -5,6 +5,7 @@ app.use(express.static('build'));
 
 import whoami from 'controllers/whoami';
 import * as links from 'controllers/links';
+import {checkRepo} from 'controllers/checkRepo';
 
 // ----------------------------------------------------------------------------
 // Mongo stuff
@@ -74,13 +75,7 @@ app.get('/api/v1/links', links.index.bind(null, Link));
 app.get('/api/v1/links/:id', links.get.bind(null, Link));
 
 // return the branches for a given repo
-app.get('/api/v1/repos/:provider/:user/:repo', (req, res) => {
-  return res.status(200).json({
-    branches: ["master", "branch-1", "branch-2"],
-    private: true,
-    fork: true,
-  });
-});
+app.get('/api/v1/repos/:provider/:user/:repo', checkRepo);
 
 // create a new link
 app.post('/api/v1/links', links.create.bind(null, Link));

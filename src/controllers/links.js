@@ -1,3 +1,5 @@
+
+
 // A utility function to check if a user is authenticated, and if so, return
 // the authenticated user. Otherwise, this function will throw an error
 function assertLoggedIn(req, res) {
@@ -67,11 +69,13 @@ export function create(Link, req, res) {
 
 
 
-
-
 function formatLink(data) {
   delete data._id;
   return data;
+}
+
+function isLinkPaid(link) {
+  return link.to.private || link.from.private;
 }
 
 // Update a Link. This method requires a body with a link property.

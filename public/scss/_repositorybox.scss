@@ -14,8 +14,9 @@
   .repo-name-box {
     margin-bottom: 0.5em;
 
-    i.fa-check { color: $brand-success; }
-    i.fa-times { color: $brand-danger; }
+    i.fa-check { color: $brand-success; } // unpaid repos
+    i.fa-dollar { color: $brand-warning; } // paid repos
+    i.fa-times { color: $brand-danger; } // no repo
   }
 }
 

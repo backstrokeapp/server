@@ -30,11 +30,9 @@ export function RepositoryBox({
       />
       <InputGroup.Addon>
         <OverlayTrigger placement="top" overlay={
-          <Tooltip id="is-enabled">
-            {repo._nameValid ? "This repo is valid!" : "This repo doesn't exist."}
-          </Tooltip>
+          <Tooltip id="is-enabled">{validTooltip(repo)}</Tooltip>
         }>
-          {repo._nameValid ? <i className="fa fa-check" /> : <i className="fa fa-times" />}
+          {validIcon(repo)}
         </OverlayTrigger>
       </InputGroup.Addon>
     </InputGroup>
@@ -48,6 +46,31 @@ export function RepositoryBox({
       disabled={branchOptions.length === 0}
     />
   </div>;
+}
+
+export function validIcon(repo) {
+  if (!repo._nameValid) {
+    // not a repo
+    return <i className="fa fa-times" />;
+  } else if (repo.private) {
+    // A private repo
+    return <i className="fa fa-dollar" />;
+  } else {
+    // A public repo
+    return <i className="fa fa-check" />;
+  }
+}
+
+export function validTooltip(repo) {
+  if (!repo._nameValid) {
+    // not a repo
+    return "This repo doesn't exist.";
+  } else if (repo.private) {
+    return "This repo is valid and private.";
+  } else {
+    // A public repo
+    return "This repo is valid!";
+  }
 }
 
 export default connect((state, props) => {

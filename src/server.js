@@ -6,6 +6,7 @@ app.use(express.static('build'));
 import whoami from 'controllers/whoami';
 import * as links from 'controllers/links';
 import {checkRepo} from 'controllers/checkRepo';
+import webhook from 'controllers/webhook';
 
 // ----------------------------------------------------------------------------
 // Mongo stuff
@@ -95,6 +96,9 @@ app.post('/api/v1/link/:linkId/enable', links.enable.bind(null, Link));
 // app.route("/").get((req, res) => {
 //   res.redirect(`https://github.com/1egoman/backstroke`);
 // }).post(webhook);
+
+// the new webhook route
+app.all('/_:linkId', webhook.bind(null, Link));
 
 let port = process.env.PORT || 8001;
 app.listen(port);

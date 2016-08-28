@@ -1,5 +1,5 @@
 import isLinkPaid from 'helpers/isLinkPaid';
-import validateLinkFormat from 'helpers/validateLinkFormat';
+import addWebhooksForLink from 'helpers/addWebhooksForLink';
 
 // A utility function to check if a user is authenticated, and if so, return
 // the authenticated user. Otherwise, this function will throw an error
@@ -70,42 +70,48 @@ export function create(Link, req, res) {
 
 
 
-function formatLink(data) {
-  delete data._id;
-  return data;
-}
-
 // Update a Link. This method requires a body with a link property.
 // Responds with {"status": "ok"} on success.
 export function update(Link, req, res) {
   let user = assertLoggedIn(req, res);
-  let formatErrors = validateLinkFormat(req.body.link).errors;
 
+  // Ensure the user is authenticated, and they passed a seeminly correct body.
   if (!req.isAuthenticated()) {
-    res.status(403).send({error: 'Not authenticated'});
+    return res.status(403).send({error: 'Not authenticated'});
   } else if (!req.body.link) {
-    res.status(400).send({error: 'No link field in json body.'});
-  } else if (!req.body.link.to || !req.body.link.from) {
-    res.status(400).send({error: 'To or from props are null'});
-  } else if (formatErrors.length > 0) {
-    res.status(400).send(formatErrors);
-  } else {
-    let link = formatLink(req.body.link);
-
-    // is a link paid? Calculate this ourselves.
-    isLinkPaid(req.user, link).then(paid => {
-      link.paid = paid;
-
-      Link.update({_id: req.params.linkId, owner: user}, link).exec((err, data) => {
-        if (err) {
-          console.trace(err);
-          return res.status(500).send({error: 'Database error.'});
-        }
-
-        res.status(200).send({status: 'ok'});
-      });
-    });
+    return res.status(400).send({error: 'No link field in json body.'});
   }
+
+  let link = req.body.link;
+
+  // Vaidate the body against a schema
+  let formatErrors = Link.isValidLink(req.body.link).errors;
+  if (formatErrors.length > 0) {
+    return res.status(400).send(formatErrors);
+  }
+
+  // remove a link's id when updating, if it exists
+  delete link._id;
+
+  // Change a couple fields
+  isLinkPaid(req.user, link)
+  .then(paid => {
+    link.paid = paid;
+    return addWebhooksForLink(req.user, link)
+  }).then(hooks => {
+    console.log(hooks);
+    Link.update({_id: req.params.linkId, owner: user}, link).exec((err, data) => {
+      if (err) {
+        console.trace(err);
+        return res.status(500).send({error: 'Database error.'});
+      }
+
+      res.status(200).send({status: 'ok'});
+    });
+  }).catch(err => {
+    console.trace(err);
+    // res.status(500).send({error: "Server error"});
+  });
 }
 
 // Enable or disable a link. Requires a body like {"enabled": true/false}, and

@@ -24,7 +24,7 @@ export function checkRepo(req, res) {
         branches: branches.map(b => b.name),
       });
     }).catch(err => {
-      console.trace(err);
+      // repo doesn't exist.
       res.status(404).send({valid: false});
     });
   } else {

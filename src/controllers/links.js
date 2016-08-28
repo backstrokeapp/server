@@ -91,7 +91,7 @@ export function update(Link, req, res) {
   }
 
   // remove a link's id when updating, if it exists
-  delete link._id;
+  link._id = req.params.linkId;
 
   // Change a couple fields
   isLinkPaid(req.user, link)
@@ -99,7 +99,6 @@ export function update(Link, req, res) {
     link.paid = paid;
     return addWebhooksForLink(req.user, link)
   }).then(hooks => {
-    console.log(hooks);
     Link.update({_id: req.params.linkId, owner: user}, link).exec((err, data) => {
       if (err) {
         console.trace(err);
@@ -110,7 +109,7 @@ export function update(Link, req, res) {
     });
   }).catch(err => {
     console.trace(err);
-    // res.status(500).send({error: "Server error"});
+    res.status(500).send({error: "Server error"});
   });
 }
 

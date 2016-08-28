@@ -75,4 +75,9 @@ link.statics.isValidLink = function isValidLink(link) {
   return validator.validate(link, LINK_SCHEMA);
 }
 
+// Given a link, return its price.
+link.statics.price = function price(link) {
+  return link.paid ? 1.00 : 0;
+}
+
 export default mongoose.model('Link', link);

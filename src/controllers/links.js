@@ -22,12 +22,16 @@ export function index(Link, req, res) {
       return res.status(500).send({error: 'Database error.'});
     }
 
+    // calculate metadata fields
     let lastId = links.length > 0 ? links.slice(-1)[0]._id : null
+    let totalPrice = links.reduce((acc, link) => acc + Link.price(link), 0);
+
     res.status(200).send({
       data: links.map(link => {
         return {_id: link._id, name: link.name, enabled: link.enabled, paid: link.paid};
       }),
       lastId,
+      totalPrice,
     });
   });
 }

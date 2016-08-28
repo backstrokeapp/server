@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
 import classname from 'classname';
 import Switch from 'react-ios-switch';
+import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 
 import enableDisableLink from 'actions/enableDisableLink';
 import newLink from 'actions/newLink';
@@ -19,7 +20,11 @@ export function LinkList({
     return <div className="repo container">
       <div className="link-list">
         <ul className="list-group">
-          <li className="list-header">My links</li>
+          {/* header */}
+          <li className="list-header">
+            My links
+          </li>
+
           {links.data.map((link, ct) => {
             return <li
               key={ct}
@@ -29,6 +34,17 @@ export function LinkList({
               {/* Provider (Github, Bitbucket, Gitlab, etc) */}
               <i className={classname('fa', 'fa-'+link.provider, 'move-to-repo')} />
               <div className="item-title move-to-repo">{link.name}</div>
+
+              {/* Do you have to pay for a link? */}
+              {
+                link.paid ?
+                <OverlayTrigger placement="left" overlay={<Tooltip id="is-paid">
+                  This link is paid since it has a private repository inside.
+                </Tooltip>}>
+                  <i className={classname('fa', 'fa-money', 'move-to-repo')} />
+                </OverlayTrigger>
+                : null
+              }
 
               {/* Enabled or disabled? */}
               <Switch
@@ -40,6 +56,10 @@ export function LinkList({
           })}
         </ul>
         <button className="btn btn-success" onClick={onNewLink}>Add new link</button>
+
+        <div className="monthly-price">
+          ${links.totalPrice && links.totalPrice.toFixed(2)} per month
+        </div>
       </div>
 
       {children}

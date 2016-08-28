@@ -115,12 +115,8 @@ export function Link({
         />
 
         <p>
-          Every time this url is visited, we'll check for updates. In order to keep
-          your repository up to date, you should add this url to one of the projects
-          above. This is super simple: go to your project's page, click <code>Settings</code>,
-          then <code>Webhooks &amp; services</code>, then in the box labeled
-          <code>Payload URL</code>, paste the above url. Once you click <code>Add Webhook</code>,
-          we'll make sure that your changes are synced.
+          Every time this url is visited, we'll make sure that any new changes are
+          synced according to what's been configured above.
         </p>
       </div>
 

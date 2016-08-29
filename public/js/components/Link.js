@@ -38,6 +38,7 @@ export function isLinkValid(link) {
 
 export function Link({
   link,
+  user,
   children,
 
   onLinkSave,
@@ -132,6 +133,8 @@ export function Link({
 
       {children}
     </div>;
+  } else if (user && !user._auth) {
+    return <UserNotAuthenticated />;
   } else {
     return <div className="column repo">
       <span>Loading repository...</span>
@@ -160,6 +163,7 @@ export function RepoWrapper({repository, branch, from, slot}) {
 export default connect((state, props) => {
   return {
     link: state.activeLink,
+    user: state.user,
   };
 }, dispatch => {
   return {

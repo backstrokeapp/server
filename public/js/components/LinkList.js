@@ -7,9 +7,11 @@ import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 
 import enableDisableLink from 'actions/enableDisableLink';
 import newLink from 'actions/newLink';
+import UserNotAuthenticated from 'components/UserNotAuthenticated';
 
 export function LinkList({
   links,
+  user,
   children,
 
   onMoveToRepo,
@@ -64,6 +66,8 @@ export function LinkList({
 
       {children}
     </div>;
+  } else if (user && !user._auth) {
+    return <UserNotAuthenticated />;
   } else {
     return <div className="repo-list">
       <span>Loading...</span>
@@ -75,6 +79,7 @@ export function LinkList({
 export default connect((state, props) => {
   return {
     links: state.linkList,
+    user: state.user,
   };
 }, dispatch => {
   return {

@@ -7,11 +7,20 @@ export default function fetchUser() {
     })
     .then(response => response.json())
     .then(json => {
-      dispatch(userInfo(json));
+      if (json.error) {
+        dispatch(userNotAuthenticated());
+      } else {
+        dispatch(userInfo(json));
+      }
+    }).catch(err => {
+      dispatch(userNotAuthenticated());
     });
   };
 }
 
 export function userInfo(user) {
   return {type: 'USER_INFO', user};
+}
+export function userNotAuthenticated() {
+  return {type: 'USER_NOT_AUTHENTICATED'};
 }

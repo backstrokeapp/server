@@ -1,3 +1,14 @@
 .navbar-mark {
   height: $navbar-height;
 }
+
+.user-nav img {
+  position: absolute;
+  top: 0px;
+  left: -$navbar-height;
+  height: $navbar-height;
+}
+
+.user-nav {
+  padding-left: $navbar-height;
+}

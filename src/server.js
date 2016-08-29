@@ -66,6 +66,11 @@ app.get("/auth/github/callback", passport.authenticate("github", {
   res.redirect('/'); // on success
 });
 
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/');
+});
+
 // identify the currently logged in user
 app.get('/api/v1/whoami', whoami);
 

@@ -18,7 +18,7 @@ export function index(Link, req, res) {
 
   return Link.find({owner: user}).exec((err, links) => {
     if (err) {
-      console.trace(err);
+      process.env.NODE_ENV !== 'test' && console.trace(err);
       return res.status(500).send({error: 'Database error.'});
     }
 
@@ -43,7 +43,7 @@ export function get(Link, req, res) {
 
   return Link.findOne({_id: req.params.id, owner: user}).exec((err, link) => {
     if (err) {
-      console.trace(err);
+      process.env.NODE_ENV !== 'test' && console.trace(err);
       return res.status(500).send({error: 'Database error.'});
     }
 
@@ -57,19 +57,15 @@ export function get(Link, req, res) {
 export function create(Link, req, res) {
   let user = assertLoggedIn(req, res);
 
-  if (req.isAuthenticated()) {
-    let link = new Link({enabled: false, owner: req.user, to: null, false: null});
-    link.save(err => {
-      if (err) {
-        console.trace(err);
-        return res.status(500).send({error: 'Database error.'});
-      }
+  let link = new Link({enabled: false, owner: user, to: null, false: null});
+  link.save(err => {
+    if (err) {
+      process.env.NODE_ENV !== 'test' && console.trace(err);
+      return res.status(500).send({error: 'Database error.'});
+    }
 
-      res.status(201).send(link.format());
-    });
-  } else {
-    res.status(403).send({error: 'Not authenticated'});
-  }
+    res.status(201).send(link.format());
+  });
 }
 
 
@@ -105,14 +101,14 @@ export function update(Link, req, res) {
   }).then(hooks => {
     Link.update({_id: req.params.linkId, owner: user}, link).exec((err, data) => {
       if (err) {
-        console.trace(err);
+        process.env.NODE_ENV !== 'test' && console.trace(err);
         return res.status(500).send({error: 'Database error.'});
       }
 
       res.status(200).send({status: 'ok'});
     });
   }).catch(err => {
-    console.trace(err);
+    process.env.NODE_ENV !== 'test' && console.trace(err);
     res.status(500).send({error: "Server error"});
   });
 }
@@ -134,7 +130,7 @@ export function enable(Link, req, res) {
       enabled: req.body.enabled,
     }).exec((err, data) => {
       if (err) {
-        console.trace(err);
+        process.env.NODE_ENV !== 'test' && console.trace(err);
         return res.status(500).send({error: 'Database error.'});
       }
 

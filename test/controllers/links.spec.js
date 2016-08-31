@@ -27,10 +27,6 @@ describe('links controller', function() {
     }, ...arguments);
   }
 
-  afterEach(() => {
-    Link.restore && Link.restore();
-  });
-
   describe('index', function() {
     it('should get all links assigned to a user', function(done) {
       let link1 = generateLink(), link2 = generateLink();
@@ -42,6 +38,7 @@ describe('links controller', function() {
       // handle a response
       res(function() {
         LinkMock.verify();
+        Link.find.restore()
         assert.deepEqual(res.statusCode, 200);
         assert.deepEqual(res.data, {
           data: [
@@ -56,7 +53,31 @@ describe('links controller', function() {
 
       index(Link, join(loggedIn), res);
     });
-    it('should error if not logged in');
+    it('should error if not logged in', function(done) {
+      let link1 = generateLink(), link2 = generateLink();
+      let LinkMock = sinon.mock(Link).expects('find')
+                     .withArgs({owner: loggedIn.user})
+                     .chain('exec')
+                     .yields(null, [link1, link2])
+
+      // handle a response
+      res(function() {
+        LinkMock.verify();
+        Link.find.restore()
+        assert.deepEqual(res.statusCode, 200);
+        assert.deepEqual(res.data, {
+          data: [
+            {_id: link1._id, name: link1.name, enabled: link1.enabled, paid: link1.paid},
+            {_id: link2._id, name: link2.name, enabled: link2.enabled, paid: link2.paid},
+          ],
+          lastId: link2._id,
+          totalPrice: 0,
+        });
+        done();
+      });
+
+      index(Link, join(loggedIn), res);
+    });
     it('should not expose errors to the user');
   });
   describe('get', function() {

@@ -1,13 +1,24 @@
-export function generateLink() {
+export function generateLink({to, from}) {
   return {
     "_id": "57c20d14202d40988411078d",
     "enabled": true,
     "owner": "57c1784179111d7374647b8f",
-    "to": {
+    "to": generateRepo(to),
+    "from": generateRepo(from),
+    "__v": 0,
+    "paid": false,
+    "name": "backstroke sync"
+  }
+}
+
+export function generateRepo(type) {
+  if (type === 'fork-all') {
+    return {
       "type": "fork-all",
       "provider": "github"
-    },
-    "from": {
+    };
+  } else {
+    return {
       "type": "repo",
       "name": "1egoman/lunch-app",
       "provider": "github",
@@ -18,10 +29,7 @@ export function generateLink() {
         "master",
         "react"
       ],
-    },
-    "__v": 0,
-    "paid": false,
-    "name": "backstroke sync"
+    };
   }
 }
 

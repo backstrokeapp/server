@@ -117,9 +117,9 @@ export function enable(Link, req, res) {
   let user = assertLoggedIn(req, res);
 
   if (!req.isAuthenticated()) {
-    res.status(403).send({error: 'Not authenticated'});
+    return
   } else if (typeof req.body.enabled !== 'boolean') {
-    res.status(500).send({error: 'Enabled property not specified in the body.'});
+    res.status(400).send({error: 'Enabled property not specified in the body.'});
   } else {
     Link.update({
       _id: req.params.linkId,

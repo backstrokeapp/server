@@ -2,7 +2,7 @@ import assert from 'assert';
 import sinon from 'sinon';
 import Promise from 'bluebird';
 
-import {get, index, create, update} from 'controllers/links';
+import {get, index, create, update, enable} from 'controllers/links';
 import Link from 'models/Link';
 import {generateLink, res} from '../testHelpers';
 
@@ -207,7 +207,7 @@ describe('links controller', function() {
     });
   });
   describe('update', function() {
-    it('should update a link', function() {
+    it('should update a link, changing its properties in the database', function() {
       let link1 = generateLink();
 
       let LinkMock = sinon.mock(Link);
@@ -502,6 +502,104 @@ describe('links controller', function() {
         isLinkPaid,
         addWebhooksForLink,
         join(params({linkId: 'my-link-id'}), body({link: link1})), // no `loggedIn`
+        res
+      );
+    });
+  });
+  describe('enable', function() {
+    it('should enable a link so it will run via webhook', function(done) {
+      let link1 = generateLink();
+      let LinkMock = sinon.mock(Link).expects('update')
+      .withArgs({_id: link1._id, owner: loggedIn.user}, {enabled: true})
+      .chain('exec')
+      .yields(null, link1);
+
+      res(function() {
+        LinkMock.verify();
+        Link.update.restore();
+
+        assert.equal(res.statusCode, 200);
+        assert.deepEqual(res.data, {status: 'ok'});
+        done();
+      });
+
+      enable(
+        Link,
+        join(loggedIn, params({linkId: link1._id}), body({enabled: true})),
+        res
+      );
+    })
+    it('should disable a link', function(done) {
+      let link1 = generateLink();
+      let LinkMock = sinon.mock(Link).expects('update')
+      .withArgs({_id: link1._id, owner: loggedIn.user}, {enabled: false})
+      .chain('exec')
+      .yields(null, link1);
+
+      res(function() {
+        LinkMock.verify();
+        Link.update.restore();
+
+        assert.equal(res.statusCode, 200);
+        assert.deepEqual(res.data, {status: 'ok'});
+        done();
+      });
+
+      enable(
+        Link,
+        join(loggedIn, params({linkId: link1._id}), body({enabled: false})),
+        res
+      );
+    });
+    it('should 400 on malformed body', function(done) {
+      let link1 = generateLink();
+
+      res(function() {
+        assert.equal(res.statusCode, 400);
+        assert.deepEqual(res.data, {error: 'Enabled property not specified in the body.'});
+        done();
+      });
+
+      enable(
+        Link,
+        join(loggedIn, params({linkId: link1._id}), body({enabled: 'not valid'})),
+        res
+      );
+    });
+    it('should 403 when unauthenticated', function(done) {
+      let link1 = generateLink();
+
+      res(function() {
+        assert.equal(res.statusCode, 403);
+        assert.deepEqual(res.data, {error: 'Not authenticated.'});
+        done();
+      });
+
+      enable(
+        Link,
+        join(params({linkId: link1._id})), // no loggedIn
+        res
+      );
+    });
+    it('should 500 on database error', function(done) {
+      let link1 = generateLink();
+      let LinkMock = sinon.mock(Link).expects('update')
+      .withArgs({_id: link1._id, owner: loggedIn.user}, {enabled: false})
+      .chain('exec')
+      .yields(new Error('a fancy error'));
+
+      res(function() {
+        LinkMock.verify();
+        Link.update.restore();
+
+        assert.equal(res.statusCode, 500);
+        assert.deepEqual(res.data, {error: 'Database error.'});
+        done();
+      });
+
+      enable(
+        Link,
+        join(loggedIn, params({linkId: link1._id}), body({enabled: false})),
         res
       );
     });

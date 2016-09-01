@@ -8,6 +8,9 @@ import * as links from 'controllers/links';
 import {checkRepo} from 'controllers/checkRepo';
 import webhook from 'controllers/webhook';
 
+import isLinkPaid from 'helpers/isLinkPaid';
+import addWebhooksForLink from 'helpers/addWebhooksForLink';
+
 // ----------------------------------------------------------------------------
 // Mongo stuff
 // ----------------------------------------------------------------------------
@@ -87,7 +90,7 @@ app.get('/api/v1/repos/:provider/:user/:repo', checkRepo);
 app.post('/api/v1/links', links.create.bind(null, Link));
 
 // POST link updates
-app.post('/api/v1/links/:linkId', links.update.bind(null, Link));
+app.post('/api/v1/links/:linkId', links.update.bind(null, Link, isLinkPaid, addWebhooksForLink));
 
 // enable or disable a repository
 app.post('/api/v1/link/:linkId/enable', links.enable.bind(null, Link));

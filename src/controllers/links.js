@@ -1,5 +1,3 @@
-import isLinkPaid from 'helpers/isLinkPaid';
-import addWebhooksForLink from 'helpers/addWebhooksForLink';
 
 // A utility function to check if a user is authenticated, and if so, return
 // the authenticated user. Otherwise, this function will throw an error
@@ -72,13 +70,13 @@ export function create(Link, req, res) {
 
 // Update a Link. This method requires a body with a link property.
 // Responds with {"status": "ok"} on success.
-export function update(Link, req, res) {
+export function update(Link, isLinkPaid, addWebhooksForLink, req, res) {
   let user = assertLoggedIn(req, res);
 
   // Ensure the user is authenticated, and they passed a seeminly correct body.
   if (!req.isAuthenticated()) {
-    return res.status(403).send({error: 'Not authenticated'});
-  } else if (!req.body.link) {
+    return
+  } else if (!req.body || !req.body.link) {
     return res.status(400).send({error: 'No link field in json body.'});
   }
 
@@ -94,7 +92,7 @@ export function update(Link, req, res) {
   link._id = req.params.linkId;
 
   // Change a couple fields
-  isLinkPaid(req.user, link)
+  return isLinkPaid(req.user, link)
   .then(paid => {
     link.paid = paid;
     return addWebhooksForLink(req.user, link)

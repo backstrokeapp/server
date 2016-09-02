@@ -2,8 +2,8 @@ import Promise from 'bluebird';
 import getRepoName from 'helpers/getRepoName';
 import createGithubInstance from '../createGithubInstance';
 
-export default function webhook(gh, link) {
-  let backstrokeBotInstance = createGithubInstance({accessToken: process.env.GITHUB_TOKEN});
+export default function webhook(gh, link, pageSize=100, botInstance=false) {
+  let backstrokeBotInstance = botInstance || createGithubInstance({accessToken: process.env.GITHUB_TOKEN});
 
   function actOnRepo(from, to) {
     return alreadyHasPullRequest(gh, to.provider, from, to).then(hasPull => {
@@ -24,36 +24,61 @@ export default function webhook(gh, link) {
     });
   }
 
+  // if disabled, or to/from is null, return so
+  if (!link.enabled) {
+    return Promise.resolve({error: 'not-enabled', isEnabled: false});
+  } else if (!link.to || !link.from) {
+    return Promise.resolve({
+      error: 'to-or-from-false',
+      isEnabled: true,
+      msg: 'Please set both a "to" and "from" on this link.',
+    });
+  }
+
   // step 1: are we dealing with a repo to merge into or all the forks of a repo?
   if (link.to.type === 'repo') {
     return actOnRepo(link.from, link.to);
-
   } else if (link.to.type === 'fork-all') {
-    let pageSize = 100; // (100 = max page size)
     let [user, repo] = getRepoName(link.from);
 
     // Fetch each fork, then try to make a pull request.
     function getForks(page) {
+      let allForks = [];
       return gh.reposGetForks({
         user, repo, page,
         per_page: pageSize,
       }).then(forks => {
-        // Act on each fork
+        // Act on each fork, and add each's response to `forkGroup`.
+        let forkGroup = [];
         forks.forEach(fork => {
-          actOnRepo(link.from, { // to
-            type: 'repo',
-            provider: link.to.provider,
-            name: fork.full_name,
-            private: fork.private,
-            fork: true,
-            branch: link.from.branch, // same branch as the upstream. TODO: make this configurable.
-            branches: [],
-          });
+          forkGroup.push(
+            actOnRepo(link.from, { // to
+              type: 'repo',
+              provider: link.to.provider,
+              name: fork.full_name,
+              private: fork.private,
+              fork: true,
+              branch: link.from.branch, // same branch as the upstream. TODO: make this configurable.
+              branches: [],
+            })
+          );
         });
+
+        // add a conglomeration of the previous promises to the group of all forks
+        allForks.push(Promise.all(forkGroup));
 
         // if required, go to the next page of forks
         if (forks.length === pageSize) {
           return getForks(++page);
+        } else {
+          return Promise.all(allForks).then(success => {
+            return {
+              status: 'ok',
+              many: true,
+              forkCount: (page * pageSize) + forks.length, // total amount of forks handled
+              isEnabled: true,
+            };
+          });
         }
       });
     }
@@ -122,6 +147,14 @@ export function getBranchHEAD(inst, provider, upstreamRepoModel) {
   }
 }
 
+export function generatePullRequestTitle(user, repo) {
+  return `Update from upstream repo ${user}/${repo}`;
+}
+
+export function generatePullRequestBody(user, repo) {
+  return `Body for ${user}/${repo}`;
+}
+
 // Create a new pull request from the upstream to the child.
 export function createPullRequest(inst, provider, upstreamRepoModel, childRepoModel) {
   let [upstreamUser, upstreamRepo] = getRepoName(upstreamRepoModel);
@@ -131,10 +164,10 @@ export function createPullRequest(inst, provider, upstreamRepoModel, childRepoMo
     case 'github':
       return inst.pullRequestsCreate({
         user: childUser, repo: childRepo,
-        title: `Update from upstream repo ${upstreamUser}/${upstreamRepo}`,
+        title: generatePullRequestTitle(upstreamUser, upstreamRepo),
         head: `${upstreamUser}:${upstreamRepoModel.branch}`,
         base: childRepoModel.branch,
-        body: "backstroke update",
+        body: generatePullRequestBody(upstreamUser, upstreamRepo),
       });
     default:
       throw new Error(`No such provider ${provider}`);

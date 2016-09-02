@@ -1,10 +1,10 @@
-export function generateLink({to, from}) {
+export function generateLink(types={to: 'repo', from: 'repo'}) {
   return {
     "_id": "57c20d14202d40988411078d",
     "enabled": true,
     "owner": "57c1784179111d7374647b8f",
-    "to": generateRepo(to),
-    "from": generateRepo(from),
+    "to": generateRepo(types.to),
+    "from": generateRepo(types.from),
     "__v": 0,
     "paid": false,
     "name": "backstroke sync"

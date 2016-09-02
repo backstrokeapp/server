@@ -9,12 +9,12 @@ export default function webhook(gh, link, pageSize=100, botInstance=false) {
     return alreadyHasPullRequest(gh, to.provider, from, to).then(hasPull => {
       // Does the PR already exist?
       if (hasPull) {
-        return false;
+        return {msg: "There's already a pull request for this repo, no need to create another."};
       } else {
         // Do we have permission to make a pull request on the child?
         return didRepoOptOut(gh, to.provider, to).then(didOptOut => {
           if (didOptOut) {
-            return false;
+            return {msg: "THis repo opted out of backstroke pull requests"};
           } else {
             // Then, make the pull request
             return createPullRequest(backstrokeBotInstance, to.provider, from, to);
@@ -37,7 +37,15 @@ export default function webhook(gh, link, pageSize=100, botInstance=false) {
 
   // step 1: are we dealing with a repo to merge into or all the forks of a repo?
   if (link.to.type === 'repo') {
-    return actOnRepo(link.from, link.to);
+    return actOnRepo(link.from, link.to).then(response => {
+      return {
+        status: 'ok',
+        pullRequest: response,
+        isEnabled: true,
+        many: false,
+        forkCount: 1, // just one repo
+      };
+    });
   } else if (link.to.type === 'fork-all') {
     let [user, repo] = getRepoName(link.from);
 
@@ -162,6 +170,10 @@ export function createPullRequest(inst, provider, upstreamRepoModel, childRepoMo
 
   switch (provider) {
     case 'github':
+      // console.log("Create pull request on", childUser, childRepo);
+      // console.log("  base:", childRepoModel.branch);
+      // console.log("  head:", upstreamUser, upstreamRepoModel.branch);
+      // break;
       return inst.pullRequestsCreate({
         user: childUser, repo: childRepo,
         title: generatePullRequestTitle(upstreamUser, upstreamRepo),
@@ -170,6 +182,7 @@ export function createPullRequest(inst, provider, upstreamRepoModel, childRepoMo
         body: generatePullRequestBody(upstreamUser, upstreamRepo),
       });
     default:
+      console.log('provider', provider === 'github')
       throw new Error(`No such provider ${provider}`);
   }
 }

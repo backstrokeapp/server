@@ -74,7 +74,7 @@
     "serve": "npm run build:js && npm run build:css && npm start",
     "watch": "nodemon --exec 'npm run serve' -e 'js scss' -w src/ -w public/js -w public/scss",
     "test": "NODE_PATH=src/ NODE_ENV=test mocha",
-    "coverage": "babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha"
+    "coverage": "NODE_PATH=src/ babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha"
   },
   "author": "Ryan Gaus <rgaus.net>",
   "license": "ISC"

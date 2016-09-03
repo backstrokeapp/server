@@ -7,6 +7,7 @@ import whoami from 'controllers/whoami';
 import * as links from 'controllers/links';
 import {checkRepo} from 'controllers/checkRepo';
 import webhook from 'controllers/webhook';
+import webhookOld from 'controllers/webhookOld';
 
 import isLinkPaid from 'helpers/isLinkPaid';
 import addWebhooksForLink from 'helpers/addWebhooksForLink';
@@ -100,10 +101,8 @@ app.post('/api/v1/link/:linkId/enable', links.enable.bind(null, Link));
 //   res.redirect(`https://github.com/${req.params.user}/${req.params.repo}`);
 // }).post(webhook);
 
-// the webhook route
-// app.route("/").get((req, res) => {
-//   res.redirect(`https://github.com/1egoman/backstroke`);
-// }).post(webhook);
+// the old webhook route
+app.route("/").post(webhookOld);
 
 // the new webhook route
 app.all('/_:linkId', webhook.bind(null, Link));

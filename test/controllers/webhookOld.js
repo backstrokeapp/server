@@ -4,7 +4,7 @@ import assert from 'assert';
 import {
   getUpstream,
   postUpdate,
-} from "../src/remote";
+} from "controllers/webhookOld";
 import Promise from 'bluebird';
 
 describe("github", function() {
@@ -12,7 +12,7 @@ describe("github", function() {
     describe("diverging repo and upstream", function() {
       let remote, gh;
       beforeEach(function() {
-        gh = require('../src/github');
+        gh = require('github/');
         let reposGetBranch = sinon.stub();
         // fork (user/repo)
         reposGetBranch.withArgs({user: "user", repo: "repo", branch: "master"}).resolves({
@@ -44,8 +44,8 @@ describe("github", function() {
         sinon.stub(gh, "constructor").returns(ghMock);
 
         // run remote code using the above mock
-        remote = proxyquire("../src/remote", {
-          './github': gh,
+        remote = proxyquire("controllers/webhookOld", {
+          '../github': gh,
         });
       });
       afterEach(() => gh.constructor.restore());
@@ -60,7 +60,7 @@ describe("github", function() {
     describe("diverging repo and upstream", function() {
       let remote, gh;
       beforeEach(function() {
-        gh = require('../src/github');
+        gh = require('github/');
         let reposGetBranch = sinon.stub();
         // fork (user/repo)
         reposGetBranch.withArgs({user: "user", repo: "repo", branch: "master"}).resolves({
@@ -88,7 +88,7 @@ describe("github", function() {
         sinon.stub(gh, "constructor").returns(ghMock);
 
         // run remote code using the above mock
-        remote = proxyquire("../src/remote", { './github': gh, });
+        remote = proxyquire("controllers/webhookOld", { '../github': gh, });
       });
       afterEach(() => gh.constructor.restore());
       it("should detect a repo that has not diverged from its upstream", function() {
@@ -105,7 +105,7 @@ describe("github", function() {
     describe("with a pr made with the label 'optout'", function() {
       let remote, gh;
       beforeEach(function() {
-        gh = require('../src/github');
+        gh = require('github/');
 
         // mock the github constructor
         let ghMock = {
@@ -121,8 +121,8 @@ describe("github", function() {
         sinon.stub(gh, "constructor").returns(ghMock);
 
         // run remote code using the above mock
-        remote = proxyquire("../src/remote", {
-          './github': gh,
+        remote = proxyquire("controllers/webhookOld", {
+          '../github': gh,
         });
       });
       afterEach(() => gh.constructor.restore());
@@ -135,7 +135,7 @@ describe("github", function() {
     describe("with no prs at all", function() {
       let remote, gh;
       beforeEach(function() {
-        gh = require('../src/github');
+        gh = require('github/');
 
         // mock the github constructor
         let ghMock = {
@@ -149,8 +149,8 @@ describe("github", function() {
         sinon.stub(gh, "constructor").returns(ghMock);
 
         // run remote code using the above mock
-        remote = proxyquire("../src/remote", {
-          './github': gh,
+        remote = proxyquire("controllers/webhookOld", {
+          '../github': gh,
         });
       });
       afterEach(() => gh.constructor.restore());
@@ -188,7 +188,7 @@ describe("github", function() {
     describe("with a PR that's already been made", function() {
       let remote, gh;
       beforeEach(function() {
-        gh = require('../src/github');
+        gh = require('github/');
 
         // mock the github constructor
         let ghMock = {
@@ -205,8 +205,8 @@ describe("github", function() {
         sinon.stub(gh, "constructor").returns(ghMock);
 
         // run remote code using the above mock
-        remote = proxyquire("../src/remote", {
-          './github': gh,
+        remote = proxyquire("controllers/webhookOld", {
+          '../github': gh,
         });
       });
       afterEach(() => gh.constructor.restore());
@@ -234,7 +234,7 @@ describe("github", function() {
     describe("with no PR made", function() {
       let remote, gh;
       beforeEach(function() {
-        gh = require('../src/github');
+        gh = require('github/');
 
         // mock the github constructor
         let ghMock = {
@@ -253,8 +253,8 @@ describe("github", function() {
         sinon.stub(gh, "constructor").returns(ghMock);
 
         // run remote code using the above mock
-        remote = proxyquire("../src/remote", {
-          './github': gh,
+        remote = proxyquire("controllers/webhookOld", {
+          '../github': gh,
         });
       });
       afterEach(() => gh.constructor.restore());

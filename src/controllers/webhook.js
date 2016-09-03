@@ -5,7 +5,6 @@ export default function webhookRoute(Link, req, res) {
   return Link.findOne({_id: req.params.linkId}).populate('owner').exec().then(link => {
     let gh = createGithubInstance(link.owner);
     return webhook(gh, link);
-  // })
   }).then(output => {
     if (output.isEnabled === false) {
       res.status(200).send({

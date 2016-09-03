@@ -1,5 +1,5 @@
-import Promise from 'bluebird';
-import GitHubApi from 'github';
+const Promise = require('bluebird');
+const GitHubApi = require('github');
 
 // configure github api client
 let github = new GitHubApi({});
@@ -13,7 +13,7 @@ if (process.env.GITHUB_TOKEN) {
 }
 
 // import the libraries that are required for communication
-import * as ghFactory from './github';
+const ghFactory = require('../github');
 let gh = ghFactory.constructor(github);
 
 // has the given fork diverged from its parent?
@@ -149,7 +149,7 @@ export function getUpstream(repository, opts={}) {
 // Routes
 // ----------------------------------------------------------------------------
 
-export function webhook(req, res) {
+export default function webhook(req, res) {
   // the repo is a fork, or the user has manually specified an upstream to merge into
   if (
     (req.body && req.body.repository && req.body.repository.fork) ||

@@ -14,6 +14,10 @@ function assertLoggedIn(req, res) {
 export function index(Link, req, res) {
   let user = assertLoggedIn(req, res);
 
+  if (!req.isAuthenticated()) {
+    return;
+  }
+
   return Link.find({owner: user}).exec((err, links) => {
     if (err) {
       process.env.NODE_ENV !== 'test' && console.trace(err);

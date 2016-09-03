@@ -13,14 +13,15 @@ import changeLinkName from 'actions/changeLinkName';
 
 import linkSave from 'actions/linkSave';
 
-export function isRepoValid(repo) {
+export function isRepoValid(repo, type) {
   return (
     repo.type === 'repo' &&
     repo.provider && 
     repo.name &&
     repo.name.length > 0 &&
     repo.name.indexOf('/') !== -1 &&
-    repo.branch && repo.branch.length > 0
+    repo.branch && repo.branch.length > 0 &&
+    (type === 'to' ? repo.fork : true) // to must be a fork
   ) || (
     repo.type === 'fork-all' &&
     repo.provider && repo.provider.length > 0
@@ -32,7 +33,7 @@ export function isLinkValid(link) {
     link.name && link.name.length > 0 &&
     link.to && link.to.type && link.to.provider &&
     link.from && link.from.type && link.from.provider &&
-    isRepoValid(link.to) && isRepoValid(link.from)
+    isRepoValid(link.to, 'to') && isRepoValid(link.from, 'from')
   )
 }
 
@@ -147,7 +148,7 @@ export function RepoWrapper({repository, branch, from, slot}) {
   if (repository && repository.type === 'repo') {
     // A bare repository / branch combo
     return <BoxProperties repository={repository}>
-      <RepositoryBox repository={repository} branch={branch} />
+      <RepositoryBox repository={repository} branch={branch} type={slot} />
     </BoxProperties>;
   } else if (repository && repository.type === 'fork-all') {
     // All forks for the upstream

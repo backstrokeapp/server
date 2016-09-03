@@ -52,12 +52,17 @@ app.use(morgan('tiny'));
 app.get('/setup/login', passport.authenticate('github', {
   successRedirect: '/',
   failureRedirect: '/setup/login',
+  scope: ["public_repo", "write:repo_hook", "user:email"],
+}));
+app.get('/setup/login/private', passport.authenticate('github', {
+  successRedirect: '/setup/login',
+  failureRedirect: '/setup/login',
   scope: ["repo", "write:repo_hook", "user:email"],
 }));
 
+// Second leg of the auth
 app.get("/auth/github/callback", passport.authenticate("github", {
-  failureRedirect: '/login',
-  failureFlash: true,
+  failureRedirect: '/setup/login',
 }), (req, res) => {
   res.redirect('/'); // on success
 });
@@ -68,7 +73,7 @@ app.get('/logout', (req, res) => {
 });
 
 // identify the currently logged in user
-app.get('/api/v1/whoami', bodyParser.json(), whoami);
+app.get('/api/v1/whoami', whoami);
 
 // get all links
 app.get('/api/v1/links', bodyParser.json(), links.index.bind(null, Link));

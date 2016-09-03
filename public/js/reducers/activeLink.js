@@ -46,6 +46,7 @@ export default function activeLink(state=null, action) {
       return updateRepo(state, action.data, repo => {
         return Object.assign({}, repo, {
           _nameValid: false,
+          branches: [],
         });
       });
 

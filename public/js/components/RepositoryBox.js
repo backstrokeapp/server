@@ -10,6 +10,7 @@ import repoBranch from 'actions/repoBranch';
 export function RepositoryBox({
   repository: repo,
   branch,
+  type,
 
   onVerifyRepositoryName,
   onRepoBranch,
@@ -30,9 +31,9 @@ export function RepositoryBox({
       />
       <InputGroup.Addon>
         <OverlayTrigger placement="top" overlay={
-          <Tooltip id="is-enabled">{validTooltip(repo)}</Tooltip>
+          <Tooltip id="is-enabled">{validTooltip(repo, type)}</Tooltip>
         }>
-          {validIcon(repo)}
+          {validIcon(repo, type)}
         </OverlayTrigger>
       </InputGroup.Addon>
     </InputGroup>
@@ -48,9 +49,12 @@ export function RepositoryBox({
   </div>;
 }
 
-export function validIcon(repo) {
+export function validIcon(repo, type) {
   if (!repo._nameValid) {
     // not a repo
+    return <i className="fa fa-times" />;
+  } else if (type === 'to' && !repo.fork) {
+    // not a fork
     return <i className="fa fa-times" />;
   } else if (repo.private) {
     // A private repo
@@ -61,10 +65,13 @@ export function validIcon(repo) {
   }
 }
 
-export function validTooltip(repo) {
+export function validTooltip(repo, type) {
   if (!repo._nameValid) {
     // not a repo
     return "This repo doesn't exist.";
+  } else if (type === 'to' && !repo.fork) {
+    // not a fork
+    return "The child repo must be a fork of the parent.";
   } else if (repo.private) {
     return "This repo is valid and private.";
   } else {

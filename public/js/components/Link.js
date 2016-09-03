@@ -168,8 +168,9 @@ export default connect((state, props) => {
   };
 }, dispatch => {
   return {
-    onLinkSave(repo) {
-      dispatch(linkSave(repo));
+    onLinkSave(link) {
+      link.enabled = true;
+      dispatch(linkSave(link));
     },
     onLinkEnable(link, enabled) {
       dispatch(enableDisableLink(link, enabled));

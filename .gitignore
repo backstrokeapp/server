@@ -7,4 +7,3 @@ gh-pages
 .creds
 coverage/
 *.sw*
-build/

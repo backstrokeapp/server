@@ -8,6 +8,8 @@ const user = new mongoose.Schema({
   provider_id: 'string',
   user: 'string',
   email: 'string',
+  customerId: 'string', // from stripe
+  subscriptionId: 'string', // also from stripe
 });
 
 // user.static.

@@ -9,6 +9,7 @@ import * as links from 'controllers/links';
 import {checkRepo} from 'controllers/checkRepo';
 import webhook from 'controllers/webhook';
 import webhookOld from 'controllers/webhookOld';
+import {addPaymentInfo} from 'controllers/payments';
 
 import isLinkPaid from 'helpers/isLinkPaid';
 import addWebhooksForLink from 'helpers/addWebhooksForLink';
@@ -93,6 +94,10 @@ app.post('/api/v1/links/:linkId', bodyParser.json(),
 
 // enable or disable a repository
 app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(null, Link));
+
+// add payment info to a user
+app.post('/api/v1/paymentinfo', bodyParser.urlencoded({extended: true}),
+  addPaymentInfo.bind(null, User));
 
 // the old webhook route
 // app.route("/ping/github/:user/:repo").get((req, res) => {

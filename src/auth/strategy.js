@@ -20,6 +20,8 @@ export default function strategy(User) {
             provider: profile.provider,
             picture: profile._json.avatar_url,
             email: profile._json.email,
+						customerId: null,
+						subscriptionId: null,
           }).save(cb.bind(null, null));
         }
       });

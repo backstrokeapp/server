@@ -95,7 +95,7 @@ app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(nul
 // }).post(webhook);
 
 // the old webhook route
-app.route("/").post(bodyParser.json(), webhookOld);
+app.post("/", bodyParser.json(), webhookOld);
 
 // the new webhook route
 app.all('/_:linkId', webhook.bind(null, Link));

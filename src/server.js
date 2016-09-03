@@ -2,6 +2,7 @@ import express from 'express';
 let app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('build'));
+import Promise from 'bluebird';
 
 import whoami from 'controllers/whoami';
 import * as links from 'controllers/links';
@@ -17,6 +18,7 @@ import addWebhooksForLink from 'helpers/addWebhooksForLink';
 // ----------------------------------------------------------------------------
 import mongoose from 'mongoose';
 mongoose.connect(process.env.MONGO_URI);
+mongoose.Promise = Promise;
 import User from 'models/User';
 import Link from 'models/Link';
 
@@ -43,18 +45,8 @@ passport.use(strategy(User));
 serialize(User, passport);
 
 import bodyParser from 'body-parser';
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-
 import morgan from 'morgan';
 app.use(morgan('tiny'));
-
-// Disable cors (for now, while in development)
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
 
 // Authenticate a user
 app.get('/setup/login', passport.authenticate('github', {
@@ -76,25 +68,26 @@ app.get('/logout', (req, res) => {
 });
 
 // identify the currently logged in user
-app.get('/api/v1/whoami', whoami);
+app.get('/api/v1/whoami', bodyParser.json(), whoami);
 
 // get all links
-app.get('/api/v1/links', links.index.bind(null, Link));
+app.get('/api/v1/links', bodyParser.json(), links.index.bind(null, Link));
 
 // GET a given link
-app.get('/api/v1/links/:id', links.get.bind(null, Link));
+app.get('/api/v1/links/:id', bodyParser.json(), links.get.bind(null, Link));
 
 // return the branches for a given repo
-app.get('/api/v1/repos/:provider/:user/:repo', checkRepo);
+app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), checkRepo);
 
 // create a new link
-app.post('/api/v1/links', links.create.bind(null, Link));
+app.post('/api/v1/links', bodyParser.json(), links.create.bind(null, Link));
 
 // POST link updates
-app.post('/api/v1/links/:linkId', links.update.bind(null, Link, isLinkPaid, addWebhooksForLink));
+app.post('/api/v1/links/:linkId', bodyParser.json(),
+  links.update.bind(null, Link, isLinkPaid, addWebhooksForLink));
 
 // enable or disable a repository
-app.post('/api/v1/link/:linkId/enable', links.enable.bind(null, Link));
+app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(null, Link));
 
 // the old webhook route
 // app.route("/ping/github/:user/:repo").get((req, res) => {
@@ -102,7 +95,7 @@ app.post('/api/v1/link/:linkId/enable', links.enable.bind(null, Link));
 // }).post(webhook);
 
 // the old webhook route
-app.route("/").post(webhookOld);
+app.route("/").post(bodyParser.json(), webhookOld);
 
 // the new webhook route
 app.all('/_:linkId', webhook.bind(null, Link));

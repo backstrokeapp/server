@@ -139,10 +139,10 @@ export function Link({
       {
         link._deleting ?
         <button
-          className="btn btn-danger"
+          className="btn btn-danger btn-del"
           onClick={onDeleteLink.bind(null, link._id)}
         >Sure?</button> :
-        <button className="btn btn-danger" onClick={onIsDeletingLink}>Delete</button>
+        <button className="btn btn-danger btn-del" onClick={onIsDeletingLink}>Delete</button>
       }
 
       {children}

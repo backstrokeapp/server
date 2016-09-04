@@ -11,6 +11,8 @@ export default function enableDisableLink(link, enabled) {
     }).then(response => response.json()).then(json => {
       if (json.status === 'ok') {
         dispatch(enableDisableLinkAction(link, enabled));
+      } else {
+        dispatch(enableDisableLinkAction(link, !enabled)); // don't change the state
       }
     });
   };

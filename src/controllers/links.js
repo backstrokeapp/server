@@ -128,6 +128,9 @@ export function enable(Link, req, res) {
     Link.update({
       _id: req.params.linkId,
       owner: user,
+      'to.type': {$exists: true},
+      'from.type': {$exists: true},
+      name: {$exists: true, $type: 2, $ne: ''},
     }, {
       enabled: req.body.enabled,
     }).exec((err, data) => {
@@ -136,7 +139,11 @@ export function enable(Link, req, res) {
         return res.status(500).send({error: 'Database error.'});
       }
 
-      res.status(200).send({status: 'ok'});
+      if (data.nModified > 0) {
+        res.status(200).send({status: 'ok'});
+      } else {
+        res.status(400).send({status: 'not-complete'});
+      }
     });
   }
 }

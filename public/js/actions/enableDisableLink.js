@@ -9,7 +9,9 @@ export default function enableDisableLink(link, enabled) {
       body: JSON.stringify({enabled}),
       credentials: 'include',
     }).then(response => response.json()).then(json => {
-      dispatch(enableDisableLinkAction(link, enabled));
+      if (json.status === 'ok') {
+        dispatch(enableDisableLinkAction(link, enabled));
+      }
     });
   };
 }

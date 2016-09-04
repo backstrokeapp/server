@@ -35,7 +35,7 @@ export function LinkList({
             >
               {/* Provider (Github, Bitbucket, Gitlab, etc) */}
               <i className={classname('fa', 'fa-'+link.provider, 'move-to-repo')} />
-              <div className="item-title move-to-repo">{link.name}</div>
+              <div className="item-title move-to-repo">{link.name || 'Untitled Link'}</div>
 
               {/* Do you have to pay for a link? */}
               {

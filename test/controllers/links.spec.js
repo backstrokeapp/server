@@ -510,9 +510,15 @@ describe('links controller', function() {
     it('should enable a link so it will run via webhook', function(done) {
       let link1 = generateLink();
       let LinkMock = sinon.mock(Link).expects('update')
-      .withArgs({_id: link1._id, owner: loggedIn.user}, {enabled: true})
+        .withArgs({
+          _id: link1._id,
+          owner: loggedIn.user,
+          'to.type': {$exists: true},
+          'from.type': {$exists: true},
+          name: {$exists: true, $type: 2, $ne: ''},
+        }, {enabled: true})
       .chain('exec')
-      .yields(null, link1);
+      .yields(null, {nModified: 1});
 
       res(function() {
         LinkMock.verify();
@@ -532,9 +538,15 @@ describe('links controller', function() {
     it('should disable a link', function(done) {
       let link1 = generateLink();
       let LinkMock = sinon.mock(Link).expects('update')
-      .withArgs({_id: link1._id, owner: loggedIn.user}, {enabled: false})
+        .withArgs({
+          _id: link1._id,
+          owner: loggedIn.user,
+          'to.type': {$exists: true},
+          'from.type': {$exists: true},
+          name: {$exists: true, $type: 2, $ne: ''},
+        }, {enabled: false})
       .chain('exec')
-      .yields(null, link1);
+      .yields(null, {nModified: 1});
 
       res(function() {
         LinkMock.verify();
@@ -548,6 +560,34 @@ describe('links controller', function() {
       enable(
         Link,
         join(loggedIn, params({linkId: link1._id}), body({enabled: false})),
+        res
+      );
+    });
+    it('should change link state on an incomplete state', function(done) {
+      let link1 = generateLink();
+      let LinkMock = sinon.mock(Link).expects('update')
+        .withArgs({
+          _id: link1._id,
+          owner: loggedIn.user,
+          'to.type': {$exists: true},
+          'from.type': {$exists: true},
+          name: {$exists: true, $type: 2, $ne: ''},
+        }, {enabled: true})
+      .chain('exec')
+      .yields(null, {nModified: 0});
+
+      res(function() {
+        LinkMock.verify();
+        Link.update.restore();
+
+        assert.equal(res.statusCode, 400);
+        assert.deepEqual(res.data, {status: 'not-complete'});
+        done();
+      });
+
+      enable(
+        Link,
+        join(loggedIn, params({linkId: link1._id}), body({enabled: true})),
         res
       );
     });
@@ -584,7 +624,13 @@ describe('links controller', function() {
     it('should 500 on database error', function(done) {
       let link1 = generateLink();
       let LinkMock = sinon.mock(Link).expects('update')
-      .withArgs({_id: link1._id, owner: loggedIn.user}, {enabled: false})
+        .withArgs({
+          _id: link1._id,
+          owner: loggedIn.user,
+          'to.type': {$exists: true},
+          'from.type': {$exists: true},
+          name: {$exists: true, $type: 2, $ne: ''},
+        }, {enabled: false})
       .chain('exec')
       .yields(new Error('a fancy error'));
 

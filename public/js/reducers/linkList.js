@@ -25,6 +25,13 @@ export default function linkList(state=null, action) {
         }),
       });
 
+    case 'DELETE_LINK':
+      return Object.assign({}, state, {
+        data: state.data.filter(item => {
+          return item._id !== action.link;
+        }),
+      });
+
     default:
       return state;
   }

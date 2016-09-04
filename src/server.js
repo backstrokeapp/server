@@ -81,6 +81,9 @@ app.get('/api/v1/links', bodyParser.json(), links.index.bind(null, Link));
 // GET a given link
 app.get('/api/v1/links/:id', bodyParser.json(), links.get.bind(null, Link));
 
+// delete a link
+app.del('/api/v1/links/:id', links.del.bind(null, Link));
+
 // return the branches for a given repo
 app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), checkRepo);
 

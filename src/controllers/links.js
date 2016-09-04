@@ -140,3 +140,18 @@ export function enable(Link, req, res) {
     });
   }
 }
+
+export function del(Link, req, res) {
+  let user = assertLoggedIn(req, res);
+
+  if (!req.isAuthenticated()) {
+    return
+  } else {
+    Link.remove({_id: req.params.id, owner: user._id}).exec().then(() => {
+      res.status(200).send({status: 'ok'});
+    }).catch(err => {
+      process.env.NODE_ENV !== 'test' && console.trace(err);
+      return res.status(500).send({error: 'Database error.'});
+    });
+  }
+}

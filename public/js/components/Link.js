@@ -10,6 +10,8 @@ import BoxProperties from 'components/BoxProperties';
 import AddNewBox from 'components/AddNewBox';
 import enableDisableLink from 'actions/enableDisableLink';
 import changeLinkName from 'actions/changeLinkName';
+import isDeletingLink from 'actions/isDeletingLink';
+import deleteLink from 'actions/deleteLink';
 
 import linkSave from 'actions/linkSave';
 
@@ -45,6 +47,8 @@ export function Link({
   onLinkSave,
   onLinkEnable,
   onChangeLinkName,
+  onDeleteLink,
+  onIsDeletingLink,
 }) {
   if (link) {
     // fetch branches, if required
@@ -132,6 +136,15 @@ export function Link({
         >Save</button>
       }
 
+      {
+        link._deleting ?
+        <button
+          className="btn btn-danger"
+          onClick={onDeleteLink.bind(null, link._id)}
+        >Sure?</button> :
+        <button className="btn btn-danger" onClick={onIsDeletingLink}>Delete</button>
+      }
+
       {children}
     </div>;
   } else if (user && !user._auth) {
@@ -177,6 +190,12 @@ export default connect((state, props) => {
     },
     onChangeLinkName(event) {
       dispatch(changeLinkName(event.target.value));
+    },
+    onIsDeletingLink() {
+      dispatch(isDeletingLink());
+    },
+    onDeleteLink(linkId) {
+      dispatch(deleteLink(linkId));
     },
   };
 })(Link);

@@ -82,6 +82,14 @@ export default function activeLink(state=null, action) {
         return Object.assign({}, repo, {_deleting: false});
       });
 
+    // Delete a link
+    case 'IS_DELETING_ACTIVE_LINK':
+      return Object.assign({}, state, {_deleting: true});
+    case 'CANCEL_ACTIVE_LINK_DELETE':
+      return Object.assign({}, state, {_deleting: false});
+    case 'DELETE_LINK':
+      return null;
+
     // Add a new repo / all forks / box / etc
     case 'ADD_NEW_REPOSITORY':
       return Object.assign({}, state, {

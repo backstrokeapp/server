@@ -147,7 +147,7 @@ export function del(Link, req, res) {
   if (!req.isAuthenticated()) {
     return
   } else {
-    Link.remove({_id: req.params.id, owner: user._id}).exec().then(() => {
+    Link.remove({_id: req.params.id, owner: user}).exec().then(() => {
       res.status(200).send({status: 'ok'});
     }).catch(err => {
       process.env.NODE_ENV !== 'test' && console.trace(err);

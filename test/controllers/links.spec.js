@@ -2,7 +2,7 @@ import assert from 'assert';
 import sinon from 'sinon';
 import Promise from 'bluebird';
 
-import {get, index, create, update, enable} from 'controllers/links';
+import {get, index, create, update, enable, del} from 'controllers/links';
 import Link from 'models/Link';
 import {generateLink, res} from '../testHelpers';
 
@@ -600,6 +600,67 @@ describe('links controller', function() {
       enable(
         Link,
         join(loggedIn, params({linkId: link1._id}), body({enabled: false})),
+        res
+      );
+    });
+  });
+  describe('del', function() {
+    it('should delete a link when it is no longer needed', function(done) {
+      let link1 = generateLink();
+      let LinkMock = sinon.mock(Link).expects('remove')
+      .withArgs({_id: link1._id, owner: loggedIn.user})
+      .chain('exec')
+      .resolves(true);
+
+      res(function() {
+        LinkMock.verify();
+        Link.remove.restore();
+
+        assert.equal(res.statusCode, 200);
+        assert.deepEqual(res.data, {status: 'ok'});
+        done();
+      });
+
+      del(
+        Link,
+        join(loggedIn, params({id: link1._id})),
+        res
+      );
+    });
+    it('should handle errors when a link delete fails', function(done) {
+      let link1 = generateLink();
+      let LinkMock = sinon.mock(Link).expects('remove')
+      .withArgs({_id: link1._id, owner: loggedIn.user})
+      .chain('exec')
+      .rejects(new Error('screaming'));
+
+      res(function() {
+        LinkMock.verify();
+        Link.remove.restore();
+
+        assert.equal(res.statusCode, 500);
+        assert.deepEqual(res.data, {error: 'Database error.'});
+        done();
+      });
+
+      del(
+        Link,
+        join(loggedIn, params({id: link1._id})),
+        res
+      );
+    });
+    it('should 403 when unauthenticated', function(done) {
+      let link1 = generateLink();
+
+      res(function() {
+        assert.equal(res.statusCode, 403);
+        assert.deepEqual(res.data, {error: 'Not authenticated.'});
+        done();
+      });
+
+      del(
+        Link,
+        join(params({id: link1._id})), // no loggedIn
         res
       );
     });

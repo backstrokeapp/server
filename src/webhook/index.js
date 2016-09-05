@@ -1,23 +1,28 @@
 import Promise from 'bluebird';
 import getRepoName from 'helpers/getRepoName';
 import createGithubInstance from '../createGithubInstance';
+import createTemporaryRepo from 'helpers/createTemporaryRepo';
 
 export default function webhook(gh, link, pageSize=100, botInstance=false) {
   let backstrokeBotInstance = botInstance || createGithubInstance({accessToken: process.env.GITHUB_TOKEN});
 
   function actOnRepo(from, to) {
-    return alreadyHasPullRequest(gh, to.provider, from, to).then(hasPull => {
-      // Does the PR already exist?
-      if (hasPull) {
-        return {msg: "There's already a pull request for this repo, no need to create another."};
+    return didRepoOptOut(gh, to.provider, to).then(didOptOut => {
+      // Do we have permission to make a pull request on the child?
+      if (didOptOut) {
+        return {msg: "This repo opted out of backstroke pull requests"};
       } else {
-        // Do we have permission to make a pull request on the child?
-        return didRepoOptOut(gh, to.provider, to).then(didOptOut => {
-          if (didOptOut) {
-            return {msg: "THis repo opted out of backstroke pull requests"};
+        // create a temporary repo with the new changes
+        return createTemporaryRepo(gh, backstrokeBotInstance, to).then(tempRepo => {
+          // Make the pull request
+          return createPullRequest(backstrokeBotInstance, to.provider, from, to, tempRepo);
+        }).catch(err => {
+          if (err.code === 422) {
+            // The pull request already existed
+            return {msg: "There's already a pull request for this repo, no need to create another."};
           } else {
-            // Then, make the pull request
-            return createPullRequest(backstrokeBotInstance, to.provider, from, to);
+            // Still reject anything else
+            return Promise.reject(err);
           }
         });
       }
@@ -114,31 +119,6 @@ export function didRepoOptOut(inst, provider, repoData) {
   }
 }
 
-// Does the specified relationship from the upstream to the child exist?
-export function alreadyHasPullRequest(inst, provider, upstreamRepoModel, childRepoModel) {
-  let [upstreamUser, upstreamRepo] = getRepoName(upstreamRepoModel);
-  let [childUser, childRepo] = getRepoName(childRepoModel);
-
-  switch (provider) {
-    case "github":
-      // Get all pull requests
-      return inst.pullRequestsGetAll({
-        user: childUser,
-        repo: childRepo,
-        state: "open",
-
-        // A PR on the child from the upstream
-        head: `${upstreamUser}:${upstreamRepoModel.branch}`,
-        base: childRepoModel.branch,
-      }).then(existingPulls => {
-        return existingPulls.length > 0;
-      });
-
-    default:
-      throw new Error(`No such provider ${provider}`);
-  }
-}
-
 // Get the head commit of a branch.
 export function getBranchHEAD(inst, provider, upstreamRepoModel) {
   let [user, repo] = getRepoName(upstreamRepoModel);
@@ -159,13 +139,29 @@ export function generatePullRequestTitle(user, repo) {
   return `Update from upstream repo ${user}/${repo}`;
 }
 
-export function generatePullRequestBody(user, repo) {
-  return `Body for ${user}/${repo}`;
+export function generatePullRequestBody(user, repo, forkName) {
+  return `Hello!
+  The remote \`${user}/${repo}\` has some new changes that aren't in this fork.
+  So, here they are, ready to be merged! :tada:
+
+  If this pull request can be merged without conflict, you can publish your software
+  with these new changes.
+
+  Otherwise, if you have merge conflicts, we've taken the liberty of creating a fork at
+  [backstroke-bot/${forkName}](https://github.com/backstroke-bot/${forkName}) that
+  \`${user}\` has push access to. After fixing any conflicts, merge below to update
+  your code to the latest.
+
+  Have fun!
+  --------
+  Created by [Backstroke](http://backstroke.us). Oh yea, I'm a bot.
+  `.replace('\n', '');
 }
 
 // Create a new pull request from the upstream to the child.
-export function createPullRequest(inst, provider, upstreamRepoModel, childRepoModel) {
-  let [upstreamUser, upstreamRepo] = getRepoName(upstreamRepoModel);
+export function createPullRequest(inst, provider, upstreamRepoModel, childRepoModel, tempUpstreamRepoModel) {
+  let [realUpstreamUser, realUpstreamRepo] = getRepoName(upstreamRepoModel);
+  let [upstreamUser, upstreamRepo] = getRepoName(tempUpstreamRepoModel);
   let [childUser, childRepo] = getRepoName(childRepoModel);
 
   switch (provider) {
@@ -176,13 +172,12 @@ export function createPullRequest(inst, provider, upstreamRepoModel, childRepoMo
       // break;
       return inst.pullRequestsCreate({
         user: childUser, repo: childRepo,
-        title: generatePullRequestTitle(upstreamUser, upstreamRepo),
+        title: generatePullRequestTitle(realUpstreamUser, realUpstreamRepo),
         head: `${upstreamUser}:${upstreamRepoModel.branch}`,
         base: childRepoModel.branch,
-        body: generatePullRequestBody(upstreamUser, upstreamRepo),
+        body: generatePullRequestBody(realUpstreamUser, realUpstreamRepo, upstreamRepo),
       });
     default:
-      console.log('provider', provider === 'github')
       throw new Error(`No such provider ${provider}`);
   }
 }

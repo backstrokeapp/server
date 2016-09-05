@@ -1,0 +1,15 @@
+.user-not-authenticated {
+  @extend .container;
+  text-align: center;
+
+  i {
+    font-size: 8em;
+    color: $gray-light;
+  }
+
+  h1 {
+    color: $gray-light;
+    font-weight: 300;
+    margin-bottom: 1em;
+  }
+}

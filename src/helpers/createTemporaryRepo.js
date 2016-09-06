@@ -11,7 +11,7 @@ export default function createTemporaryRepo(inst, backstrokeBotInstance, repo) {
 
   // step 0: does the repo exist?
   return inst.reposGet({user: 'backstroke-bot', repo: ephemeralRepoName}).then(exists => {
-    console.log(123)
+    console.log('repo exists', exists)
     // Repo exists, so update it instead of creating a new repo.
     return mergeChangesIntoEphemeralRepo(
       inst,
@@ -20,11 +20,16 @@ export default function createTemporaryRepo(inst, backstrokeBotInstance, repo) {
     );
   }).catch(err => {
     console.log('theres a error', err)
-    // step 1: Repo doesn't exist, so create it by forking.
-    return backstrokeBotInstance.reposFork({
-      user: userName,
-      repo: repoName,
-    });
+    return createEphemeralRepo(backstrokeBotInstance, userName, repoName, ephemeralRepoName);
+  });
+}
+
+export function createEphemeralRepo(backstrokeBotInstance, userName, repoName, ephemeralRepoName) {
+  console.log('creating ephemeral repo');
+  // step 1: Repo doesn't exist, so create it by forking.
+  return backstrokeBotInstance.reposFork({
+    user: userName,
+    repo: repoName,
   }).then(newFork => {
     if (newFork) {
       // step 2: update the repo to look better / match naming conventions

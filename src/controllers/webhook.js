@@ -16,7 +16,7 @@ export default function webhookRoute(Link, req, res) {
       res.status(201).send({status: 'ok', output});
     }
   }).catch(err => {
-    console.trace(err);
     res.status(500).send({error: 'Server error.'});
+    throw err;
   });
 }

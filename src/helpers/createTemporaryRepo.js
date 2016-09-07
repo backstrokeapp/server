@@ -1,5 +1,4 @@
 import getRepoName from 'helpers/getRepoName';
-import {createPullRequest} from 'webhook/';
 
 // provider="github"
 // loggedInUser= the logged in user
@@ -11,21 +10,26 @@ export default function createTemporaryRepo(inst, backstrokeBotInstance, repo) {
 
   // step 0: does the repo exist?
   return inst.reposGet({user: 'backstroke-bot', repo: ephemeralRepoName}).then(exists => {
-    console.log('repo exists', exists)
+    console.log('repo exists')
     // Repo exists, so update it instead of creating a new repo.
     return mergeChangesIntoEphemeralRepo(
-      inst,
+      backstrokeBotInstance,
       userName, repoName, repo.branch,
       'backstroke-bot', ephemeralRepoName, repo.branch
     );
   }).catch(err => {
-    console.log('theres a error', err)
-    return createEphemeralRepo(backstrokeBotInstance, userName, repoName, ephemeralRepoName);
+    if (err.code === 422) {
+      // Repo doesn't exist, so create it.
+      return createEphemeralRepo(backstrokeBotInstance, userName, repoName, ephemeralRepoName);
+    } else {
+      return Promise.reject(err);
+    }
   });
 }
 
 export function createEphemeralRepo(backstrokeBotInstance, userName, repoName, ephemeralRepoName) {
   console.log('creating ephemeral repo');
+
   // step 1: Repo doesn't exist, so create it by forking.
   return backstrokeBotInstance.reposFork({
     user: userName,
@@ -70,21 +74,42 @@ function mergeChangesIntoEphemeralRepo(
   ephemeralRepo,
   ephemeralBranch
 ) {
-  console.log('making pr', fromUser, fromRepo, ephemeralUser, ephemeralRepo);
+  // step 1: Create a pull request to merge in changes
   return inst.pullRequestsCreate({
-    user: fromUser, repo: fromRepo,
+    user: ephemeralUser, repo: ephemeralRepo,
     title: 'Merge in new changes from the upstream into this ephemeral snapshot',
-    head: `${ephemeralUser}:${ephemeralBranch}`,
+    head: `${fromUser}:${fromBranch}`,
     base: ephemeralBranch,
   }).then(pr => {
-    console.log('pr', pr)
-    return inst.pullRequestsMerge({user: fromUser, repo: fromRepo, number: pr.number});
+    // step 2: Merge the pull request that was created
+    return inst.pullRequestsMerge({
+      user: ephemeralUser,
+      repo: ephemeralRepo,
+      number: pr.number,
+    });
+  }).then(merge => {
+    // Merge was successful!
+    return {
+      type: 'repo',
+      name: `backstroke-bot/${ephemeralRepo}`,
+      private: false, // FIXME: make this dynamic.
+      provider: 'github',
+      fork: true,
+      branch: ephemeralBranch,
+    };
   }).catch(err => {
     if (err.code === 422) {
-      console.log('no changes', err)
       // no new changes, keep on moving
-      return false;
+      return {
+        type: 'repo',
+        name: `backstroke-bot/${ephemeralRepo}`,
+        private: false, // FIXME: make this dynamic.
+        provider: 'github',
+        fork: true,
+        branch: ephemeralBranch,
+      };
     } else {
+      console.log('a real error', err)
       return Promise.reject(err);
     }
   });

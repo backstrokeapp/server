@@ -15,6 +15,7 @@ export default function webhook(gh, link, pageSize=100, botInstance=false) {
         // create a temporary repo with the new changes
         return createTemporaryRepo(gh, backstrokeBotInstance, to).then(tempRepo => {
           // Make the pull request
+          console.log('temp repo', tempRepo)
           return createPullRequest(backstrokeBotInstance, to.provider, from, to, tempRepo);
         }).catch(err => {
           if (err.code === 422) {

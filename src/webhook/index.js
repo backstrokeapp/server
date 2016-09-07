@@ -158,11 +158,9 @@ Otherwise, if you have merge conflicts, we've taken the liberty of creating a fo
 your code to the latest.
 
 **PROTIP**: Squash-and-merge to get rid of any merge commits I made!
-    `
+    `.replace('\n', '')
   } else {
-    forkMessage = `
-If you have merge conflicts, this is a great place to fix them.
-    `
+    forkMessage = `If you have merge conflicts, this is a great place to fix them.`
   }
 
   return `Hello!

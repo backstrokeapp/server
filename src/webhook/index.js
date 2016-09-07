@@ -22,7 +22,7 @@ export default function webhook(gh, link, pageSize=100, botInstance=false) {
         }
 
         // Make the pull request.
-        pullRequestUpstream.then(prIntoRepo => {
+        return pullRequestUpstream.then(prIntoRepo => {
           return createPullRequest(backstrokeBotInstance, to.provider, from, to, prIntoRepo);
         }).catch(err => {
           if (err.code === 422) {
@@ -186,7 +186,7 @@ export function createPullRequest(inst, provider, upstreamRepoModel, childRepoMo
 
   switch (provider) {
     case 'github':
-      // console.log("Create pull request on", childUser, childRepo);
+      // console.ephemeralBranchlog("Create pull request on", childUser, childRepo);
       // console.log("  base:", childRepoModel.branch);
       // console.log("  head:", upstreamUser, upstreamRepoModel.branch);
       // break;

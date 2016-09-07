@@ -7,7 +7,8 @@ export function generateLink(types={to: 'repo', from: 'repo'}) {
     "from": generateRepo(types.from),
     "__v": 0,
     "paid": false,
-    "name": "backstroke sync"
+    "name": "backstroke sync",
+    "ephemeralRepo": false,
   }
 }
 

@@ -310,6 +310,9 @@ describe('links controller', function() {
               "paid": {
                 "type": "boolean"
               },
+              "ephemeralRepo": {
+                "type": "boolean"
+              },
               "from": {
                 "type": "object",
                 "properties": {
@@ -443,7 +446,8 @@ describe('links controller', function() {
             },
             "__v": 0,
             "paid": false,
-            "name": "backstroke sync"
+            "name": "backstroke sync",
+            "ephemeralRepo": false,
           },
           "name": "required",
           "argument": "to",

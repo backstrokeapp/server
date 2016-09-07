@@ -179,16 +179,9 @@ describe('webhook v2', function() {
           head: `${user}:${link1.from.branch}`,
           base: link1.to.branch,
           body: generatePullRequestBody(user, repo),
-      }).resolves({created: 'pull request'});
+      }).rejects({code: 422}); // failsure because it aleady exiets
 
       let gh = {
-        pullRequestsGetAll: sinon.stub().withArgs({
-          user: childUser,
-          repo: childRepo,
-          state: 'open',
-          head: `${user}:${link1.from.branch}`,
-          base: link1.to.branch,
-        }).resolves([{hereis: 'a pr'}]),
         searchIssues: sinon.stub().withArgs({
           q: `repo:${childUser}/${childRepo} is:pr label:optout`,
         }).resolves({total_count: 0}),

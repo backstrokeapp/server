@@ -39,6 +39,8 @@ const LINK_SCHEMA = {
     paid: {type: 'boolean'}, // will be overriden, so not required
     from: repo,
     to: {oneOf: [repo, forks]},
+
+    ephemeralRepo: {type: 'boolean'},
   },
   required: ['enabled', 'to', 'from', 'name'],
 };
@@ -64,6 +66,8 @@ const link = new mongoose.Schema({
   owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   from: RepoSchema,
   to: RepoSchema,
+
+  ephemeralRepo: 'boolean',
 });
 
 link.methods.format = function format() {

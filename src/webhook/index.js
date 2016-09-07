@@ -6,17 +6,24 @@ import createTemporaryRepo from 'helpers/createTemporaryRepo';
 export default function webhook(gh, link, pageSize=100, botInstance=false) {
   let backstrokeBotInstance = botInstance || createGithubInstance({accessToken: process.env.GITHUB_TOKEN});
 
-  function actOnRepo(from, to) {
+  function actOnRepo(link, from, to) {
     return didRepoOptOut(gh, to.provider, to).then(didOptOut => {
       // Do we have permission to make a pull request on the child?
       if (didOptOut) {
         return {msg: "This repo opted out of backstroke pull requests"};
       } else {
-        // create a temporary repo with the new changes
-        return createTemporaryRepo(gh, backstrokeBotInstance, to).then(tempRepo => {
-          // Make the pull request
-          console.log('temp repo', tempRepo)
-          return createPullRequest(backstrokeBotInstance, to.provider, from, to, tempRepo);
+        // Should we create a temporary repo with the new changes? If not, just use the existing
+        // `from` repo.
+        let pullRequestUpstream;
+        if (link.ephemeralRepo) {
+          pullRequestUpstream = createTemporaryRepo(gh, backstrokeBotInstance, to);
+        } else {
+          pullRequestUpstream = Promise.resolve(from);
+        }
+
+        // Make the pull request.
+        pullRequestUpstream.then(prIntoRepo => {
+          return createPullRequest(backstrokeBotInstance, to.provider, from, to, prIntoRepo);
         }).catch(err => {
           if (err.code === 422) {
             // The pull request already existed
@@ -43,7 +50,7 @@ export default function webhook(gh, link, pageSize=100, botInstance=false) {
 
   // step 1: are we dealing with a repo to merge into or all the forks of a repo?
   if (link.to.type === 'repo') {
-    return actOnRepo(link.from, link.to).then(response => {
+    return actOnRepo(link, link.from, link.to).then(response => {
       return {
         status: 'ok',
         pullRequest: response,
@@ -66,7 +73,7 @@ export default function webhook(gh, link, pageSize=100, botInstance=false) {
         let forkGroup = [];
         forks.forEach(fork => {
           forkGroup.push(
-            actOnRepo(link.from, { // to
+            actOnRepo(link, link.from, { // to
               type: 'repo',
               provider: link.to.provider,
               name: fork.full_name,
@@ -141,6 +148,23 @@ export function generatePullRequestTitle(user, repo) {
 }
 
 export function generatePullRequestBody(user, repo, forkName) {
+  // only show this message if an ephemeral repo was generated.
+  let forkMessage;
+  if (forkName) {
+    forkMessage = `
+Otherwise, if you have merge conflicts, we've taken the liberty of creating a fork at
+[backstroke-bot/${forkName}](https://github.com/backstroke-bot/${forkName}) that
+\`${user}\` has push access to. After fixing any conflicts, merge below to update
+your code to the latest.
+
+**PROTIP**: Squash-and-merge to get rid of any merge commits I made!
+    `
+  } else {
+    forkMessage = `
+If you have merge conflicts, this is a great place to fix them.
+    `
+  }
+
   return `Hello!
   The remote \`${user}/${repo}\` has some new changes that aren't in this fork.
   So, here they are, ready to be merged! :tada:
@@ -148,10 +172,7 @@ export function generatePullRequestBody(user, repo, forkName) {
   If this pull request can be merged without conflict, you can publish your software
   with these new changes.
 
-  Otherwise, if you have merge conflicts, we've taken the liberty of creating a fork at
-  [backstroke-bot/${forkName}](https://github.com/backstroke-bot/${forkName}) that
-  \`${user}\` has push access to. After fixing any conflicts, merge below to update
-  your code to the latest.
+  ${forkMessage}
 
   Have fun!
   --------
@@ -176,7 +197,12 @@ export function createPullRequest(inst, provider, upstreamRepoModel, childRepoMo
         title: generatePullRequestTitle(realUpstreamUser, realUpstreamRepo),
         head: `${upstreamUser}:${upstreamRepoModel.branch}`,
         base: childRepoModel.branch,
-        body: generatePullRequestBody(realUpstreamUser, realUpstreamRepo, upstreamRepo),
+        body: generatePullRequestBody(
+          realUpstreamUser,
+          realUpstreamRepo,
+          // if an ephemeral repo wasn't generated, this should be falsey
+          upstreamRepo === realUpstreamRepo ? false : upstreamRepo
+        ),
       });
     default:
       throw new Error(`No such provider ${provider}`);

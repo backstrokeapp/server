@@ -41,6 +41,7 @@ const LINK_SCHEMA = {
     to: {oneOf: [repo, forks]},
 
     ephemeralRepo: {type: 'boolean'},
+    pushUsers: {type: 'array', items: {type: 'string'}},
   },
   required: ['enabled', 'to', 'from', 'name'],
 };
@@ -68,6 +69,7 @@ const link = new mongoose.Schema({
   to: RepoSchema,
 
   ephemeralRepo: 'boolean',
+  pushUsers: ['string'],
 });
 
 link.methods.format = function format() {

@@ -8,7 +8,7 @@ export function generateEphemeralRepoName(userName, repoName) {
 // loggedInUser= the logged in user
 // repo= Repo instance that is to be operated on (should be from `to`)
 // number= PR number that is being operated on
-export default function createTemporaryRepo(inst, backstrokeBotInstance, repo) {
+export default function createTemporaryRepo(inst, backstrokeBotInstance, link, repo) {
   let [userName, repoName] = getRepoName(repo);
   let ephemeralRepoName = generateEphemeralRepoName(userName, repoName);
 
@@ -21,12 +21,13 @@ export default function createTemporaryRepo(inst, backstrokeBotInstance, repo) {
       'backstroke-bot', ephemeralRepoName, repo.branch
     );
   }).catch(err => {
-    if (err.code === 422) {
+    if (err.code === 422 || err.code === 404) {
       // Repo doesn't exist, so create it.
       return createEphemeralRepo(
         backstrokeBotInstance,
         repo,
-        ephemeralRepoName
+        ephemeralRepoName,
+        link.pushUsers
       );
     } else {
       return Promise.reject(err);
@@ -34,7 +35,7 @@ export default function createTemporaryRepo(inst, backstrokeBotInstance, repo) {
   });
 }
 
-export function createEphemeralRepo(backstrokeBotInstance, repo, ephemeralRepoName) {
+export function createEphemeralRepo(backstrokeBotInstance, repo, ephemeralRepoName, pushUsers=[]) {
   let [userName, repoName] = getRepoName(repo);
   let ephemeralRepository;
 
@@ -60,12 +61,17 @@ export function createEphemeralRepo(backstrokeBotInstance, repo, ephemeralRepoNa
       return repo;
     }
   }).then(newRepo => {
+    // step 3: add the specfied users as collaborators
     ephemeralRepository = newRepo;
-    return backstrokeBotInstance.reposAddCollaborator({
-      user: 'backstroke-bot', repo: ephemeralRepoName,
-      collabuser: userName, // add this user to the repo
-      permission: 'push', // let them make changes
+    let userPromises = pushUsers.map(user => {
+      return backstrokeBotInstance.reposAddCollaborator({
+        user: 'backstroke-bot', repo: ephemeralRepoName,
+        collabuser: user, // add this user to the repo
+        permission: 'push', // let them make changes
+      });
     });
+
+    return Promise.all(userPromises);
   }).then(changes => {
     return {
       type: 'repo',

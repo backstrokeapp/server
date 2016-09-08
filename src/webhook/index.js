@@ -16,7 +16,7 @@ export default function webhook(gh, link, pageSize=100, botInstance=false) {
         // `from` repo.
         let pullRequestUpstream;
         if (link.ephemeralRepo) {
-          pullRequestUpstream = createTemporaryRepo(gh, backstrokeBotInstance, to);
+          pullRequestUpstream = createTemporaryRepo(gh, backstrokeBotInstance, link, to);
         } else {
           pullRequestUpstream = Promise.resolve(from);
         }

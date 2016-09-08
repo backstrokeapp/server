@@ -313,6 +313,7 @@ describe('links controller', function() {
               "ephemeralRepo": {
                 "type": "boolean"
               },
+              "pushUsers": {"items": {"type": "string"}, "type": "array"},
               "from": {
                 "type": "object",
                 "properties": {
@@ -448,6 +449,7 @@ describe('links controller', function() {
             "paid": false,
             "name": "backstroke sync",
             "ephemeralRepo": false,
+            "pushUsers": [],
           },
           "name": "required",
           "argument": "to",

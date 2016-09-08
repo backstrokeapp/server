@@ -5,9 +5,13 @@ import getRepoName from 'helpers/getRepoName';
 
 import createTemporaryRepo, {generateEphemeralRepoName} from 'helpers/createTemporaryRepo';
 
-describe('createTemporaryRepo (with ephemeralRepo: true)', function() {
+describe('webhook (with ephemeralRepo: true)', function() {
   it('should create an ephemeral repo when the flag is set, and use that in the pr', function() {
-    // the source repo
+    // Create a link
+    let link1 = generateLink();
+    link1.pushUsers = ["foo-user"];
+
+    // Create a source repo
     let repo1 = generateRepo('repo');
     repo1.ephemeralRepo = true;
     let [userName, repoName] = getRepoName(repo1);
@@ -18,7 +22,7 @@ describe('createTemporaryRepo (with ephemeralRepo: true)', function() {
     ephemeralRepo.name = `backstroke-bot/${ephemeralRepoName}`;
 
     let inst = {
-      reposGet: sinon.stub().withArgs({
+      reposGet: sinon.mock().withArgs({
         user: 'backstroke-bot',
         repo: ephemeralRepoName,
       }).rejects({code: 422}), // no ephemeral repo
@@ -55,12 +59,17 @@ describe('createTemporaryRepo (with ephemeralRepo: true)', function() {
 
       reposAddCollaborator: sinon.mock().withArgs({
         user: 'backstroke-bot', repo: ephemeralRepoName,
-        collabuser: userName,
+        collabuser: 'foo-user',
         permission: 'push',
       }),
     };
 
-    return createTemporaryRepo(inst, backstrokeBotInstance, repo1).then(repo => {
+    return createTemporaryRepo(inst, backstrokeBotInstance, link1, repo1).then(repo => {
+      inst.reposGet.verify();
+      backstrokeBotInstance.reposFork.verify();
+      backstrokeBotInstance.reposEdit.verify();
+      backstrokeBotInstance.reposAddCollaborator.verify();
+
       assert.deepEqual(repo, {
         type: 'repo',
         name: `backstroke-bot/${ephemeralRepoName}`,
@@ -72,7 +81,11 @@ describe('createTemporaryRepo (with ephemeralRepo: true)', function() {
     })
   });
   it('should try to merge changes when the ephemeral repo already exists', function() {
-    // the source repo
+    // Create a link
+    let link1 = generateLink();
+    link1.pushUsers = ["foo-user"];
+
+    // Create a source repo
     let repo1 = generateRepo('repo');
     repo1.ephemeralRepo = true;
     let [userName, repoName] = getRepoName(repo1);
@@ -107,7 +120,7 @@ describe('createTemporaryRepo (with ephemeralRepo: true)', function() {
       }),
     };
 
-    return createTemporaryRepo(inst, backstrokeBotInstance, repo1).then(repo => {
+    return createTemporaryRepo(inst, backstrokeBotInstance, link1, repo1).then(repo => {
       inst.reposGet.verify();
       backstrokeBotInstance.pullRequestsCreate.verify();
       backstrokeBotInstance.pullRequestsMerge.verify();
@@ -127,4 +140,4 @@ describe('createTemporaryRepo (with ephemeralRepo: true)', function() {
 
 
 describe('mergeChangesIntoEphemeralRepo', function() {
-})
+});

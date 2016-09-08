@@ -9,6 +9,7 @@ export function generateLink(types={to: 'repo', from: 'repo'}) {
     "paid": false,
     "name": "backstroke sync",
     "ephemeralRepo": false,
+    "pushUsers": [],
   }
 }
 

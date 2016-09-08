@@ -41,7 +41,6 @@
   "devDependencies": {
     "autoprefixer-core": "^6.0.1",
     "babel-cli": "^6.10.1",
-    "babel-istanbul": "^0.11.0",
     "babelify": "^7.3.0",
     "browser-sync": "^2.14.0",
     "browserify": "^13.0.1",
@@ -58,6 +57,7 @@
     "mocha": "^2.5.3",
     "mock-res": "^0.3.0",
     "node-sass": "^3.8.0",
+    "nyc": "^8.1.0",
     "proxyquire": "^1.7.10",
     "sinon": "^1.17.5",
     "sinon-as-promised": "^4.0.0",
@@ -74,7 +74,8 @@
     "serve": "npm run build:js && npm run build:css && npm start",
     "watch": "nodemon --exec 'npm run serve' -e 'js scss' -w src/ -w public/js -w public/scss",
     "test": "NODE_PATH=src/ NODE_ENV=test mocha",
-    "coverage": "NODE_PATH=src/ babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha"
+    "coverage": "NODE_PATH=src/ NODE_ENV=test nyc mocha; nyc report --reporter=lcov",
+    "coverageopen": "open coverage/lcov-report/index.html"
   },
   "author": "Ryan Gaus <rgaus.net>",
   "license": "ISC"

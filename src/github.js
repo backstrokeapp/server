@@ -10,6 +10,7 @@ export function constructor(github) {
     reposEdit: Promise.promisify(github.repos.edit),
     reposDelete: Promise.promisify(github.repos['delete']),
     reposMerge: Promise.promisify(github.repos.merge),
+    reposAddCollaborator: Promise.promisify(github.repos.addCollaborator),
 
     pullRequestsCreate: Promise.promisify(github.pullRequests.create),
     pullRequestsGetAll: Promise.promisify(github.pullRequests.getAll),

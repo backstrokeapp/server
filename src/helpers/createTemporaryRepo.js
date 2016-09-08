@@ -1,12 +1,16 @@
 import getRepoName from 'helpers/getRepoName';
 
+export function generateEphemeralRepoName(userName, repoName) {
+  return `fix-${userName}-${repoName}`;
+}
+
 // provider="github"
 // loggedInUser= the logged in user
 // repo= Repo instance that is to be operated on (should be from `to`)
 // number= PR number that is being operated on
 export default function createTemporaryRepo(inst, backstrokeBotInstance, repo) {
   let [userName, repoName] = getRepoName(repo);
-  let ephemeralRepoName = `fix-${userName}-${repoName}`;
+  let ephemeralRepoName = generateEphemeralRepoName(userName, repoName);
 
   // step 0: does the repo exist?
   return inst.reposGet({user: 'backstroke-bot', repo: ephemeralRepoName}).then(exists => {
@@ -19,14 +23,21 @@ export default function createTemporaryRepo(inst, backstrokeBotInstance, repo) {
   }).catch(err => {
     if (err.code === 422) {
       // Repo doesn't exist, so create it.
-      return createEphemeralRepo(backstrokeBotInstance, userName, repoName, ephemeralRepoName);
+      return createEphemeralRepo(
+        backstrokeBotInstance,
+        repo,
+        ephemeralRepoName
+      );
     } else {
       return Promise.reject(err);
     }
   });
 }
 
-export function createEphemeralRepo(backstrokeBotInstance, userName, repoName, ephemeralRepoName) {
+export function createEphemeralRepo(backstrokeBotInstance, repo, ephemeralRepoName) {
+  let [userName, repoName] = getRepoName(repo);
+  let ephemeralRepository;
+
   // step 1: Repo doesn't exist, so create it by forking.
   return backstrokeBotInstance.reposFork({
     user: userName,
@@ -49,10 +60,17 @@ export function createEphemeralRepo(backstrokeBotInstance, userName, repoName, e
       return repo;
     }
   }).then(newRepo => {
+    ephemeralRepository = newRepo;
+    return backstrokeBotInstance.reposAddCollaborator({
+      user: 'backstroke-bot', repo: ephemeralRepoName,
+      collabuser: userName, // add this user to the repo
+      permission: 'push', // let them make changes
+    });
+  }).then(changes => {
     return {
       type: 'repo',
       name: `backstroke-bot/${ephemeralRepoName}`,
-      private: newRepo.private,
+      private: ephemeralRepository.private,
       provider: 'github',
       fork: true,
       branch: repo.branch,

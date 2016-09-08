@@ -127,22 +127,6 @@ export function didRepoOptOut(inst, provider, repoData) {
   }
 }
 
-// Get the head commit of a branch.
-export function getBranchHEAD(inst, provider, upstreamRepoModel) {
-  let [user, repo] = getRepoName(upstreamRepoModel);
-  switch (provider) {
-    case 'github':
-      return inst.reposGetBranch({
-        user, repo,
-        branch: upstreamRepoModel.branch,
-      }).then(branch => {
-        return branch.commit.sha;
-      });
-    default:
-      throw new Error(`No such provider ${provider}`);
-  }
-}
-
 export function generatePullRequestTitle(user, repo) {
   return `Update from upstream repo ${user}/${repo}`;
 }

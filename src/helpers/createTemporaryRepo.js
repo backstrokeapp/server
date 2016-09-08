@@ -58,7 +58,7 @@ export function createEphemeralRepo(backstrokeBotInstance, repo, ephemeralRepoNa
         auto_init: false,
       });
     } else {
-      return repo;
+      throw new Error(`Cannot create the ephemeral repo: fork failed.`);
     }
   }).then(newRepo => {
     // step 3: add the specfied users as collaborators

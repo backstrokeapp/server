@@ -9,8 +9,7 @@ let repo = {
   type: 'object',
   properties: {
     private: {type: 'boolean'},
-    name: {type: 'string'},
-    repo: {type: 'string'},
+    name: {type: 'string', pattern: '(.+)\/(.+)'},
     provider: {
       type: 'string',
       enum: ['github'],
@@ -20,7 +19,7 @@ let repo = {
     branches: {type: 'array', items: {type: 'string'}},
     type: {type: 'string', pattern: "repo"},
   },
-  required: ['private', 'name', 'repo', 'provider', 'fork', 'branches', 'branch', 'type'],
+  required: ['private', 'name', 'provider', 'fork', 'branches', 'branch', 'type'],
 };
 
 let forks = {
@@ -54,7 +53,6 @@ const RepoSchema = {
   type: {type: 'string'},
   private: 'boolean',
   name: 'string',
-  repo: 'string',
   provider: {type: 'string', enum: ['github']},
   fork: 'boolean',
   html_url: 'string',

@@ -322,7 +322,9 @@ describe('links controller', function() {
                   },
                   "name": {
                     "type": "string",
-                    "pattern": "(.+)\/(.+)"
+                  },
+                  "repo": {
+                    "type": "string",
                   },
                   "provider": {
                     "type": "string",
@@ -350,6 +352,7 @@ describe('links controller', function() {
                 "required": [
                   "private",
                   "name",
+                  "repo",
                   "provider",
                   "fork",
                   "branches",
@@ -367,7 +370,9 @@ describe('links controller', function() {
                       },
                       "name": {
                         "type": "string",
-                        "pattern": "(.+)\/(.+)"
+                      },
+                      "repo": {
+                        "type": "string",
                       },
                       "provider": {
                         "type": "string",
@@ -395,6 +400,7 @@ describe('links controller', function() {
                     "required": [
                       "private",
                       "name",
+                      "repo",
                       "provider",
                       "fork",
                       "branches",
@@ -435,7 +441,8 @@ describe('links controller', function() {
             "owner": "57c1784179111d7374647b8f",
             "from": {
               "type": "repo",
-              "name": "1egoman\/lunch-app",
+              "name": "1egoman",
+              "repo": "lunch-app",
               "provider": "github",
               "private": false,
               "fork": false,

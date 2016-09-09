@@ -22,7 +22,8 @@ export function generateRepo(type) {
   } else {
     return {
       "type": "repo",
-      "name": "1egoman/lunch-app",
+      "name": "1egoman",
+      "repo": "lunch-app",
       "provider": "github",
       "private": false,
       "fork": false,

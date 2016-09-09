@@ -75,7 +75,7 @@
     "serve": "npm run build:js && npm run build:css && npm start",
     "watch": "nodemon --exec 'npm run serve' -e 'js scss' -w src/ -w public/js -w public/scss",
     "test": "NODE_PATH=src/ NODE_ENV=test mocha",
-    "coverage": "NODE_PATH=src/ NODE_ENV=test nyc mocha; nyc report --reporter=lcov",
+    "coverage": "NODE_PATH=src/ NODE_ENV=test nyc --reporter=lcov --reporter=text mocha",
     "coverageopen": "open coverage/lcov-report/index.html"
   },
 
@@ -88,6 +88,7 @@
     }
   },
   "nyc": {
+    "include": ["src/*.js", "src/**/*.js"],
     "require": ["babel-register"],
     "sourceMap": false,
     "instrument": false

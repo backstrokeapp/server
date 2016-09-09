@@ -41,6 +41,7 @@
   "devDependencies": {
     "autoprefixer-core": "^6.0.1",
     "babel-cli": "^6.10.1",
+    "babel-plugin-istanbul": "^2.0.1",
     "babelify": "^7.3.0",
     "browser-sync": "^2.14.0",
     "browserify": "^13.0.1",
@@ -77,6 +78,21 @@
     "coverage": "NODE_PATH=src/ NODE_ENV=test nyc mocha; nyc report --reporter=lcov",
     "coverageopen": "open coverage/lcov-report/index.html"
   },
+
+  "babel": {
+    "presets": ["es2015", "react"],
+    "env": {
+      "test": {
+        "plugins": ["istanbul"]
+      }
+    }
+  },
+  "nyc": {
+    "require": ["babel-register"],
+    "sourceMap": false,
+    "instrument": false
+  },
+
   "author": "Ryan Gaus <rgaus.net>",
   "license": "ISC"
 }

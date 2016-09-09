@@ -7,3 +7,4 @@ gh-pages
 .creds
 coverage/
 *.sw*
+.nyc_output/

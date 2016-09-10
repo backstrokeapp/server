@@ -39,6 +39,7 @@
     "whatwg-fetch": "^1.0.0"
   },
   "devDependencies": {
+    "autoprefixer": "^6.4.1",
     "autoprefixer-core": "^6.0.1",
     "babel-cli": "^6.10.1",
     "babel-plugin-istanbul": "^2.0.1",

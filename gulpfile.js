@@ -13,10 +13,8 @@ var argv = require('yargs').argv;
 // sass
 var sass = require('gulp-sass');
 var postcss = require('gulp-postcss');
-var autoprefixer = require('autoprefixer-core');
+var autoprefixer = require('autoprefixer');
 var sourcemaps = require('gulp-sourcemaps');
-// BrowserSync
-var browserSync = require('browser-sync');
 // js
 var watchify = require('watchify');
 var browserify = require('browserify');
@@ -34,22 +32,8 @@ var watch = argv._.length ? argv._[0] === 'watch' : true;
 // ----------------------------
 // Error notification methods
 // ----------------------------
-var beep = function() {
-  var os = require('os');
-  var file = 'gulp/error.wav';
-  if (os.platform() === 'linux') {
-    // linux
-    exec("aplay " + file);
-  } else {
-    // mac
-    console.log("afplay " + file);
-    exec("afplay " + file);
-  }
-};
 var handleError = function(task) {
   return function(err) {
-    beep();
-    
       notify.onError({
         message: task + ' failed, check the logs..',
         sound: false
@@ -66,7 +50,7 @@ var tasks = {
   // Delete build folder
   // --------------------------
   clean: function(cb) {
-    del(['build/'], cb);
+    del(['build/']).then(cb.bind(null, null)).catch(cb);
   },
   // --------------------------
   // Copy static assets
@@ -144,25 +128,6 @@ var tasks = {
   },
 };
 
-gulp.task('browser-sync', function() {
-    browserSync({
-        server: {
-            baseDir: "./build"
-        },
-        port: process.env.PORT || 3000
-    });
-});
-
-gulp.task('reload-sass', ['sass'], function(){
-  browserSync.reload();
-});
-gulp.task('reload-js', ['browserify'], function(){
-  browserSync.reload();
-});
-gulp.task('reload-templates', ['templates'], function(){
-  browserSync.reload();
-});
-
 // --------------------------
 // CUSTOMS TASKS
 // --------------------------
@@ -181,22 +146,12 @@ gulp.task('test', tasks.test);
 // --------------------------
 // DEV/WATCH TASK
 // --------------------------
-gulp.task('watch', ['assets', 'templates', 'sass', 'browserify', 'browser-sync'], function() {
-
-  // --------------------------
-  // watch:sass
-  // --------------------------
-  gulp.watch('./public/scss/**/*.scss', ['reload-sass']);
+gulp.task('watch', ['assets', 'templates', 'sass', 'browserify'], function() {
 
   // --------------------------
   // watch:js
   // --------------------------
-  gulp.watch('./public/js/**/*.js', ['lint:js', 'reload-js']);
-
-  // --------------------------
-  // watch:html
-  // --------------------------
-  gulp.watch('./public/**/*.html', ['reload-templates']);
+  gulp.watch('./public/js/**/*.js', ['lint:js']);
 
   gutil.log(gutil.colors.bgGreen('Watching for changes...'));
 });
@@ -204,8 +159,8 @@ gulp.task('watch', ['assets', 'templates', 'sass', 'browserify', 'browser-sync']
 // build task
 gulp.task('build', [
   'clean',
-  'templates',
   'assets',
+  'templates',
   'sass',
   'browserify'
 ]);

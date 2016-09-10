@@ -11,7 +11,9 @@ export default function strategy(User) {
         if (err) {
           return cb(err);
         } else if (model) {
-          return cb(null, model);
+					// update the refresh token provided
+					User.update({_id: model._id}, {accessToken, refreshToken})
+					.exec(err => cb(err, model));
         } else {
           return new User({
             accessToken, refreshToken,

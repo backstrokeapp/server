@@ -128,10 +128,9 @@ export function Link({
         </p>
       </div>
 
-      <div className="other-container">
+      {/* <div className="other-container">
         <h1>Other</h1>
         <div className="form-group">
-          <input type="checkbox" checked={false} />
           <label>Create a temporary repo to fix merge conflicts</label>
         </div>
         <div className="form-group">
@@ -142,7 +141,7 @@ export function Link({
             onChange={onChangePushUsers}
           />
         </div>
-      </div>
+      </div> */}
 
       {
         link._saveInProgress ? 

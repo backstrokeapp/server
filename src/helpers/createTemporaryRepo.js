@@ -1,24 +1,25 @@
 import getRepoName from 'helpers/getRepoName';
+import Promise from 'bluebird';
 
 export function generateEphemeralRepoName(userName, repoName) {
   return `fix-${userName}-${repoName}`;
 }
 
-// provider="github"
-// loggedInUser= the logged in user
-// repo= Repo instance that is to be operated on (should be from `to`)
-// number= PR number that is being operated on
+// This function will create a temporary repo to fix a merge that didn't apply cleanly that has
+// conflicts. Additionally, if the temporary repo already exists, it will attempt to keep it up to
+// date with further changes. As arguments, it needs a provider instance for the owner, a provider
+// instance for `backstroke-bot`, and the link/repo combo to create the temporary repo for.
 export default function createTemporaryRepo(inst, backstrokeBotInstance, link, repo) {
   let [userName, repoName] = getRepoName(repo);
   let ephemeralRepoName = generateEphemeralRepoName(userName, repoName);
 
-  // step 0: does the repo exist?
+  // Does the repo exist?
   return inst.reposGet({user: 'backstroke-bot', repo: ephemeralRepoName}).then(exists => {
     // Repo exists, so update it instead of creating a new repo.
     return mergeChangesIntoEphemeralRepo(
       backstrokeBotInstance,
-      userName, repoName, repo.branch,
-      'backstroke-bot', ephemeralRepoName, repo.branch
+      userName, repoName, repo.branch, // The original repo
+      'backstroke-bot', ephemeralRepoName, repo.branch // the ephemeral repo that is being created
     );
   }).catch(err => {
     if (err.code === 422 || err.code === 404) {
@@ -65,7 +66,7 @@ export function createEphemeralRepo(backstrokeBotInstance, repo, ephemeralRepoNa
     ephemeralRepository = newRepo;
     let userPromises = pushUsers.map(user => {
       return backstrokeBotInstance.reposAddCollaborator({
-        user: 'backstroke-bot', repo: ephemeralRepoName,
+        user: 'backstroke-bot', repo: ephemeralRepoName, // The new ephemeral "fork" just created
         collabuser: user, // add this user to the repo
         permission: 'push', // let them make changes
       });
@@ -85,12 +86,16 @@ export function createEphemeralRepo(backstrokeBotInstance, repo, ephemeralRepoNa
 }
 
 // Merge changes into an ephemeral repo from a specified repo. Behind the scenes, this method makes
-// a PR, then accepts it right away.
+// a PR, then accepts it right away to do this. 
 function mergeChangesIntoEphemeralRepo(
   inst,
+
+  // The original repo
   fromUser,
   fromRepo,
   fromBranch,
+
+  // The ephemeral repo
   ephemeralUser,
   ephemeralRepo,
   ephemeralBranch
@@ -134,3 +139,20 @@ function mergeChangesIntoEphemeralRepo(
     }
   });
 }
+
+// // A work in progress function to create a branch on the given repo
+// export function createBranch(
+//   backstrokeBotInstance,
+//   userName,
+//   repoName,
+//   branchName
+// ) {
+//   return backstrokeBotInstance.gitdataCreateReference({
+//     user: userName, repo: repoName,
+//     ref: `refs/heads/${branchName}`,
+//     sha: headOfChild,
+//   }).then(branch => {
+//     1
+//   });
+// }
+//

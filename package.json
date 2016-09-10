@@ -78,22 +78,30 @@
     "coverage": "NODE_PATH=src/ NODE_ENV=test nyc --reporter=lcov --reporter=text mocha",
     "coverageopen": "open coverage/lcov-report/index.html"
   },
-
   "babel": {
-    "presets": ["es2015", "react"],
+    "presets": [
+      "es2015",
+      "react"
+    ],
     "env": {
       "test": {
-        "plugins": ["istanbul"]
+        "plugins": [
+          "istanbul"
+        ]
       }
     }
   },
   "nyc": {
-    "include": ["src/*.js", "src/**/*.js"],
-    "require": ["babel-register"],
+    "include": [
+      "src/*.js",
+      "src/**/*.js"
+    ],
+    "require": [
+      "babel-register"
+    ],
     "sourceMap": false,
     "instrument": false
   },
-
   "author": "Ryan Gaus <rgaus.net>",
   "license": "ISC"
 }

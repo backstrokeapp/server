@@ -209,6 +209,7 @@ describe('links controller', function() {
   describe('update', function() {
     it('should update a link, changing its properties in the database', function() {
       let link1 = generateLink();
+      link1.to.fork = true;
 
       let LinkMock = sinon.mock(Link);
       LinkMock.expects('update')
@@ -240,6 +241,7 @@ describe('links controller', function() {
     });
     it('should 500 on a database error', function() {
       let link1 = generateLink();
+      link1.to.fork = true;
 
       let LinkMock = sinon.mock(Link);
       LinkMock.expects('update')
@@ -271,6 +273,7 @@ describe('links controller', function() {
     });
     it('should 500 on an unexpected error', function() {
       let link1 = generateLink();
+      link1.to.fork = true;
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
 
@@ -292,6 +295,7 @@ describe('links controller', function() {
     });
     it('should 400 on a bad body schema', function() {
       let link1 = generateLink();
+      link1.to.fork = true;
       delete link1.to; // remve part of s=the schema
 
       let validationError = [
@@ -473,8 +477,29 @@ describe('links controller', function() {
         res
       );
     });
+    it('should restrict `to` repos to a fork', function() {
+      let link1 = generateLink();
+      link1.to.fork = false;
+
+      let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
+      let addWebhooksForLink = sinon.stub().resolves();
+
+      res(function() {
+        assert.equal(res.statusCode, 400);
+        assert.deepEqual(res.data, {error: `The 'to' repo must be a fork.`});
+      });
+
+      return update(
+        Link,
+        isLinkPaid,
+        addWebhooksForLink,
+        join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
+        res
+      );
+    });
     it('should 400 on a paid repo', function() {
       let link1 = generateLink();
+      link1.to.fork = true;
 
       let isLinkPaid = sinon.stub().resolves(true);
       let addWebhooksForLink = sinon.stub().resolves();
@@ -494,6 +519,7 @@ describe('links controller', function() {
     });
     it('should 400 when there is not a link in the body', function() {
       let link1 = generateLink();
+      link1.to.fork = true;
 
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
@@ -513,6 +539,7 @@ describe('links controller', function() {
     });
     it('should 403 when not authenticated', function() {
       let link1 = generateLink();
+      link1.to.fork = true;
 
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();

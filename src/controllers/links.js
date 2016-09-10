@@ -92,6 +92,11 @@ export function update(Link, isLinkPaid, addWebhooksForLink, req, res) {
     return res.status(400).send(formatErrors);
   }
 
+  // make sure `to` is a fork
+  if (req.body.link.to.fork === false) {
+    return res.status(400).send({error: `The 'to' repo must be a fork.`});
+  }
+
   // remove a link's id when updating, if it exists
   link._id = req.params.linkId;
 

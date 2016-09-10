@@ -13,13 +13,13 @@ export default function webhook(gh, link, pageSize=100, botInstance=false) {
         return {msg: "This repo opted out of backstroke pull requests"};
       } else {
         // Should we create a temporary repo with the new changes? If not, just use the existing
-        // `from` repo.
+        // `from` repo. FIXME: make this stable.
         let pullRequestUpstream;
-        if (link.ephemeralRepo) {
-          pullRequestUpstream = createTemporaryRepo(gh, backstrokeBotInstance, link, to);
-        } else {
-          pullRequestUpstream = Promise.resolve(from);
-        }
+        // if (link.ephemeralRepo) {
+          // pullRequestUpstream = createTemporaryRepo(gh, backstrokeBotInstance, link, to);
+        // } else {
+        pullRequestUpstream = Promise.resolve(from);
+        // }
 
         // Make the pull request.
         return pullRequestUpstream.then(prIntoRepo => {

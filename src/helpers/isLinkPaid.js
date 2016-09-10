@@ -1,5 +1,6 @@
 import createGithubInstance from '../createGithubInstance';
 import getRepoName from 'helpers/getRepoName';
+import Promise from 'bluebird';
 
 // will a link be paid?
 export default function isLinkPaid(user, link) {

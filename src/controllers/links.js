@@ -108,6 +108,10 @@ export function update(Link, isLinkPaid, addWebhooksForLink, req, res) {
     } else {
       link.paid = false;
       return addWebhooksForLink(req.user, link).then(hooks => {
+        if (hooks.error) {
+          return res.status(400).send({error: hooks.error});
+        }
+
         Link.update({_id: req.params.linkId, owner: user}, link).exec((err, data) => {
           if (err) {
             process.env.NODE_ENV !== 'test' && console.trace(err);

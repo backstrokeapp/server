@@ -25,6 +25,8 @@ export default function addWebhooksForLink(user, link) {
     }).catch(err => {
       if (err.code === 422) { // The webhook already exists
         return false;
+      } else if (err.code === 404) { // No permission to add a webhook
+        return {error: 'No permission to add a webhook to the repository.'};
       } else {
         return Promise.reject(err);
       }

@@ -12,6 +12,7 @@ import enableDisableLink from 'actions/enableDisableLink';
 import changeLinkName from 'actions/changeLinkName';
 import isDeletingLink from 'actions/isDeletingLink';
 import deleteLink from 'actions/deleteLink';
+import changePushUsers from 'actions/changePushUsers';
 
 import linkSave from 'actions/linkSave';
 
@@ -49,6 +50,7 @@ export function Link({
   onChangeLinkName,
   onDeleteLink,
   onIsDeletingLink,
+  onChangePushUsers,
 }) {
   if (link) {
     // fetch branches, if required
@@ -126,6 +128,22 @@ export function Link({
         </p>
       </div>
 
+      <div className="other-container">
+        <h1>Other</h1>
+        <div className="form-group">
+          <input type="checkbox" checked={false} />
+          <label>Create a temporary repo to fix merge conflicts</label>
+        </div>
+        <div className="form-group">
+          <label>Who can push to the temporary repo?</label>
+          <input
+            type="text"
+            value={link.pushUsers.join(' ')}
+            onChange={onChangePushUsers}
+          />
+        </div>
+      </div>
+
       {
         link._saveInProgress ? 
         <button className="btn btn-primary disabled">Loading</button> :
@@ -196,6 +214,9 @@ export default connect((state, props) => {
     },
     onDeleteLink(linkId) {
       dispatch(deleteLink(linkId));
+    },
+    onChangePushUsers(event) {
+      dispatch(changePushUsers(event.target.value));
     },
   };
 })(Link);

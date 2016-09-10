@@ -116,6 +116,9 @@ export default function activeLink(state=null, action) {
     case 'CHANGE_LINK_NAME':
       return Object.assign({}, state, {name: action.content});
 
+    case 'CHANGE_PUSH_USERS':
+      return Object.assign({}, state, {pushUsers: action.users});
+
     default:
       return state;
   }

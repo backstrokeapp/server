@@ -217,7 +217,7 @@ describe('links controller', function() {
       .yields(null, link1);
       LinkMock.expects('isValidLink').withArgs(link1).returns({errors: []});
 
-      let isLinkPaid = sinon.stub().resolves(true);
+      let isLinkPaid = sinon.stub().resolves(false);
       let addWebhooksForLink = sinon.stub().resolves();
 
       res(function() {
@@ -248,7 +248,7 @@ describe('links controller', function() {
       .yields(new Error('some database error'));
       LinkMock.expects('isValidLink').withArgs(link1).returns({errors: []});
 
-      let isLinkPaid = sinon.stub().resolves(true);
+      let isLinkPaid = sinon.stub().resolves(false);
       let addWebhooksForLink = sinon.stub().resolves();
 
       res(function() {
@@ -463,6 +463,25 @@ describe('links controller', function() {
       res(function() {
         assert.equal(res.statusCode, 400);
         assert.deepEqual(res.data, validationError);
+      });
+
+      return update(
+        Link,
+        isLinkPaid,
+        addWebhooksForLink,
+        join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
+        res
+      );
+    });
+    it('should 400 on a paid repo', function() {
+      let link1 = generateLink();
+
+      let isLinkPaid = sinon.stub().resolves(true);
+      let addWebhooksForLink = sinon.stub().resolves();
+
+      res(function() {
+        assert.equal(res.statusCode, 400);
+        assert.deepEqual(res.data, {error: 'Private repos are currently not supported.'});
       });
 
       return update(

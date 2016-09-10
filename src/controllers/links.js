@@ -98,17 +98,21 @@ export function update(Link, isLinkPaid, addWebhooksForLink, req, res) {
   // Change a couple fields
   return isLinkPaid(req.user, link)
   .then(paid => {
-    link.paid = paid;
-    return addWebhooksForLink(req.user, link)
-  }).then(hooks => {
-    Link.update({_id: req.params.linkId, owner: user}, link).exec((err, data) => {
-      if (err) {
-        process.env.NODE_ENV !== 'test' && console.trace(err);
-        return res.status(500).send({error: 'Database error.'});
-      }
+    if (paid) {
+      return res.status(400).send({error: 'Private repos are currently not supported.'});
+    } else {
+      link.paid = false;
+      return addWebhooksForLink(req.user, link).then(hooks => {
+        Link.update({_id: req.params.linkId, owner: user}, link).exec((err, data) => {
+          if (err) {
+            process.env.NODE_ENV !== 'test' && console.trace(err);
+            return res.status(500).send({error: 'Database error.'});
+          }
 
-      res.status(200).send({status: 'ok'});
-    });
+          res.status(200).send({status: 'ok'});
+        });
+      });
+    }
   }).catch(err => {
     process.env.NODE_ENV !== 'test' && console.trace(err);
     res.status(500).send({error: "Server error"});

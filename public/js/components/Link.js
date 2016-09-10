@@ -91,6 +91,9 @@ export function Link({
         />
       </header>
 
+      {/* Errors in the save process */}
+      {link._saveError ? <span className="text-danger">{link._saveError}</span> : null}
+
       <div className="slot-container">
         <div className="slot from-slot">
           <h1>From</h1>

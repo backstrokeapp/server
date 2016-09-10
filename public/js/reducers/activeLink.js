@@ -58,12 +58,20 @@ export default function activeLink(state=null, action) {
     case 'LINK_SAVE_IN_PROGRESS':
       return Object.assign({}, state, {
         _saveInProgress: true,
+        _saveError: false,
       });
 
     case 'LINK_SAVE':
       return Object.assign({}, state, {
         _saveInProgress: false,
         _saveStatus: action.status,
+        _saveError: false,
+      });
+
+    case 'LINK_SAVE_ERROR':
+      return Object.assign({}, state, {
+        _saveInProgress: false,
+        _saveError: action.error,
       });
 
     // Delete a repo

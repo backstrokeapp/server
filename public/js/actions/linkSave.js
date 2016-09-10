@@ -1,5 +1,6 @@
 import 'whatwg-fetch';
 import {push} from 'react-router-redux';
+import linkSaveError from 'actions/linkSaveError';
 
 export default function linkSave(link) {
   return dispatch => {
@@ -10,8 +11,12 @@ export default function linkSave(link) {
       body: JSON.stringify({link}),
       credentials: 'include',
     }).then(response => response.json()).then(json => {
-      dispatch(linkSaveAction(link, json.status));
-      dispatch(push('/links'));
+      if (json.error) {
+        dispatch(linkSaveError(json.error));
+      } else {
+        dispatch(linkSaveAction(link, json.status));
+        dispatch(push('/links'));
+      }
     });
   };
 }

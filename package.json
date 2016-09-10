@@ -36,9 +36,7 @@
     "react-toggle-switch": "^2.1.2",
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0",
-    "whatwg-fetch": "^1.0.0"
-  },
-  "devDependencies": {
+    "whatwg-fetch": "^1.0.0",
     "autoprefixer": "^6.4.1",
     "autoprefixer-core": "^6.0.1",
     "babel-cli": "^6.10.1",
@@ -71,13 +69,10 @@
   },
   "scripts": {
     "start": "NODE_PATH=src/ babel-node src/server.js",
-    "build:js": "NODE_PATH=public/js browserify public/js -t [babelify] > public/bundle.js",
-    "build:css": "node-sass --source-map true public/scss/styles.scss > public/bundle.css",
-    "serve": "npm run build:js && npm run build:css && npm start",
-    "watch": "nodemon --exec 'npm run serve' -e 'js scss' -w src/ -w public/js -w public/scss",
     "test": "NODE_PATH=src/ NODE_ENV=test mocha",
     "coverage": "NODE_PATH=src/ NODE_ENV=test nyc --reporter=lcov --reporter=text mocha",
-    "coverageopen": "open coverage/lcov-report/index.html"
+    "coverageopen": "open coverage/lcov-report/index.html",
+    "postinstall": "[ \"$NODE_ENV\" = \"production\" ] && NODE_PATH=src/ ./node_modules/.bin/gulp build --$NODE_ENV"
   },
   "babel": {
     "presets": [

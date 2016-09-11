@@ -1,24 +1,45 @@
+.repo {
+  p {
+    font-size: 16px;
+    font-weight: 300;
+  }
+}
+
 .link-list {
   height: 100%;
+
+  p {
+    font-size: 16px;
+  }
 
   & > ul {
     padding-left: 0px;
     list-style-type: none;
     font-size: $font-size-base * 1.2;
 
-    .list-header {
-      @include list-header;
-    }
-
     // each repo
     & > li {
-      padding: $padding-large-vertical $padding-base-horizontal;
-      font-size: 1em;
+      padding: $padding-large-vertical * 3 $padding-base-horizontal * 3;
+      font-size: 1.2em;
       display: flex;
 
-      border-bottom: 1px solid $gray-lighter;
-      &:first-child {
-        border-top: 1px solid $gray-lighter;
+      border-color: $gray-light;
+
+      &.list-header {
+        padding-top: $padding-large-vertical;
+        padding-bottom: $padding-large-vertical;
+        display: flex;
+        background-color: $brand-primary;
+
+        border-top-left-radius: $border-radius-base;
+        border-top-right-radius: $border-radius-base;
+
+        span {
+          color: $gray-light;
+          font-weight: 300;
+          &:first-child { flex: 1; }
+        }
+
       }
 
       &.grayed {
@@ -30,12 +51,13 @@
       .item-title {
         cursor: pointer;
         display: inline-block;
-        &:hover, &:focus, &:active { text-decoration: underline; }
         flex: 1;
         white-space: nowrap;
         overflow-x: hidden;
         text-overflow: ellipsis;
         padding-right: 0.5em;
+        font-weight: 300;
+        &:hover, &:focus, &:active { text-decoration: underline; }
       }
 
       i {

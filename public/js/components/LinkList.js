@@ -21,11 +21,14 @@ export function LinkList({
 }) {
   if (links) {
     return <div className="repo container">
+      <h1>Links join two repos together. Here are yours.</h1>
+
       <div className="link-list">
         <ul className="list-group">
           {/* header */}
           <li className="list-header">
-            My links
+            <span>Name</span>
+            <span>Enabled</span>
           </li>
 
           {links.data.map((link, ct) => {
@@ -34,8 +37,6 @@ export function LinkList({
               onClick={onMoveToRepo.bind(null, link)}
               className={classname('move-to-repo', 'list-group-item', {grayed: !link.enabled})}
             >
-              {/* Provider (Github, Bitbucket, Gitlab, etc) */}
-              <i className={classname('fa', 'fa-'+link.provider, 'move-to-repo')} />
               <div className="item-title move-to-repo">{link.name || 'Untitled Link'}</div>
 
               {/* Do you have to pay for a link? */}
@@ -60,9 +61,10 @@ export function LinkList({
         </ul>
         <button className="btn btn-success" onClick={onNewLink}>Add new link</button>
 
-        <div className="monthly-price">
+        {/* Coming later */}
+        {/*<div className="monthly-price">
           ${links.totalPrice && links.totalPrice.toFixed(2)} per month
-        </div>
+        </div>*/}
       </div>
 
       {children}

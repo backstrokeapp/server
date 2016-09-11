@@ -1,4 +1,4 @@
-@import 'https://fonts.googleapis.com/css?family=Lato';
+@import 'https://fonts.googleapis.com/css?family=Lato:300,400,700';
 
 @import "bootstrap";
 @import "fontawesome/font-awesome";
@@ -7,11 +7,6 @@
 @import "navbar";
 
 @import "repo-box";
-@mixin list-header {
-  background-color: $brand-primary;
-  color: #fff;
-  font-size: 0.75em;
-}
 
 @import "loading";
 @import "repositorylist";

@@ -122,7 +122,7 @@ export function Link({
           type="text"
           onFocus={event => event.target.select()}
           readOnly={true}
-          value={`http://backstroke.us/_${link._id}`}
+          value={`${process.env.BACKSTROKE_SERVER}/_${link._id}`}
         />
 
         <p>

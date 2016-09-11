@@ -3,7 +3,7 @@ import getRepoName from 'helpers/getRepoName';
 import Promise from 'bluebird';
 
 export function getBackstrokeUrlFor(link) {
-  let hostname = process.env.BACKSTROKE_HOSTNAME || 'http://backstroke.us';
+  let hostname = process.env.BACKSTROKE_SERVER || 'http://backstroke.us';
   return `${hostname}/_${link._id}`;
 }
 

@@ -20,6 +20,15 @@ export default function activeLink(state=null, action) {
       action.data.from._nameValid = true;
       return action.data;
 
+    // When moving to a new link, clear the old one.
+    // Well, only clear if we're moving to a different link then we were on previously.
+    case 'MOVE_TO_LINK':
+      if (state._id !== action.link) {
+        return null;
+      } else {
+        return state;
+      }
+
     // enable or disable a link
     case 'ENABLE_DISABLE_LINK':
       return Object.assign({}, state, {enabled: action.enabled, _pending: false});

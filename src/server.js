@@ -110,7 +110,7 @@ app.all('/_:linkId', webhook.bind(null, Link));
 
 // For letsencrypt
 app.get('/.well-known/acme-challenge/:id', (req, res) =>
-  res.status(200).send(process.env.LETSENCRYPT_ID);
+  res.status(200).send(process.env.LETSENCRYPT_ID)
 );
 
 let port = process.env.PORT || 8001;

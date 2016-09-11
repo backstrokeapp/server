@@ -43,7 +43,7 @@ $link-hover-decoration: underline !default;
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-$font-family-sans-serif:  "Open Sans", Helvetica, Arial, sans-serif !default;
+$font-family-sans-serif:  "Lato", Helvetica, Arial, sans-serif !default;
 $font-family-serif:       Georgia, "Times New Roman", Times, serif !default;
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
 $font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace !default;
@@ -66,7 +66,7 @@ $line-height-base:        1.428571429 !default; // 20/14
 $line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
 
 //** By default, this inherits from the `<body>`.
-$headings-font-family:    "Open Sans", Helvetica, Arial, sans-serif !default;
+$headings-font-family:    "Lato", Helvetica, Arial, sans-serif !default;
 $headings-font-weight:    500 !default;
 $headings-line-height:    1.1 !default;
 $headings-color:          inherit !default;
@@ -365,14 +365,14 @@ $navbar-padding-vertical:          (($navbar-height - $line-height-computed) / 2
 $navbar-collapse-max-height:       340px !default;
 
 $navbar-default-color:             #FFF !default;
-$navbar-default-bg:                $brand-primary !default;
+$navbar-default-bg:                #FFF !default;
 $navbar-default-border:            darken($navbar-default-bg, 6.5%) !default;
 
 // Navbar links
-$navbar-default-link-color:                #FFF !default;
-$navbar-default-link-hover-color:          $gray-lighter !default;
+$navbar-default-link-color:                $gray-darker !default;
+$navbar-default-link-hover-color:          $brand-primary !default;
 $navbar-default-link-hover-bg:             transparent !default;
-$navbar-default-link-active-color:         $gray-lighter !default;
+$navbar-default-link-active-color:         $brand-primary !default;
 $navbar-default-link-active-bg:            darken($navbar-default-bg, 6.5%) !default;
 $navbar-default-link-disabled-color:       #ccc !default;
 $navbar-default-link-disabled-bg:          transparent !default;
@@ -384,8 +384,8 @@ $navbar-default-brand-hover-bg:            transparent !default;
 
 // Navbar toggle
 $navbar-default-toggle-hover-bg:           rgba(0, 0, 0, 0.1) !default;
-$navbar-default-toggle-icon-bar-bg:        #FFF !default;
-$navbar-default-toggle-border-color:       #FFF !default;
+$navbar-default-toggle-icon-bar-bg:        $gray-darker !default;
+$navbar-default-toggle-border-color:       $gray-darker !default;
 
 
 // Inverted navbar

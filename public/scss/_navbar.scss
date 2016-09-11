@@ -1,14 +1,34 @@
-.navbar-mark {
-  height: $navbar-height;
+$navbar-mark-margin: $navbar-margin-bottom / 2;
+
+@mixin navbar-icon {
+  height: $navbar-height - $navbar-mark-margin;
+  margin-top: $navbar-mark-margin / 2;
 }
 
+// Navbar drop-shadow
+.navbar {
+  box-shadow: $gray-light 0px 0px 1px;
+  border-radius: 0px;
+}
+
+// Backstroke logo
+.navbar-mark {
+  @include navbar-icon;
+
+  margin-left: 15px; // FIXME: where does this value come from?
+  @media (min-width: $screen-sm-min) {
+    margin-left: 0px;
+  }
+}
+
+// User login picture
 .user-nav img {
+  @include navbar-icon;
   position: absolute;
   top: 0px;
-  left: -$navbar-height;
-  height: $navbar-height;
+  left: -1 * ($navbar-height - $navbar-mark-margin);
 }
 
 .user-nav {
-  padding-left: $navbar-height;
+  padding-left: $navbar-height - $navbar-mark-margin;
 }

@@ -24,11 +24,11 @@ export function MainNav({user}) {
       <Nav>
         <NavItem eventKey={2} href="#/links">Links</NavItem>
       </Nav>
+      <UserNav user={user} />
       <Nav pullRight>
         <NavItem eventKey={1} href="//github.com/1egoman/backstroke">
           Code on Github
         </NavItem>
-        <UserNav user={user} />
       </Nav>
     </Navbar.Collapse>
   </Navbar>;
@@ -37,14 +37,16 @@ export function MainNav({user}) {
 function UserNav({user}) {
   // Login status
   if (user && user._auth) {
-    return <NavItem eventKey={2} href="/logout" className="user-nav">
-      <img src={user.picture} />
-      Logout {user.user}
-    </NavItem>;
+    return <Nav pullRight>
+      <NavItem eventKey={2} href="/logout" className="user-nav">
+        <img src={user.picture} />
+        Logout {user.user}
+      </NavItem>
+    </Nav>;
   } else {
-    return <NavItem eventKey={2} href="/setup/login">
-      Login
-    </NavItem>;
+    return <Navbar.Form pullRight>
+      <a href="/setup/login" className="btn btn-primary">Login with Github</a>
+    </Navbar.Form>;
   }
 }
 

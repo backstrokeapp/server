@@ -20,7 +20,9 @@ export function RepositoryBox({
   });
   return <div className="repository-box">
     <div className="icon-wrapper">
-      <i className={'fa fa-'+repo.provider} />
+      <a target="_blank" href={generateRepoUrl(repo)}>
+        <i className={'fa fa-'+repo.provider} />
+      </a>
     </div>
     <InputGroup className="repo-name-box">
       <FormControl
@@ -77,6 +79,14 @@ export function validTooltip(repo, type) {
   } else {
     // A public repo
     return "This repo is valid!";
+  }
+}
+
+export function generateRepoUrl(repo) {
+  switch (repo.provider) {
+    case 'github': return `https://github.com/${repo.name}`;
+    case 'bitbucket': return `https://bitbucket.org/${repo.name}`;
+    default: return '';
   }
 }
 

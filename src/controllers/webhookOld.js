@@ -64,9 +64,12 @@ export function generateUpdateBody(fullRemote, tempRepoName) {
   with these new changes.  Otherwise, if you have merge conflicts, this
   is the place to fix them.
 
-  Have fun!
+  Have fun! :wave:
+
+  From,
+  :swimmer: Your Neighborly [Backstroke](http://backstroke.us) Bot
   --------
-  Created by [Backstroke](http://backstroke.us). Oh yea, I'm a bot.
+
   PS. **Hey, there's a new version of Backstroke available. If you'd like to configure repo-to-repo syncing or sync to all forks, [check it out here](http://backstroke.us).**
   `
 }

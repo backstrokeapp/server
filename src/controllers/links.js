@@ -108,7 +108,7 @@ export function update(Link, isLinkPaid, addWebhooksForLink, req, res) {
     } else {
       link.paid = false;
       return addWebhooksForLink(req.user, link).then(hooks => {
-        if (hooks.error) {
+        if (hooks && hooks.error) {
           return res.status(400).send({error: hooks.error});
         }
 

@@ -219,7 +219,7 @@ describe('links controller', function() {
       LinkMock.expects('isValidLink').withArgs(link1).returns({errors: []});
 
       let isLinkPaid = sinon.stub().resolves(false);
-      let addWebhooksForLink = sinon.stub().resolves();
+      let addWebhooksForLink = sinon.stub().resolves(false);
 
       res(function() {
         LinkMock.verify();

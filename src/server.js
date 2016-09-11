@@ -98,14 +98,14 @@ app.post('/api/v1/links/:linkId', bodyParser.json(),
 app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(null, Link));
 
 // the old webhook route
-// app.route("/ping/github/:user/:repo").get((req, res) => {
-//   res.redirect(`https://github.com/${req.params.user}/${req.params.repo}`);
-// }).post(webhook);
-
-// the old webhook route
+// This parses the body of the request to get most of its data.
 app.post("/", bodyParser.json(), webhookOld);
+app.route("/ping/github/:user/:repo").get((req, res) => {
+  res.redirect(`https://github.com/${req.params.user}/${req.params.repo}`);
+}).post(webhook);
 
 // the new webhook route
+// No body parsing, all oauth-based
 app.all('/_:linkId', webhook.bind(null, Link));
 
 let port = process.env.PORT || 8001;

@@ -67,6 +67,7 @@ export function generateUpdateBody(fullRemote, tempRepoName) {
   Have fun!
   --------
   Created by [Backstroke](http://backstroke.us). Oh yea, I'm a bot.
+  PS. **Hey, there's a new version of Backstroke available. If you'd like to configure repo-to-repo syncing or sync to all forks, [check it out here](http://backstroke.us).**
   `
 }
 

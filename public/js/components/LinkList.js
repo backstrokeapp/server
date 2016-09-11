@@ -69,8 +69,8 @@ export function LinkList({
   } else if (user && !user._auth) {
     return <UserNotAuthenticated />;
   } else {
-    return <div className="repo-list">
-      <span>Loading...</span>
+    return <div className="loading container">
+      <span>Loading your links...</span>
       {children}
     </div>;
   }

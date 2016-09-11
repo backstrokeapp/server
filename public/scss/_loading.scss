@@ -1,0 +1,14 @@
+.loading {
+  text-align: center;
+  font-size: 1.4em;
+  font-weight: 300;
+
+  &:before {
+    content: "...";
+    display: block;
+    font-size: 4.8em;
+    line-height: 0em;
+    margin-bottom: 1em;
+    font-weight: normal;
+  }
+}

@@ -170,8 +170,8 @@ export function Link({
   } else if (user && !user._auth) {
     return <UserNotAuthenticated />;
   } else {
-    return <div className="column repo">
-      <span>Loading repository...</span>
+    return <div className="loading container">
+      <span>Loading link...</span>
       {children}
     </div>;
   }

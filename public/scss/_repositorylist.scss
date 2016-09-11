@@ -1,6 +1,7 @@
 .repo {
-  p {
-    font-size: 16px;
+  h1 {
+    margin-bottom: 2em;
+    line-height: 1.25;
     font-weight: 300;
   }
 }
@@ -25,6 +26,7 @@
 
       border-color: $gray-light;
 
+      // the link header
       &.list-header {
         padding-top: $padding-large-vertical;
         padding-bottom: $padding-large-vertical;
@@ -39,7 +41,27 @@
           font-weight: 300;
           &:first-child { flex: 1; }
         }
+      }
 
+      // when there aren't any links
+      &.link-empty {
+        text-align: center;
+        display: block;
+
+        i {
+          font-size: 5em;
+          color: $gray-light;
+          width: 1em;
+          margin: 0px auto;
+          display: block;
+        }
+        p {
+          margin-top: 1em;
+          font-size: 1.1em;
+          font-weight: 300;
+          display: inline-block;
+          a { cursor: pointer; }
+        }
       }
 
       &.grayed {

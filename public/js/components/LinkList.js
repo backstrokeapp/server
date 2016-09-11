@@ -21,7 +21,10 @@ export function LinkList({
 }) {
   if (links) {
     return <div className="repo container">
-      <h1>Links join two repos together. Here are yours.</h1>
+      <h1>
+        Links join two repos together.<br/>
+        Here are yours.
+      </h1>
 
       <div className="link-list">
         <ul className="list-group">
@@ -58,6 +61,14 @@ export function LinkList({
               />
             </li>;
           })}
+
+          {links.data.length === 0 ? <li className="link-empty">
+            <i className="fa fa-anchor" />
+            <p>
+              You don't have any links?
+              It's really easy to create one <a onClick={onNewLink}>here</a>.
+            </p>
+          </li> : null}
         </ul>
         <button className="btn btn-success" onClick={onNewLink}>Add new link</button>
 

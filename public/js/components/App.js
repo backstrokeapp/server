@@ -15,7 +15,9 @@ export function App({user, children}) {
 export function MainNav({user}) {
   return <Navbar>
     <Navbar.Header>
-      <img className="navbar-mark" src="/assets/img/logo.svg" alt="Backstroke" />
+      <Link to="/">
+        <img className="navbar-mark" src="/assets/img/logo.svg" alt="Backstroke" />
+      </Link>
       <Navbar.Toggle />
     </Navbar.Header>
     <Navbar.Collapse>

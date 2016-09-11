@@ -1,6 +1,5 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {push} from 'react-router-redux';
 import classname from 'classname';
 import Switch from 'react-ios-switch';
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
@@ -8,6 +7,8 @@ import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import enableDisableLink from 'actions/enableDisableLink';
 import newLink from 'actions/newLink';
 import UserNotAuthenticated from 'components/UserNotAuthenticated';
+
+import moveToLink from 'actions/moveToLink';
 
 export function LinkList({
   links,
@@ -86,7 +87,7 @@ export default connect((state, props) => {
     onMoveToRepo(link, event) {
       // only move if the user didn't click on the switch
       if (event.target.className.indexOf('move-to-repo') !== -1) {
-        dispatch(push(`/links/${link._id}`));
+        dispatch(moveToLink(link._id));
       }
     },
     onLinkEnable(link, enabled) {

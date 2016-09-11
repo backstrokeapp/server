@@ -28,12 +28,13 @@ export function LinkList({
 
       <div className="link-list">
         <ul className="list-group">
-          {/* header */}
-          <li className="list-header">
+          {/* Section header */}
+          {links.data.length > 0 ? <li className="list-header">
             <span>Name</span>
             <span>Enabled</span>
-          </li>
+          </li> : null}
 
+          {/* Link list */}
           {links.data.map((link, ct) => {
             return <li
               key={ct}
@@ -62,6 +63,7 @@ export function LinkList({
             </li>;
           })}
 
+          {/* When there are no links */}
           {links.data.length === 0 ? <li className="link-empty">
             <i className="fa fa-anchor" />
             <p>

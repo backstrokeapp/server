@@ -331,12 +331,9 @@ describe("github", function() {
   });
 });
 
-describe.only("routes", function() {
+describe("routes", function() {
   describe("with an upstream repo", function() {
-    it("should update all forks when pushed to");
-  });
-  describe("with a forked repo", function() {
-    it(`should update the specific fork from the upstream`, function(done) {
+    it("should update all forks when pushed to", function(done) {
       // mock the github constructor
       let ghOriginal = require('github/');
       let gh = {
@@ -453,7 +450,7 @@ describe.only("routes", function() {
         body: generateUpdateBody('upstreamuser/repo'),
       }).resolves({created: 'pull request'}),
 
-      sinon.stub(ghOriginal, "constructor").returns(gh);
+      ghOriginal.constructor = () => gh
 
       // inject the above mock
       let {default: webhook} = proxyquire("controllers/webhookOld", {'../github': ghOriginal});
@@ -474,6 +471,99 @@ describe.only("routes", function() {
 
       res(function() {
         ghMock.verify();
+        assert.equal(res.statusCode, 200);
+        assert.equal(res.data, 'Opened 2 pull requests on forks of this repository.');
+        done();
+      });
+
+      webhook(req, res);
+    });
+  });
+  describe("with a forked repo", function() {
+    it(`should update the specific fork from the upstream`, function(done) {
+      // mock the github constructor
+      let ghOriginal = require('github/');
+      let gh = {
+        reposGet() {},
+        reposGetBranch() {},
+        reposGetForks() {},
+        searchIssues() {},
+        pullRequestsCreate() {},
+        pullRequestsGetAll() {},
+      };
+      let ghMock = sinon.mock(gh);
+
+      ghMock.expects('reposGet').withArgs({user: "forkuser", repo: "fork0"}).resolves({
+        parent: {
+          owner: {
+            login: "upstreamuser",
+          },
+          name: "repo",
+          default_branch: "master",
+          full_name: 'upstreamuser/repo',
+        },
+        default_branch: "master",
+        owner: {login: 'forkuser'},
+        name: 'fork0',
+      });
+
+      ghMock.expects('reposGetBranch')
+      .withArgs({user: "upstreamuser", repo: "repo", branch: "master"}).resolves({
+        commit: {
+          sha: "upstreamRepoCommitSha",
+        },
+      });
+      ghMock.expects('reposGetBranch')
+      .withArgs({user: "forkuser", repo: "fork0", branch: "master"}).resolves({
+        commit: {
+          sha: "fork0RepoCommitSha",
+        },
+      });
+
+      // Look for opt-outs
+      ghMock.expects('searchIssues').withArgs({q: `repo:forkuser/fork0 is:pr label:optout`})
+      .resolves({total_count: 0});
+
+      // Check for existing PRs
+      ghMock.expects('pullRequestsGetAll').withArgs({
+        user: 'forkuser',
+        repo: 'fork0',
+        state: 'open',
+        head: 'upstreamuser:master',
+      }).resolves([]);
+
+      // Make the pull request
+      ghMock.expects('pullRequestsCreate').withArgs({
+        user: 'forkuser', repo: 'fork0',
+        title: 'Update from upstream repo upstreamuser/repo',
+        head: 'upstreamuser:master',
+        base: 'master',
+        body: generateUpdateBody('upstreamuser/repo'),
+      }).resolves({created: 'pull request'}),
+
+      ghOriginal.constructor = () => gh
+
+      // inject the above mock
+      let {default: webhook} = proxyquire("controllers/webhookOld", {'../github': ghOriginal});
+
+      let req = {
+        body: {
+          repository: {
+            full_name: 'forkuser/fork0',
+            owner: {
+              login: 'forkuser',
+            },
+            name: 'fork0',
+            fork: true,
+          },
+        },
+        query: {},
+      };
+
+      res(function() {
+        ghMock.verify();
+        assert.deepEqual(res.statusCode, 200);
+        assert.deepEqual(res.data, 'Success!');
         done();
       });
 

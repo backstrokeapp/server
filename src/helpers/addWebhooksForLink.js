@@ -3,7 +3,8 @@ import getRepoName from 'helpers/getRepoName';
 import Promise from 'bluebird';
 
 export function getBackstrokeUrlFor(link) {
-  return `http://backstroke.us/_${link._id}`;
+  let hostname = process.env.BACKSTROKE_HOSTNAME || 'http://backstroke.us';
+  return `${hostname}/_${link._id}`;
 }
 
 // Given a link, try to add a webhook within the parent repository.
@@ -15,10 +16,10 @@ export default function addWebhooksForLink(user, link) {
   };
 
   if (link.from.type === 'repo') {
-    let [user, repo] = getRepoName(link.from);
+    let [fromUser, fromRepo] = getRepoName(link.from);
     return gh.reposCreateHook({
-      user,
-      repo,
+      user: fromUser,
+      repo: fromRepo,
       config,
       name: 'web',
       events: ['push'],
@@ -26,7 +27,13 @@ export default function addWebhooksForLink(user, link) {
       if (err.code === 422) { // The webhook already exists
         return false;
       } else if (err.code === 404) { // No permission to add a webhook
-        return {error: 'No permission to add a webhook to the repository.'};
+        return {
+          error: [
+            `No permission to add a webhook to the repository ${fromUser}/${fromRepo}.`,
+            `Make sure ${user.user} has given Backstroke permission to access this organisation or`,
+            `repo via OAuth.`,
+          ].join(' '),
+        };
       } else {
         return Promise.reject(err);
       }

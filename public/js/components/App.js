@@ -25,13 +25,23 @@ export function MainNav({user}) {
         <NavItem eventKey={2} href="#/links">Links</NavItem>
       </Nav>
       <UserNav user={user} />
-      <Nav pullRight>
-        <NavItem eventKey={1} href="//github.com/1egoman/backstroke">
-          Code on Github
-        </NavItem>
-      </Nav>
     </Navbar.Collapse>
   </Navbar>;
+}
+
+export function Index() {
+  return <div className="index-page">
+    <section className="section-hero">
+      <div className="container">
+        <h1>Backstroke</h1>
+        <h2>is a Github bot to keep forks up-to-date.</h2>
+
+        <button className="btn btn-default btn-outline btn-outline-primary btn-cta">
+          Sign in with Github
+        </button>
+      </div>
+    </section>
+  </div>;
 }
 
 function UserNav({user}) {
@@ -45,7 +55,7 @@ function UserNav({user}) {
     </Nav>;
   } else {
     return <Navbar.Form pullRight>
-      <a href="/setup/login" className="btn btn-primary">Login with Github</a>
+      <a href="/setup/login" className="btn btn-primary btn-outline">Login with Github</a>
     </Navbar.Form>;
   }
 }

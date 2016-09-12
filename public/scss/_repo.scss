@@ -1,36 +1,29 @@
 .link-item {
-  padding: 0px;
+  padding: 0px $padding-base-horizontal;
 
   .link-header {
-    padding-top: 2em;
-    padding-bottom: 1em;
-    margin-top: -20px;
-    background-color: $brand-primary;
+    margin-top: -1.2em;
+    display: flex;
 
-    .container {
-      display: flex;
+    div.react-ios-switch-Switch-switch {
+      width: 50px;
+      vertical-align: middle;
+      margin-top: 1.75em;
+      margin-right: 1em;
+    }
 
-      div.react-ios-switch-Switch-switch {
-        width: 50px;
-        vertical-align: middle;
-        margin-top: 1.75em;
-        margin-right: 1em;
-      }
+    .link-name {
+      flex: 1;
+      font-weight: 300;
+      font-size: 2.8em;
+      padding-top: 0.2em;
+      height: 2em;
 
-      .link-name {
-        flex: 1;
-        font-weight: 300;
-        font-size: 2.8em;
-        padding-top: 0.2em;
-        height: 2em;
-        background-color: transparent;
-
-        border: 0px;
-        margin-left: 1px;
-        &:hover, &:active, &:focus {
-          border: 1px solid $gray-light;
-          margin-left: 0px;
-        }
+      border: 0px;
+      margin-left: 1px;
+      &:hover, &:active, &:focus {
+        border: 1px solid $gray-light;
+        margin-left: 0px;
       }
     }
   }

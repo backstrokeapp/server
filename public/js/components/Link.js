@@ -65,109 +65,105 @@ export function Link({
       });
     }
 
-    return <div className="link-item">
+    return <div className="link-item container">
       <header className="link-header">
-        <div className="container">
-          <OverlayTrigger placement="bottom" overlay={
-            <Tooltip id="link-state">
-              {link.enabled ? 'Disable' : 'Enable'} this link
-            </Tooltip>
-          }>
-            <span> {/* Required to let react-bootstrap bind to the switch */}
-              <Switch
-                onChange={onLinkEnable.bind(null, link, !link.enabled)}
-                checked={link.enabled}
-                disabled={link._pending}
-              />
-            </span>
-          </OverlayTrigger>
+        <OverlayTrigger placement="bottom" overlay={
+          <Tooltip id="link-state">
+            {link.enabled ? 'Disable' : 'Enable'} this link
+          </Tooltip>
+        }>
+          <span> {/* Required to let react-bootstrap bind to the switch */}
+            <Switch
+              onChange={onLinkEnable.bind(null, link, !link.enabled)}
+              checked={link.enabled}
+              disabled={link._pending}
+            />
+          </span>
+        </OverlayTrigger>
 
-          {/* The name of the link */}
-          <FormControl
-            type="text"
-            className="link-name"
-            value={link.name || ""}
-            onChange={onChangeLinkName}
-            placeholder="Enter a link name"
-          />
-        </div>
+        {/* The name of the link */}
+        <FormControl
+          type="text"
+          className="link-name"
+          value={link.name || ""}
+          onChange={onChangeLinkName}
+          placeholder="Enter a link name"
+        />
       </header>
 
-      <div className="container">
-        {/* Errors in the save process */}
-        {link._saveError ? <span className="text-danger">{link._saveError}</span> : null}
+      {/* Errors in the save process */}
+      {link._saveError ? <span className="text-danger">{link._saveError}</span> : null}
 
-        <div className="slot-container">
-          <div className="slot from-slot">
-            <h1>From</h1>
-            <RepoWrapper
-              slot="from"
-              repository={link.from}
-              branch={link.from && link.from.branch}
-            />
-          </div>
-          <div className="slot to-slot">
-            <h1>To</h1>
-            <RepoWrapper
-              slot="to"
-              repository={link.to}
-              branch={link.to && link.to.branch}
-              from={link.from}
-            />
-          </div>
-        </div>
-
-        <div className="webhook-container">
-          <h1>Webhook URL</h1>
-
-          {/* The webhook url */}
-          <FormControl
-            type="text"
-            onFocus={event => event.target.select()}
-            readOnly={true}
-            value={`${process.env.BACKSTROKE_SERVER}/_${link._id}`}
+      <div className="slot-container">
+        <div className="slot from-slot">
+          <h1>From</h1>
+          <RepoWrapper
+            slot="from"
+            repository={link.from}
+            branch={link.from && link.from.branch}
           />
-
-          <p>
-            Every time this url is visited, we'll make sure that any new changes are
-            synced according to what's been configured above.
-          </p>
         </div>
-
-        {/* <div className="other-container">
-          <h1>Other</h1>
-          <div className="form-group">
-            <label>Create a temporary repo to fix merge conflicts</label>
-          </div>
-          <div className="form-group">
-            <label>Who can push to the temporary repo?</label>
-            <input
-              type="text"
-              value={link.pushUsers.join(' ')}
-              onChange={onChangePushUsers}
-            />
-          </div>
-        </div> */}
-
-        {
-          link._saveInProgress ? 
-          <button className="btn btn-primary disabled">Loading</button> :
-          <button
-            className="btn btn-primary"
-            onClick={onLinkSave.bind(null, link)}
-            disabled={!isLinkValid(link)}
-          >Save</button>
-        }
-
-        {
-          link._deleting ?
-          <button
-            className="btn btn-danger btn-del"
-            onClick={onDeleteLink.bind(null, link._id)}
-          >Sure?</button> :
-          <button className="btn btn-danger btn-del" onClick={onIsDeletingLink}>Delete</button>
-        }
+        <div className="slot to-slot">
+          <h1>To</h1>
+          <RepoWrapper
+            slot="to"
+            repository={link.to}
+            branch={link.to && link.to.branch}
+            from={link.from}
+          />
+        </div>
       </div>
+
+      <div className="webhook-container">
+        <h1>Webhook URL</h1>
+
+        {/* The webhook url */}
+        <FormControl
+          type="text"
+          onFocus={event => event.target.select()}
+          readOnly={true}
+          value={`${process.env.BACKSTROKE_SERVER}/_${link._id}`}
+        />
+
+        <p>
+          Every time this url is visited, we'll make sure that any new changes are
+          synced according to what's been configured above.
+        </p>
+      </div>
+
+      {/* <div className="other-container">
+        <h1>Other</h1>
+        <div className="form-group">
+          <label>Create a temporary repo to fix merge conflicts</label>
+        </div>
+        <div className="form-group">
+          <label>Who can push to the temporary repo?</label>
+          <input
+            type="text"
+            value={link.pushUsers.join(' ')}
+            onChange={onChangePushUsers}
+          />
+        </div>
+      </div> */}
+
+      {
+        link._saveInProgress ? 
+        <button className="btn btn-primary disabled">Loading</button> :
+        <button
+          className="btn btn-primary"
+          onClick={onLinkSave.bind(null, link)}
+          disabled={!isLinkValid(link)}
+        >Save</button>
+      }
+
+      {
+        link._deleting ?
+        <button
+          className="btn btn-danger btn-del"
+          onClick={onDeleteLink.bind(null, link._id)}
+        >Sure?</button> :
+        <button className="btn btn-danger btn-del" onClick={onIsDeletingLink}>Delete</button>
+      }
 
       {children}
     </div>;

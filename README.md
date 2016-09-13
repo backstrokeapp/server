@@ -5,9 +5,11 @@ A Github bot to keep a fork updated with any changes made to its upstream.
 Heavily inspired by Greenkeeper.
 
 ## Add Backstroke to a repository
-1. Create a webhook in either a fork or a upstream repository. (`Settings` => `Webhooks & Services` => `Add Webhook`)
-3. Add `http://backstroke.us` as the payload url.
-4. Create the webhook, and push some code to the upstream repository to see Backstroke in action.
+1. Sign in [here](http://backstroke.us/signup/login) with your Github account.
+2. Add a new link:
+  - Between an upstream and its forks: when the upstream changes, the forks are updated. (Most common)
+  - Between two repos: When the first repo updates, update the second.
+3. Press `Save` - that's it. Try pushing to the upstream to test out Backstroke!
 
 ## How it works
 ![How Backstroke Works](https://raw.githubusercontent.com/1egoman/backstroke/master/assets/map.png)
@@ -23,15 +25,6 @@ Heavily inspired by Greenkeeper.
 2. Backstroke will create a pull request on their fork that lets them merge in
    your upstream changes.
 3. They accept Backstroke's pull request, and you merge in their code.
-
-<!--
-## Advanced Usage
-- `upstream`: A string following the format `user/repo` corresponding to a
-  custom upstream to merge from into a fork. For example, adding a webhook on a
-  fork with `http://backstroke.us/?upstream=foo/upstream` will create a pull
-  request (on the fork) that merge in new changes from the custom upstream
-  (`foo/upstream`).
--->
 
 ## FAQ
 - **I don't see any pull requests on the upstream....**: Pull requests are
@@ -51,9 +44,7 @@ resolving merge conflicts, then it's great.
 - **Does Backstroke work outside of Github?**: Not yet. If there's interest, I'd love to give it a try, though.
 
 ## How to hack on Backstroke
-1. Clone this repo locally.
-2. Run `npm install`, then start gulp with `PORT=3000 gulp`.
-3. Lastly, start the server with `npm start`.
+Read [CONTRIBUTING.md](https://github.com/1egoman/backstroke/blob/master/CONTRIBUTING.md)
 
 -------
 By [Ryan Gaus](http://rgaus.net)

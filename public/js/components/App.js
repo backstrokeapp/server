@@ -25,13 +25,31 @@ export function MainNav({user}) {
         <NavItem eventKey={2} href="#/links">Links</NavItem>
       </Nav>
       <UserNav user={user} />
-      <Nav pullRight>
-        <NavItem eventKey={1} href="//github.com/1egoman/backstroke">
-          Code on Github
-        </NavItem>
-      </Nav>
     </Navbar.Collapse>
   </Navbar>;
+}
+
+export function Index() {
+  return <div className="index-page">
+    <div className="container">
+      <h1>Backstroke<br/>is a bot<br/>that syncs upstream changes<br/>back to forks.</h1>
+      <h2>(No more "This branch is 588 commits behind upstream:master.")</h2>
+
+      <div className="row">
+        <div className="button-section">
+          <a href="/setup/login" className="btn btn-success btn-block btn-cta">Sign in with Github</a>
+        </div>
+        <div className="button-section">
+          <a
+            href="https://github.com/1egoman/backstroke#readme"
+            className="btn btn-default btn-block btn-outline btn-outline-primary btn-cta"
+          >
+            Read the README
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>;
 }
 
 function UserNav({user}) {
@@ -45,7 +63,7 @@ function UserNav({user}) {
     </Nav>;
   } else {
     return <Navbar.Form pullRight>
-      <a href="/setup/login" className="btn btn-primary">Login with Github</a>
+      <a href="/setup/login" className="btn btn-primary btn-outline">Login with Github</a>
     </Navbar.Form>;
   }
 }

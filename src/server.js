@@ -64,7 +64,7 @@ app.get('/setup/login/private', passport.authenticate('github', {
 app.get("/auth/github/callback", passport.authenticate("github", {
   failureRedirect: '/setup/login',
 }), (req, res) => {
-  res.redirect('/'); // on success
+  res.redirect('/#/links'); // on success
 });
 
 app.get('/logout', (req, res) => {

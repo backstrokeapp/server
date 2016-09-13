@@ -36,7 +36,7 @@ export function Index() {
         Backstroke<br/>
         is a Github bot<br/>
         that syncs upstream changes<br/>
-        back to an upstream's forks.
+        downstream to forks.
       </h1>
       <h2>(No more "This branch is 588 commits behind upstream:master.")</h2>
 

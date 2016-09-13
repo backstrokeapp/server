@@ -3,5 +3,5 @@ node_js:
   - "6"
   - "5.12"
 
-- env:
-  NODE_ENV: test
+env:
+  - NODE_ENV=test

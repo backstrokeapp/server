@@ -21,5 +21,17 @@ We're always looking for ways to make Backstroke better. Here's a few:
 9. Donate on Gratipay. Servers cost money, and anything dontated will be used to keep Backstroke
    running. <https://gratipay.com/Backstroke/>
 
+## Setting up Backstroke for development
+1. First, install biome: <http://github.com/1egoman/biome>
+2. Clone the repo from Github onto a local machine.
+3. Open up two terminals, both `cd`ed into Backstroke's root.
+4. In both terminals, run `biome`. Biome manages environment variables and this command allows you
+   to enter the value of each variable Backstroke requires.
+5. After entering in the required pieces of information, run `biome use` in both terminals.
+6. Lastly, in one terminal, run `npm start`. In the other terminal, run `gulp`.
+7. By default, Backstroke listens on port `8000`. Unless you changed that in biome, open a web
+   browser to `http://localhost:8000`.
+8. Backstroke's running! :tada:
+
 ### More info
 Hi, I'm Ryan. Want to get ahold of me? Check out [my website](http://rgaus.net).

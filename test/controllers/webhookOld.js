@@ -569,5 +569,168 @@ describe("routes", function() {
 
       webhook(req, res);
     });
+    it(`should throw an error when the specific fork updates from the upstream`, function(done) {
+      // mock the github constructor
+      let ghOriginal = require('github/');
+      let gh = {
+        reposGet() {},
+        reposGetBranch() {},
+        reposGetForks() {},
+        searchIssues() {},
+        pullRequestsCreate() {},
+        pullRequestsGetAll() {},
+      };
+      let ghMock = sinon.mock(gh);
+
+      ghMock.expects('reposGet').withArgs({user: "forkuser", repo: "fork0"}).resolves({
+        parent: {
+          owner: {
+            login: "upstreamuser",
+          },
+          name: "repo",
+          default_branch: "master",
+          full_name: 'upstreamuser/repo',
+        },
+        default_branch: "master",
+        owner: {login: 'forkuser'},
+        name: 'fork0',
+      });
+
+      ghMock.expects('reposGetBranch')
+      .withArgs({user: "upstreamuser", repo: "repo", branch: "master"}).resolves({
+        commit: {
+          sha: "upstreamRepoCommitSha",
+        },
+      });
+      ghMock.expects('reposGetBranch')
+      .withArgs({user: "forkuser", repo: "fork0", branch: "master"}).resolves({
+        commit: {
+          sha: "fork0RepoCommitSha",
+        },
+      });
+
+      // Look for opt-outs
+      ghMock.expects('searchIssues').withArgs({q: `repo:forkuser/fork0 is:pr label:optout`})
+      .resolves({total_count: 0});
+
+      // Check for existing PRs
+      ghMock.expects('pullRequestsGetAll').withArgs({
+        user: 'forkuser',
+        repo: 'fork0',
+        state: 'open',
+        head: 'upstreamuser:master',
+      }).resolves([]);
+
+      // Make the pull request
+      ghMock.expects('pullRequestsCreate').withArgs({
+        user: 'forkuser', repo: 'fork0',
+        title: 'Update from upstream repo upstreamuser/repo',
+        head: 'upstreamuser:master',
+        base: 'master',
+        body: generateUpdateBody('upstreamuser/repo'),
+      }).rejects(new Error('Explosion in the starboard engine room!'));
+
+      ghOriginal.constructor = () => gh
+
+      // inject the above mock
+      let {default: webhook} = proxyquire("controllers/webhookOld", {'../github': ghOriginal});
+
+      let req = {
+        body: {
+          repository: {
+            full_name: 'forkuser/fork0',
+            owner: {
+              login: 'forkuser',
+            },
+            name: 'fork0',
+            fork: true,
+          },
+        },
+        query: {},
+      };
+
+      res(function() {
+        ghMock.verify();
+        assert.deepEqual(res.statusCode, 200);
+        assert.deepEqual(res.data, 'Uhh, error: Error: Explosion in the starboard engine room!');
+        done();
+      });
+
+      webhook(req, res);
+    });
+    it(`should update the specific fork from the upstream`, function(done) {
+      // mock the github constructor
+      let ghOriginal = require('github/');
+      let gh = {
+        reposGet() {},
+        reposGetBranch() {},
+        reposGetForks() {},
+        searchIssues() {},
+        pullRequestsCreate() {},
+        pullRequestsGetAll() {},
+      };
+      let ghMock = sinon.mock(gh);
+
+      ghMock.expects('reposGet').withArgs({user: "forkuser", repo: "fork0"}).resolves({
+        parent: {
+          owner: {
+            login: "upstreamuser",
+          },
+          name: "repo",
+          default_branch: "master",
+          full_name: 'upstreamuser/repo',
+        },
+        default_branch: "master",
+        owner: {login: 'forkuser'},
+        name: 'fork0',
+      });
+
+      ghMock.expects('reposGetBranch')
+      .withArgs({user: "upstreamuser", repo: "repo", branch: "master"}).resolves({
+        commit: {
+          sha: "theSameSha",
+        },
+      });
+      ghMock.expects('reposGetBranch')
+      .withArgs({user: "forkuser", repo: "fork0", branch: "master"}).resolves({
+        commit: {
+          sha: "theSameSha",
+        },
+      });
+
+      // Look for opt-outs
+      ghMock.expects('searchIssues').withArgs({q: `repo:forkuser/fork0 is:pr label:optout`})
+      .resolves({total_count: 0});
+
+      ghOriginal.constructor = () => gh
+
+      // inject the above mock
+      let {default: webhook} = proxyquire("controllers/webhookOld", {'../github': ghOriginal});
+
+      let req = {
+        body: {
+          repository: {
+            full_name: 'forkuser/fork0',
+            owner: {
+              login: 'forkuser',
+            },
+            name: 'fork0',
+            fork: true,
+          },
+        },
+        query: {},
+      };
+
+      res(function() {
+        ghMock.verify();
+        assert.deepEqual(res.statusCode, 200);
+        assert.deepEqual(
+          res.data, `Thanks anyway, but the user either opted out or this isn\'t an imporant event.`
+        );
+        done();
+      });
+
+      webhook(req, res);
+    });
   });
 });

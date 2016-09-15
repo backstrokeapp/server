@@ -1,6 +1,9 @@
+import Promise from 'bluebird';
 import stripeFactory from 'stripe';
 const PRICE_PER_HOOK = 0.02;
 const stripe = stripeFactory(process.env.STRIPE_TOKEN);
+
+import isLinkPaid from 'helpers/isLinkPaid';
 
 // Add card info to a user.
 export function addPaymentInfo(User, req, res) {
@@ -21,14 +24,13 @@ export function addPaymentInfo(User, req, res) {
 }
 
 // Called when a paid link is added or changed
-export function addPaidLink(user, delta=1) {
+export function changePaidLinkQuantity(user, amount) {
   if (user.customerId) {
     // create or update subscription?
-    return stripe.subscriptions.retreive(user.subscriptionId).then(subsc => {
+    return stripe.subscriptions.retrieve(user.subscriptionId).then(subsc => {
       if (subsc) {
         // update the subscription
-        subsc.quantity += delta;
-        return stripe.subscriptions.update(user.subscriptionId, {quantity: subs.quantity});
+        return stripe.subscriptions.update(user.subscriptionId, {quantity: amount});
       } else {
         // create a subscription
         return stripe.subscriptions.create({
@@ -39,6 +41,21 @@ export function addPaidLink(user, delta=1) {
       }
     });
   } else {
-    return Promise.reject(new Error('Peyment info not specified.'));
+    return Promise.reject(new Error('Payment info not specified.'));
   }
+}
+
+// A paid link is defined as:
+// - A link with a private repo within.
+// - A link that is also enabled.
+export function updatePaidLinks(Link, user) {
+  return Link.find({owner: user, enabled: true}).exec().then(links => {
+    let paidLinks = links.map(link => isLinkPaid(user, link));
+
+    return Promise.all(paidLinks).then(linksPaid => {
+      return linksPaid.filter(f => f).length;
+    }).then(linkCount => {
+      return changePaidLinkQuantity(user, linkCount);
+    });
+  });
 }

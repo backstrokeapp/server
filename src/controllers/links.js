@@ -1,3 +1,4 @@
+import {updatePaidLinks} from 'controllers/payments';
 
 // A utility function to check if a user is authenticated, and if so, return
 // the authenticated user. Otherwise, this function will throw an error
@@ -7,6 +8,19 @@ function assertLoggedIn(req, res) {
   } else {
     res.status(403).send({error: 'Not authenticated.'});
   }
+}
+
+function doPayments(Link, user, res) {
+  return () => {
+    return updatePaidLinks(Link, user).catch(err => {
+      if (err.message === 'Payment info not specified.') {
+        return res.status(400).send({error: 'Payment info not specified. '});
+      } else {
+        // rethrow error
+        return Promise.reject(err);
+      }
+    });
+  };
 }
 
 // Return all links in a condensed format. Included is {_id, name, paid, enabled}.
@@ -100,38 +114,32 @@ export function update(Link, isLinkPaid, addWebhooksForLink, req, res) {
   // remove a link's id when updating, if it exists
   link._id = req.params.linkId;
 
-  // Change a couple fields
+  // Set the payment state of the link
   return isLinkPaid(req.user, link)
   .then(paid => {
-    if (paid) {
-      return res.status(400).send({error: 'Private repos are currently not supported.'});
-    } else {
-      link.paid = false;
-      return addWebhooksForLink(req.user, link).then(hooks => {
-        if (hooks && hooks.error) {
-          return res.status(400).send({error: hooks.error});
-        }
-
-        Link.update({_id: req.params.linkId, owner: user}, link).exec((err, data) => {
-          if (err) {
-            process.env.NODE_ENV !== 'test' && console.trace(err);
-            return res.status(500).send({error: 'Database error.'});
-          }
-
-          res.status(200).send({status: 'ok'});
-        });
-      });
+    link.paid = paid;
+  }).then(() => {
+    // Add webhooks to the link in the provider
+    return addWebhooksForLink(req.user, link)
+  }).then(hooks => {
+    if (hooks && hooks.error) {
+      return res.status(400).send({error: hooks.error});
     }
+
+    // update the link
+    return Link.update({_id: req.params.linkId, owner: user}, link).exec();
+  }).then(doPayments(Link, user, res)).then(() => {
+    res.status(200).send({status: 'ok'});
   }).catch(err => {
-    process.env.NODE_ENV !== 'test' && console.trace(err);
     res.status(500).send({error: "Server error"});
+    process.env.NODE_ENV !== 'test' && (() => {throw err})()
   });
 }
 
 // Enable or disable a link. Requires a body like {"enabled": true/false}, and
 // responds with {"status": "ok"}
 export function enable(Link, req, res) {
-  let user = assertLoggedIn(req, res);
+  let user = assertLoggedIn(req, res), queryData;
 
   if (!req.isAuthenticated()) {
     return
@@ -146,17 +154,18 @@ export function enable(Link, req, res) {
       name: {$exists: true, $type: 2, $ne: ''},
     }, {
       enabled: req.body.enabled,
-    }).exec((err, data) => {
-      if (err) {
-        process.env.NODE_ENV !== 'test' && console.trace(err);
-        return res.status(500).send({error: 'Database error.'});
-      }
-
-      if (data.nModified > 0) {
+    }).exec().then(data => {
+      // save this response for later
+      queryData = data;
+    }).then(doPayments(Link, user, res)).then(() => {
+      if (queryData.nModified > 0) {
         res.status(200).send({status: 'ok'});
       } else {
         res.status(400).send({status: 'not-complete'});
       }
+    }).catch(err => {
+      process.env.NODE_ENV !== 'test' && console.trace(err);
+      return res.status(500).send({error: 'Database error.'});
     });
   }
 }
@@ -167,7 +176,10 @@ export function del(Link, req, res) {
   if (!req.isAuthenticated()) {
     return
   } else {
-    Link.remove({_id: req.params.id, owner: user}).exec().then(() => {
+    Link.remove({_id: req.params.id, owner: user}).exec()
+    .then(doPayments(Link, user, res))
+    .then(() => {
+      // it worked!
       res.status(200).send({status: 'ok'});
     }).catch(err => {
       process.env.NODE_ENV !== 'test' && console.trace(err);

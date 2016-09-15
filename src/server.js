@@ -9,7 +9,7 @@ import * as links from 'controllers/links';
 import {checkRepo} from 'controllers/checkRepo';
 import webhook from 'controllers/webhook';
 import webhookOld from 'controllers/webhookOld';
-import {getSubscriptionInformation} from 'controllers/payments';
+import {getSubscriptionInformation, updatePaidLinks} from 'controllers/payments';
 
 import isLinkPaid from 'helpers/isLinkPaid';
 import addWebhooksForLink from 'helpers/addWebhooksForLink';
@@ -83,7 +83,7 @@ app.get('/api/v1/links', bodyParser.json(), links.index.bind(null, Link));
 app.get('/api/v1/links/:id', bodyParser.json(), links.get.bind(null, Link));
 
 // delete a link
-app.delete('/api/v1/links/:id', links.del.bind(null, Link, User));
+app.delete('/api/v1/links/:id', links.del.bind(null, Link, User, updatePaidLinks));
 
 // return the branches for a given repo
 app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), checkRepo);
@@ -93,12 +93,12 @@ app.post('/api/v1/links', bodyParser.json(), links.create.bind(null, Link));
 
 // POST link updates
 app.post('/api/v1/links/:linkId', bodyParser.json(),
-  links.update.bind(null, Link, User, isLinkPaid, addWebhooksForLink));
+  links.update.bind(null, Link, User, isLinkPaid, addWebhooksForLink, updatePaidLinks));
 
 app.get('/api/v1/payments', getSubscriptionInformation);
 
 // enable or disable a repository
-app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(null, Link, User));
+app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(null, Link, User, updatePaidLinks));
 
 // the old webhook route
 // This parses the body of the request to get most of its data.

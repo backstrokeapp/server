@@ -152,6 +152,7 @@ gulp.task('watch', ['assets', 'templates', 'sass', 'browserify'], function() {
   // watch:js
   // --------------------------
   gulp.watch('./public/js/**/*.js', ['lint:js']);
+  gulp.watch('./public/**/*.scss', ['sass']);
 
   gutil.log(gutil.colors.bgGreen('Watching for changes...'));
 });

@@ -1,11 +1,3 @@
-.repo {
-  h1 {
-    margin-bottom: 2em;
-    line-height: 1.25;
-    font-weight: 300;
-  }
-}
-
 .link-list {
   height: 100%;
 
@@ -36,10 +28,18 @@
         border-top-left-radius: $border-radius-base;
         border-top-right-radius: $border-radius-base;
 
-        span {
-          color: $gray-light;
+        h1 {
+          margin-bottom: 1em;
+          line-height: 1.25;
           font-weight: 300;
-          &:first-child { flex: 1; }
+          color: #FFF;
+          flex: 1;
+        }
+
+        button {
+          height: 84px;
+          font-size: 20px;
+          margin-top: 20px;
         }
       }
 
@@ -48,6 +48,10 @@
         text-align: center;
         display: block;
 
+        h1 {
+          font-weight: 300;
+          margin-bottom: 1em;
+        }
         i {
           font-size: 6em;
           color: $gray-light;

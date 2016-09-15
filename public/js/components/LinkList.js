@@ -21,17 +21,19 @@ export function LinkList({
 }) {
   if (links) {
     return <div className="repo container">
-      <h1>
-        Links join two repos together.<br/>
-        Here are yours.
-      </h1>
 
       <div className="link-list">
         <ul className="list-group">
           {/* Section header */}
           {links.data.length > 0 ? <li className="list-header">
-            <span>Name</span>
-            <span>Enabled</span>
+            <h1>
+              Links join two repos together.<br/>
+              Here are yours.
+            </h1>
+
+            <button className="btn btn-outline btn-outline-primary btn-default btn-lg" onClick={onNewLink}>
+              Add link
+            </button>
           </li> : null}
 
           {/* Link list */}
@@ -65,14 +67,19 @@ export function LinkList({
 
           {/* When there are no links */}
           {links.data.length === 0 ? <li className="link-empty">
+            <h1>
+              Links bind an upstream<br/>
+              to one or many<br/>
+              downstream repositories.
+            </h1>
             <i className="fa fa-anchor" />
             <p>
-              You don't have any links?
-              It's really easy to create one <a onClick={onNewLink}>here</a>.
+              <a className="btn btn-success btn-lg" onClick={onNewLink}>
+                Create a link
+              </a>
             </p>
           </li> : null}
         </ul>
-        <button className="btn btn-success" onClick={onNewLink}>Add new link</button>
 
         {/* Coming later */}
         {/*<div className="monthly-price">

@@ -205,6 +205,43 @@ describe('webhook v2', function() {
         assert.deepEqual(output, {error: 'not-enabled', isEnabled: false});
       });
     });
+    it('should not run a webhook on an opted out repo', function() {
+      let link1 = generateLink({to: 'repo', from: 'repo'});
+      let [user, repo] = getRepoName(link1.from);
+      let [childUser, childRepo] = getRepoName(link1.to);
+      let pullRequestsCreate = sinon.stub().withArgs({
+          user: childUser, repo: childRepo,
+          title: generatePullRequestTitle(user, repo),
+          head: `${user}:${link1.from.branch}`,
+          base: link1.to.branch,
+          body: generatePullRequestBody(user, repo),
+      }).resolves({created: 'pull request'});
+
+      let gh = {
+        pullRequestsGetAll: sinon.stub().withArgs({
+          user: childUser,
+          repo: childRepo,
+          state: 'open',
+          head: `${user}:${link1.from.branch}`,
+          base: link1.to.branch,
+        }).resolves([]),
+        searchIssues: sinon.stub().withArgs({
+          q: `repo:${childUser}/${childRepo} is:pr label:optout`,
+        }).resolves({total_count: 1}),
+      };
+
+      return webhook(gh, link1, 2, {pullRequestsCreate}).then(output => {
+        assert.deepEqual(output, {
+          forkCount: 1,
+          isEnabled: true,
+          many: false,
+          pullRequest: {
+            msg: 'This repo opted out of backstroke pull requests'
+          },
+          status: 'ok',
+        });
+      });
+    });
     it('should not run a webhook that doesnt have to or from defined (null)', function() {
       let link1 = generateLink({to: 'repo', from: 'repo'});
       link1.to = null;

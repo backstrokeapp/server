@@ -168,18 +168,19 @@ export function enable(Link, User, updatePaidLinks, req, res) {
   }
 }
 
-export function del(Link, User, updatePaidLink, req, res) {
+export function del(Link, User, updatePaidLinks, req, res) {
   let user = assertLoggedIn(req, res);
 
   if (!req.isAuthenticated()) {
     return
   } else {
     Link.remove({_id: req.params.id, owner: user}).exec()
-    .then(doPayments(Link, User, user, res))
+    .then(doPayments(Link, User, updatePaidLinks, user, res))
     .then(() => {
       // it worked!
       res.status(200).send({status: 'ok'});
     }).catch(err => {
+      console.error(err)
       process.env.NODE_ENV !== 'test' && console.trace(err);
       return res.status(500).send({error: 'Database error.'});
     });

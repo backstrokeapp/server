@@ -57,7 +57,11 @@ export function updatePaidLinks(Link, User, user) {
     return Promise.all(paidLinks).then(linksPaid => {
       return linksPaid.filter(f => f).length;
     }).then(linkCount => {
-      return changePaidLinkQuantity(User, user, linkCount);
+      if (linkCount > 0) {
+        return changePaidLinkQuantity(User, user, linkCount);
+      } else {
+        return true; // No payment required.
+      }
     });
   });
 }

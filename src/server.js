@@ -83,17 +83,17 @@ app.get('/api/v1/links', bodyParser.json(), links.index.bind(null, Link));
 app.get('/api/v1/links/:id', bodyParser.json(), links.get.bind(null, Link));
 
 // delete a link
-app.del('/api/v1/links/:id', links.del.bind(null, Link, User));
+app.delete('/api/v1/links/:id', links.del.bind(null, Link, User));
 
 // return the branches for a given repo
 app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), checkRepo);
 
 // create a new link
-app.post('/api/v1/links', bodyParser.json(), links.create.bind(null, Link, User));
+app.post('/api/v1/links', bodyParser.json(), links.create.bind(null, Link));
 
 // POST link updates
 app.post('/api/v1/links/:linkId', bodyParser.json(),
-  links.update.bind(null, Link, isLinkPaid, addWebhooksForLink));
+  links.update.bind(null, Link, User, isLinkPaid, addWebhooksForLink));
 
 app.get('/api/v1/payments', getSubscriptionInformation);
 

@@ -79,7 +79,7 @@ export function getSubscriptionInformation(req, res) {
         });
       }).catch(err => {
         res.status(500).send({error: "Server error"});
-        process.env.NODE_ENV !== 'test' && (() => {throw err})()
+        process.env.NODE_ENV !== 'test' && (() => {throw err})();
       });
     } else {
       res.status(400).send({error: 'No subscription on the authenticated user.'});

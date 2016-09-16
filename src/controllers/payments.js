@@ -88,3 +88,54 @@ export function getSubscriptionInformation(req, res) {
     res.status(403).send({error: 'Not authenticated.'});
   }
 }
+
+// Add a card to a user
+export function addPaymentToUser(User, req, res) {
+  if (true || req.isAuthenticated()) {
+    req.user = {provider: 'github', user: '1egoman'};
+    if (req.body.source) {
+      function createCustomer() {
+        // create a customer
+        return stripe.customers.create({
+          source: req.body.source,
+          email: req.body.email,
+          metadata: {
+            provider: req.user.provider,
+            user: req.user.user,
+          },
+        }).then(customer => {
+          return User.update({_id: req.user._id}, {customer: customer.id}).exec();
+        });
+      }
+
+      // create or update subscription?
+      return stripe.customers.retrieve(req.user.customerId).then(customer => {
+        if (customer) {
+          // update the customer
+          return stripe.customers.update(req.user.customerId, {
+            source: req.body.source,
+            email: req.body.email,
+            metadata: {
+              provider: req.user.provider,
+              user: req.user.user,
+            },
+          });
+        } else {
+          return createCustomer();
+        }
+      }).catch(createCustomer).then(() => {
+        res.status(200).send({status: 'ok'});
+      }).catch(error => {
+        if (error.message.indexOf('You cannot use a Stripe token more than once') === 0) {
+          res.status(400).send({error: `You can't reuse payment source tokens!`});
+        } else {
+          return Promise.resolve(error);
+        }
+      });
+    } else {
+      return Promise.reject(new Error('Payment source not provided in body.'));
+    }
+  } else {
+    res.status(403).send({error: 'Not authenticated.'});
+  }
+}

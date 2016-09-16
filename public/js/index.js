@@ -10,6 +10,7 @@ import reducer from 'reducers/reducer';
 import App, {Index} from 'components/App';
 import Link from 'components/Link';
 import LinkList from 'components/LinkList';
+import ManageSettings from 'components/ManageSettings';
 
 import fetchUser from 'actions/fetchUser';
 import fetchLink from 'actions/fetchLink';
@@ -57,6 +58,7 @@ render(
         <IndexRoute component={Index} />
         <Route path="/links" component={LinkList} />
         <Route path="/links/:linkId" component={Link} />
+        <Route path="/settings" component={ManageSettings} />
       </Route>
     </Router>
   </Provider>,

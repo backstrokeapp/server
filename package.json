@@ -52,6 +52,7 @@
     "react-router": "^2.7.0",
     "react-router-redux": "^4.0.5",
     "react-select": "^1.0.0-beta14",
+    "react-stripe-checkout": "^2.2.5",
     "react-toggle-switch": "^2.1.2",
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0",

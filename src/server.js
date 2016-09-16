@@ -53,12 +53,12 @@ app.use(morgan('tiny'));
 app.get('/setup/login', passport.authenticate('github', {
   successRedirect: '/',
   failureRedirect: '/setup/login',
-  scope: ["public_repo", "write:repo_hook", "user:email"],
-}));
-app.get('/setup/login/private', passport.authenticate('github', {
-  successRedirect: '/setup/login',
-  failureRedirect: '/setup/login',
   scope: ["repo", "write:repo_hook", "user:email"],
+}));
+app.get('/setup/login/public', passport.authenticate('github', {
+  successRedirect: '/',
+  failureRedirect: '/setup/login',
+  scope: ["public_repo", "write:repo_hook", "user:email"],
 }));
 
 // Second leg of the auth

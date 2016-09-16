@@ -1,4 +1,4 @@
-export function generateLink(types={to: 'repo', from: 'repo'}) {
+export function generateLink(types={to: 'repo', from: 'repo', paid: false}) {
   return {
     "_id": "57c20d14202d40988411078d",
     "enabled": true,
@@ -6,7 +6,7 @@ export function generateLink(types={to: 'repo', from: 'repo'}) {
     "to": generateRepo(types.to),
     "from": generateRepo(types.from),
     "__v": 0,
-    "paid": false,
+    "paid": types.paid,
     "name": "backstroke sync",
     "ephemeralRepo": false,
     "pushUsers": [],

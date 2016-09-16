@@ -6,7 +6,7 @@ const stripe = stripeFactory(process.env.STRIPE_TOKEN);
 import isLinkPaid from 'helpers/isLinkPaid';
 
 // Given a number of links, return the "payment quantity" that is set within stripe.
-function getPaymentQuantityForLinks(linkCount) {
+export function getPaymentQuantityForLinks(linkCount) {
   return Math.ceil(linkCount / 5);
 }
 

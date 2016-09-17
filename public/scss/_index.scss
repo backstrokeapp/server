@@ -3,7 +3,7 @@
   color: #FFF;
   margin-top: -20px;
   height: 100%;
-  height: calc(100% - $navbar-height);
+  height: calc(100% - #{$navbar-height});
 
   h1 {
     margin-top: 2em;

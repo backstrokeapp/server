@@ -12,7 +12,10 @@ export default function enableDisableLink(link, enabled) {
     }).then(response => response.json()).then(json => {
       if (json.status === 'ok') {
         dispatch(enableDisableLinkAction(link, enabled));
-      } else if (json.error.indexOf('paid') !== -1 || json.error.indexOf('private') !== -1) {
+      } else if (json.error && (
+        json.error.indexOf('paid') !== -1 ||
+        json.error.indexOf('private') !== -1
+      )) {
         // redirect to payments page
         dispatch(push('/settings'));
       } else {

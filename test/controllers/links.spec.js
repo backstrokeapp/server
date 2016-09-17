@@ -591,6 +591,7 @@ describe('links controller', function() {
       let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
+        console.log(res.statusCode, res.data)
         LinkMock.verify();
 
         assert.equal(res.statusCode, 200);

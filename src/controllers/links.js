@@ -177,11 +177,12 @@ export function enable(Link, User, updatePaidLinks, req, res) {
       queryData = data; // save this for later
     })
     // step 3: update payment status
-    .then(doPayments(Link, User, updatePaidLinks, user, res))
     .then(() => {
       // step 4: return a status message
       if (queryData.nModified > 0) {
-        res.status(200).send({status: 'ok'});
+        return doPayments(Link, User, updatePaidLinks, user, res)().then(() => {
+          res.status(200).send({status: 'ok'});
+        });
       } else {
         res.status(400).send({status: 'not-complete'});
       }

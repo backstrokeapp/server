@@ -124,6 +124,11 @@ export function update(Link, User, isLinkPaid, addWebhooksForLink, updatePaidLin
       return res.status(400).send({error: hooks.error});
     }
 
+    // verify a user can create a paid link, if the link is paid
+    if (link.paid && !req.user.customerId) {
+      res.status(403).send({error: 'Cannot create paid link without a payment method.'});
+    }
+
     // update the link
     return Link.update({_id: req.params.linkId, owner: user}, link).exec();
   }).then(doPayments(Link, User, updatePaidLinks, user, res)).then(() => {
@@ -144,26 +149,45 @@ export function enable(Link, User, updatePaidLinks, req, res) {
   } else if (typeof req.body.enabled !== 'boolean') {
     res.status(400).send({error: 'Enabled property not specified in the body.'});
   } else {
-    Link.update({
+    // step 1: verify a user can create a paid link, if the link is paid
+    Link.findOne({
       _id: req.params.linkId,
       owner: user,
-      'to.type': {$exists: true},
-      'from.type': {$exists: true},
-      name: {$exists: true, $type: 2, $ne: ''},
-    }, {
-      enabled: req.body.enabled,
-    }).exec().then(data => {
-      // save this response for later
-      queryData = data;
-    }).then(doPayments(Link, User, updatePaidLinks, user, res)).then(() => {
+      paid: true,
+    }).then(paidLink => {
+      if (paidLink && !req.user.customerId) {
+        throw new Error(`Cannot add a private repo for a user that doesn't have payment info`);
+      }
+
+      // step 2: update the link with the new information
+      return Link.update({
+        _id: req.params.linkId,
+        owner: user,
+        'to.type': {$exists: true},
+        'from.type': {$exists: true},
+        name: {$exists: true, $type: 2, $ne: ''},
+      }, {
+        enabled: req.body.enabled,
+      }).exec()
+    }).then(data => {
+      queryData = data; // save this for later
+    })
+    // step 3: update payment status
+    .then(doPayments(Link, User, updatePaidLinks, user, res))
+    .then(() => {
+      // step 4: return a status message
       if (queryData.nModified > 0) {
         res.status(200).send({status: 'ok'});
       } else {
         res.status(400).send({status: 'not-complete'});
       }
     }).catch(err => {
-      process.env.NODE_ENV !== 'test' && console.trace(err);
-      return res.status(500).send({error: 'Database error.'});
+      if (err.message.indexOf(`Cannot add a private repo for a user that doesn't have payment info`) === 0) {
+        res.status(403).send({error: 'Cannot enable a paid link without a payment method.'});
+      } else {
+        process.env.NODE_ENV !== 'test' && console.trace(err);
+        return res.status(500).send({error: 'Database error.'});
+      }
     });
   }
 }

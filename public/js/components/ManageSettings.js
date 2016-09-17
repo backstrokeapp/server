@@ -12,36 +12,48 @@ export function ManageSettings({
     <h1>Settings</h1>
 
     <h2>Payments</h2>
-    <div className="payment-status" style={{minHeight: 150}}>
+    <div className="payment-status">
       <PaymentStatus info={subscribedTo} />
-    </div>
 
-    <StripeCheckout
-      name="Enter a card:"
-      stripeKey="pk_test_k280ghlxr7GrqGF9lxBhy1Uj"
-      token={onTokenUpdate}
-      panelLabel="Add"
-    >
-      {
-        subscribedTo ?
-        <button className="btn btn-primary">Update Credit Card</button>:
-        <button className="btn btn-primary">Add Credit Card</button>
-      }
-    </StripeCheckout>
+      <h1>Payment Method</h1>
+      <StripeCheckout
+        name="Enter a card:"
+        stripeKey="pk_test_k280ghlxr7GrqGF9lxBhy1Uj"
+        token={onTokenUpdate}
+        panelLabel="Add"
+      >
+        {
+          subscribedTo ?
+          <span className="payment-button">
+            We have a valid payment method.
+            <button className="btn btn-default btn-outline btn-outline-primary btn-lg">
+              Update Credit Card
+            </button>
+          </span>:
+          <span className="payment-button">
+            We don't have a payment method.
+            <button className="btn btn-default btn-outline btn-outline-primary btn-lg">
+              Add Credit Card
+            </button>
+          </span>
+        }
+      </StripeCheckout>
+    </div>
   </div>;
 }
 
 function PaymentStatus({info}) {
   if (info === false) {
-    return <div>
-      <h3>No payment information is on file.</h3>
-    </div>;
+    return null; // no payment info
   } else if (info) {
     return <div>
-      <p>
-        Payment info is on file - You're paying ${info.paymentAmount.toFixed(2)} per month, and are
-        paying for {info.paymentBlockQuantity * 5} private repos (purchaced in blocks of 5).
-      </p>
+      <h1>You pay each month:</h1>
+      <div className="payment-quantity-group">
+        <div className="payment-quantity">{info.paymentBlockQuantity}</div>
+        <span className="times" />
+        <div className="payment-block" />
+        <div className="total-cost">{info.paymentAmount.toFixed(2)}</div>
+      </div>
     </div>;
   } else {
     return <div className="loading container">

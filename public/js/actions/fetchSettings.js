@@ -8,12 +8,12 @@ export default function fetchSettings() {
     .then(response => response.json())
     .then(json => {
       if (json.error) {
-        dispatch(userSubscribedTo(null)); // public plan
+        dispatch(userSubscribedTo(false)); // public plan
       } else {
         dispatch(userSubscribedTo(json));
       }
     }).catch(err => {
-      dispatch(userSubscribedTo(null)); // FIXME: dispatch an error of some sort?
+      dispatch(userSubscribedTo(false)); // FIXME: dispatch an error of some sort?
     });
   };
 }

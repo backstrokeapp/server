@@ -1,0 +1,113 @@
+.payment-status {
+  background-color: $brand-info;
+  color: #FFF;
+  padding: 20px;
+
+  h1 {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+
+  .payment-quantity-group {
+    width: auto;
+    height: 150px;
+    @media (min-width: $screen-xs-min) {
+      width: 720px;
+    }
+  }
+
+  // the payment button, and the text before it
+  .payment-button {
+    font-size: 1.5em;
+    button { margin-left: 10px; }
+  }
+}
+
+.payment-quantity-group {
+  margin-bottom: 20px;
+  color: #FFF;
+
+  @mixin sign {
+    font-size: 0.8em;
+    line-height: 2em;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+
+    position: relative;
+    top: -0.1em;
+  }
+
+  @mixin colored-block {
+    width: 140px;
+    height: 140px;
+    background-color: $brand-success;
+    color: #FFF;
+    padding: 6px;
+    text-align: center;
+    display: inline-block;
+    float: left;
+  }
+
+  .payment-quantity {
+    @include colored-block;
+    font-size: 54px;
+
+    &:after {
+      content: "private link block(s)";
+      display: block;
+      font-size: 16px;
+      margin-top: 5px;
+    }
+  }
+
+  .times {
+    float: left;
+    font-size: 4.8em;
+    display: none;
+    &:after {
+      content: "\00d7";
+      @include sign;
+    }
+    @media (min-width: $screen-xs-min) {
+      display: inline-block;
+    }
+  }
+
+  .payment-block {
+    @include colored-block;
+    &:after {
+      content: "price per block";
+      display: block;
+      font-size: 20px;
+      margin-top: 18px;
+    }
+    &:before {
+      content: "$5.00";
+      display: block;
+      font-size: 24px;
+      margin-top: 24px;
+    }
+  }
+
+  .total-cost {
+    display: block;
+    font-size: 4.8em;
+    float: left;
+
+    &:before {
+      content: "= $";
+      @include sign;
+    }
+
+    @media (min-width: $screen-sm-min) {
+      display: inline;
+
+      &:after {
+        content: "/month";
+        margin-left: 10px;
+        font-size: 40%;
+        white-space: pre-wrap;
+      }
+    }
+  }
+}

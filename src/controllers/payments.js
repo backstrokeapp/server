@@ -57,7 +57,7 @@ export function updatePaidLinks(Link, User, user) {
     return Promise.all(paidLinks).then(linksPaid => {
       return linksPaid.filter(f => f).length;
     }).then(linkCount => {
-      if (user.subscriptionId) {
+      if (user.customerId) {
         return changePaidLinkQuantity(User, user, linkCount);
       } else if (linkCount > 0) {
         throw new Error(`Cannot add a private repo for a user that doesn't have payment info.`);
@@ -72,7 +72,7 @@ export function updatePaidLinks(Link, User, user) {
 // A route to get subscription information for the logged-in user.
 export function getSubscriptionInformation(req, res) {
   if (req.isAuthenticated()) {
-    if (req.user.subscriptionId) {
+    if (req.user.customerId && req.user.subscriptionId) {
       return stripe.subscriptions.retrieve(req.user.subscriptionId).then(subsc => {
         res.status(200).send({
           status: 'ok',
@@ -83,8 +83,16 @@ export function getSubscriptionInformation(req, res) {
         res.status(500).send({error: "Server error"});
         process.env.NODE_ENV !== 'test' && (() => {throw err})();
       });
+    } else if (req.user.customerId) {
+      // A user isn't paying anything and doesn't have a subscription associated with their user
+      res.status(200).send({
+        status: 'ok',
+        paymentBlockQuantity: 0,
+        paymentAmount: 0,
+        note: 'No subscription on the authenticated user.'
+      });
     } else {
-      res.status(400).send({error: 'No subscription on the authenticated user.'});
+      res.status(400).send({error: "No customer associated with this user."});
     }
   } else {
     res.status(403).send({error: 'Not authenticated.'});
@@ -105,7 +113,7 @@ export function addPaymentToUser(User, req, res) {
             user: req.user.user,
           },
         }).then(customer => {
-          return User.update({_id: req.user._id}, {customer: customer.id}).exec();
+          return User.update({_id: req.user._id}, {customerId: customer.id}).exec();
         });
       }
 

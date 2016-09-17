@@ -23,6 +23,7 @@ export function MainNav({user}) {
     <Navbar.Collapse>
       <Nav>
         <NavItem eventKey={2} href="#/links">Links</NavItem>
+        <NavItem eventKey={3} href="#/settings">Settings</NavItem>
       </Nav>
       <UserNav user={user} />
     </Navbar.Collapse>

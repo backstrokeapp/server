@@ -57,8 +57,10 @@ export function updatePaidLinks(Link, User, user) {
     return Promise.all(paidLinks).then(linksPaid => {
       return linksPaid.filter(f => f).length;
     }).then(linkCount => {
-      if (linkCount > 0) {
+      if (user.subscriptionId) {
         return changePaidLinkQuantity(User, user, linkCount);
+      } else if (linkCount > 0) {
+        throw new Error(`Cannot add a private repo for a user that doesn't have payment info.`);
       } else {
         return true; // No payment required.
       }
@@ -91,8 +93,7 @@ export function getSubscriptionInformation(req, res) {
 
 // Add a card to a user
 export function addPaymentToUser(User, req, res) {
-  if (true || req.isAuthenticated()) {
-    req.user = {provider: 'github', user: '1egoman'};
+  if (req.isAuthenticated()) {
     if (req.body.source) {
       function createCustomer() {
         // create a customer

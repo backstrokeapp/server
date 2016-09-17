@@ -15,6 +15,7 @@ import ManageSettings from 'components/ManageSettings';
 import fetchUser from 'actions/fetchUser';
 import fetchLink from 'actions/fetchLink';
 import fetchLinks from 'actions/fetchLinks';
+import fetchSettings from 'actions/fetchSettings';
 
 // Which history store to use?
 const history = hashHistory;
@@ -48,6 +49,13 @@ history.listen(event => {
   if (match = pathname.match(/^\/links\/(.+)\/?$/)) {
     dispatch(fetchLink({_id: match[1]}));
   }
+
+  // /links/:linkId
+  // When navigating to a new link's page, fetch its details
+  if (match = pathname.indexOf('/settings') === 0) {
+    dispatch(fetchSettings());
+  }
+
 });
 
 // Render it all.

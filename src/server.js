@@ -96,7 +96,7 @@ app.post('/api/v1/links/:linkId', bodyParser.json(),
   links.update.bind(null, Link, User, isLinkPaid, addWebhooksForLink, updatePaidLinks));
 
 // get the info to the currently subscribed plan
-app.get('/api/v1/subscription', getSubscriptionInformation);
+app.get('/api/v1/subscribed', getSubscriptionInformation);
 
 // add a card to an account
 // body: {"source": "tok_stripetoken", "email": "billing@email.com"}

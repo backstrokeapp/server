@@ -126,7 +126,7 @@ export function update(Link, User, isLinkPaid, addWebhooksForLink, updatePaidLin
 
     // verify a user can create a paid link, if the link is paid
     if (link.paid && !req.user.customerId) {
-      res.status(403).send({error: 'Cannot create paid link without a payment method.'});
+      throw new Error('Cannot create private link without a payment method.');
     }
 
     // update the link
@@ -134,8 +134,12 @@ export function update(Link, User, isLinkPaid, addWebhooksForLink, updatePaidLin
   }).then(doPayments(Link, User, updatePaidLinks, user, res)).then(() => {
     res.status(200).send({status: 'ok'});
   }).catch(err => {
-    res.status(500).send({error: "Server error"});
-    process.env.NODE_ENV !== 'test' && (() => {throw err})()
+    if (err.message.indexOf('Cannot create private link without a payment method') === 0) {
+      res.status(403).send({error: err.message});
+    } else {
+      res.status(500).send({error: "Server error"});
+      process.env.NODE_ENV !== 'test' && (() => {throw err})()
+    }
   });
 }
 
@@ -183,7 +187,7 @@ export function enable(Link, User, updatePaidLinks, req, res) {
       }
     }).catch(err => {
       if (err.message.indexOf(`Cannot add a private repo for a user that doesn't have payment info`) === 0) {
-        res.status(403).send({error: 'Cannot enable a paid link without a payment method.'});
+        res.status(403).send({error: 'Cannot enable a private link without a payment method.'});
       } else {
         process.env.NODE_ENV !== 'test' && console.trace(err);
         return res.status(500).send({error: 'Database error.'});

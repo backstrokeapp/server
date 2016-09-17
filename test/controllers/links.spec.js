@@ -17,6 +17,8 @@ describe('links controller', function() {
       provider_id: '12345',
       user: 'my-username',
       email: 'me@example.com',
+      customerId: 'cus_stripeid',
+      subscriptionId: 'sub_stripeid',
     },
   };
 
@@ -561,9 +563,21 @@ describe('links controller', function() {
     });
   });
   describe('enable', function() {
+    beforeEach(() => {
+      Link.update.restore && Link.update.restore();
+      Link.findOne.restore && Link.findOne.restore();
+    });
+
     it('should enable a link so it will run via webhook', function(done) {
       let link1 = generateLink();
-      let LinkMock = sinon.mock(Link).expects('update')
+      let LinkMock = sinon.mock(Link);
+      LinkMock.expects('findOne').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        paid: true,
+      }).chain('exec').resolves(link1);
+
+      LinkMock.expects('update')
         .withArgs({
           _id: link1._id,
           owner: loggedIn.user,
@@ -578,7 +592,6 @@ describe('links controller', function() {
 
       res(function() {
         LinkMock.verify();
-        Link.update.restore();
 
         assert.equal(res.statusCode, 200);
         assert.deepEqual(res.data, {status: 'ok'});
@@ -595,7 +608,14 @@ describe('links controller', function() {
     })
     it('should disable a link', function(done) {
       let link1 = generateLink();
-      let LinkMock = sinon.mock(Link).expects('update')
+      let LinkMock = sinon.mock(Link);
+      LinkMock.expects('findOne').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        paid: true,
+      }).chain('exec').resolves(link1);
+
+      LinkMock.expects('update')
         .withArgs({
           _id: link1._id,
           owner: loggedIn.user,
@@ -610,7 +630,6 @@ describe('links controller', function() {
 
       res(function() {
         LinkMock.verify();
-        Link.update.restore();
 
         assert.equal(res.statusCode, 200);
         assert.deepEqual(res.data, {status: 'ok'});
@@ -627,22 +646,24 @@ describe('links controller', function() {
     });
     it('should change link state on an incomplete state', function(done) {
       let link1 = generateLink();
-      let LinkMock = sinon.mock(Link).expects('update')
-        .withArgs({
-          _id: link1._id,
-          owner: loggedIn.user,
-          'to.type': {$exists: true},
-          'from.type': {$exists: true},
-          name: {$exists: true, $type: 2, $ne: ''},
-        }, {enabled: true})
-      .chain('exec')
-      .resolves({nModified: 0});
+      let LinkMock = sinon.mock(Link);
+      LinkMock.expects('findOne').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        paid: true,
+      }).chain('exec').resolves(link1);
+      LinkMock.expects('update').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        'to.type': {$exists: true},
+        'from.type': {$exists: true},
+        name: {$exists: true, $type: 2, $ne: ''},
+      }, {enabled: true}).chain('exec').resolves({nModified: 0});
 
       let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
-        Link.update.restore();
 
         assert.equal(res.statusCode, 400);
         assert.deepEqual(res.data, {status: 'not-complete'});
@@ -695,14 +716,19 @@ describe('links controller', function() {
     });
     it('should 500 on database error', function(done) {
       let link1 = generateLink();
-      let LinkMock = sinon.mock(Link).expects('update')
-        .withArgs({
-          _id: link1._id,
-          owner: loggedIn.user,
-          'to.type': {$exists: true},
-          'from.type': {$exists: true},
-          name: {$exists: true, $type: 2, $ne: ''},
-        }, {enabled: false})
+      let LinkMock = sinon.mock(Link);
+      LinkMock.expects('findOne').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        paid: true,
+      }).chain('exec').resolves(link1);
+      LinkMock.expects('update').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        'to.type': {$exists: true},
+        'from.type': {$exists: true},
+        name: {$exists: true, $type: 2, $ne: ''},
+      }, {enabled: false})
       .chain('exec')
       .rejects(new Error('a fancy error'));
 
@@ -710,7 +736,6 @@ describe('links controller', function() {
 
       res(function() {
         LinkMock.verify();
-        Link.update.restore();
 
         assert.equal(res.statusCode, 500);
         assert.deepEqual(res.data, {error: 'Database error.'});

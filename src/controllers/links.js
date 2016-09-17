@@ -154,7 +154,7 @@ export function enable(Link, User, updatePaidLinks, req, res) {
       _id: req.params.linkId,
       owner: user,
       paid: true,
-    }).then(paidLink => {
+    }).exec().then(paidLink => {
       if (paidLink && !req.user.customerId) {
         throw new Error(`Cannot add a private repo for a user that doesn't have payment info`);
       }

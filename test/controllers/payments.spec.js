@@ -233,7 +233,7 @@ describe('payments', function() {
         res
       );
     });
-    it(`should error when a user doesn't have a subscription`, function(done) {
+    it(`should return zeros when a user doesn't have a subscription`, function(done) {
       let user = {
         _id: 'userid',
         user: 'userName',
@@ -243,8 +243,13 @@ describe('payments', function() {
       };
 
       res(function() {
-        assert.deepEqual(res.statusCode, 400);
-        assert.deepEqual(res.data, {error: 'No subscription on the authenticated user.'});
+        assert.deepEqual(res.statusCode, 200);
+        assert.deepEqual(res.data, {
+          status: 'ok',
+          paymentBlockQuantity: 0,
+          paymentAmount: 0,
+          note: 'No subscription on the authenticated user.'
+        });
         done();
       });
 

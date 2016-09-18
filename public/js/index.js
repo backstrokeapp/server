@@ -7,7 +7,7 @@ import reduxThunk from 'redux-thunk';
 import {routerMiddleware} from 'react-router-redux';
 
 import reducer from 'reducers/reducer';
-import App, {Index} from 'components/App';
+import App, {Index, Pricing} from 'components/App';
 import Link from 'components/Link';
 import LinkList from 'components/LinkList';
 import ManageSettings from 'components/ManageSettings';
@@ -67,6 +67,7 @@ render(
         <Route path="/links" component={LinkList} />
         <Route path="/links/:linkId" component={Link} />
         <Route path="/settings" component={ManageSettings} />
+        <Route path="/pricing" component={Pricing} />
       </Route>
     </Router>
   </Provider>,

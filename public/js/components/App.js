@@ -27,6 +27,7 @@ export function MainNav({user, transparent}) {
     <Navbar.Collapse>
       <Nav>
         <NavItem eventKey={2} href="#/links">Links</NavItem>
+        <NavItem eventKey={2} href="#/pricing">Pricing</NavItem>
         <NavItem eventKey={3} href="#/settings">Settings</NavItem>
       </Nav>
       <UserNav user={user} transparent={transparent} />
@@ -61,6 +62,60 @@ export function Index() {
   </div>;
 }
 Index.transparentNavBar = true;
+
+export function Pricing() {
+  return <div className="pricing-page">
+    <div className="container">
+      <h1>Five links for five bucks.</h1>
+
+      <div className="row">
+        <div className="col-md-6">
+          <div className="panel panel-default">
+            <div className="panel-heading">Free</div>
+            <ul className="list-group">
+              <li className="list-group-item">Sync changes from upstream to forks</li>
+              <li className="list-group-item">Sync changes between two repositories</li>
+              <li className="list-group-item">Sync between arbitrary branches of each repository</li>
+              <li className="list-group-item">Changes are proposed as pull requests</li>
+            </ul>
+            <div className="panel-footer">
+              <a href="/setup/login" className="btn btn-default btn-block btn-lg">Sign up</a>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-6">
+          <div className="panel panel-success">
+            <div className="panel-heading">
+              Premium
+              <span className="pull-right">$5.00/month</span>
+            </div>
+            <ul className="list-group">
+              <li className="list-group-item">Sync changes from upstream to forks</li>
+              <li className="list-group-item">Sync changes between two repositories</li>
+              <li className="list-group-item">Sync between arbitrary branches of each repository</li>
+              <li className="list-group-item">Changes are proposed as pull requests</li>
+              <li className="list-group-item">
+                <span className="label label-success">Premium</span>
+                Sync changes to private repositories on Github
+              </li>
+              <li className="list-group-item">
+                <span className="label label-success">Premium</span>
+                Premium support
+              </li>
+              <li className="list-group-item">
+                <span className="label label-success">Premium</span>
+                Sold in blocks of five
+              </li>
+            </ul>
+            <div className="panel-footer">
+              <a href="/setup/login" className="btn btn-success btn-block btn-lg">Sign up for Premium</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>;
+}
 
 function UserNav({user, transparent}) {
   // Login status

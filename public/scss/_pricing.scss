@@ -1,0 +1,26 @@
+.pricing-page {
+  margin-top: -20px;
+  background-color: $brand-info;
+  color: #FFF;
+
+  height: 100%;
+
+
+  h1 {
+    margin-top: 2em;
+    margin-bottom: 1em;
+    font-size: 3em;
+  }
+
+  // within each pricing panel
+  .list-group-item {
+    color: $text-color;
+    font-size: 1.2em;
+    font-weight: 300;
+    text-align: left;
+
+    .label {
+      margin-right: 10px;
+    }
+  }
+}

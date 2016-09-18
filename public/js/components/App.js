@@ -7,16 +7,20 @@ import {Navbar, Nav, NavItem} from 'react-bootstrap';
 
 export function App({user, children}) {
   return <div className="app-container-parent">
-    <MainNav user={user} />
+    <MainNav user={user} transparent={children.type.transparentNavBar} />
     <div className="app-container">{children}</div>
   </div>
 }
 
-export function MainNav({user}) {
-  return <Navbar>
+export function MainNav({user, transparent}) {
+  return <Navbar className={transparent ? "navbar-inverse" : null}>
     <Navbar.Header>
       <Link to="/">
-        <img className="navbar-mark" src="/assets/img/logo.svg" alt="Backstroke" />
+        {
+          transparent ?
+          <img className="navbar-mark" src="/assets/img/inverse.png" alt="Backstroke" />:
+          <img className="navbar-mark" src="/assets/img/logo.png" alt="Backstroke" />
+        }
       </Link>
       <Navbar.Toggle />
     </Navbar.Header>
@@ -25,7 +29,7 @@ export function MainNav({user}) {
         <NavItem eventKey={2} href="#/links">Links</NavItem>
         <NavItem eventKey={3} href="#/settings">Settings</NavItem>
       </Nav>
-      <UserNav user={user} />
+      <UserNav user={user} transparent={transparent} />
     </Navbar.Collapse>
   </Navbar>;
 }
@@ -33,13 +37,12 @@ export function MainNav({user}) {
 export function Index() {
   return <div className="index-page">
     <div className="container">
-      <h1>
-        Backstroke<br/>
-        is a Github bot<br/>
-        that syncs upstream changes<br/>
-        downstream to forks.
-      </h1>
-      <h2>(No more "This branch is 588 commits behind upstream:master.")</h2>
+      <h1>A pipeline for changes</h1>
+      <p>
+        With Backstroke, always keep your repository's forks up to date.<br/>
+        <span>Open source maintainers</span> can merge contributor's code with one click.<br/>
+        <span>Contributors</span> don't have to worry about hefty merge conflicts.
+      </p>
 
       <div className="row">
         <div className="button-section">
@@ -50,15 +53,16 @@ export function Index() {
             href="https://github.com/1egoman/backstroke#readme"
             className="btn btn-default btn-block btn-outline btn-outline-primary btn-cta"
           >
-            Read the README
+            To the README
           </a>
         </div>
       </div>
     </div>
   </div>;
 }
+Index.transparentNavBar = true;
 
-function UserNav({user}) {
+function UserNav({user, transparent}) {
   // Login status
   if (user && user._auth) {
     return <Nav pullRight>
@@ -67,10 +71,12 @@ function UserNav({user}) {
         Logout {user.user}
       </NavItem>
     </Nav>;
-  } else {
+  } else if (!transparent) {
     return <Navbar.Form pullRight>
       <a href="/setup/login" className="btn btn-primary btn-outline">Login with Github</a>
     </Navbar.Form>;
+  } else {
+    return null;
   }
 }
 

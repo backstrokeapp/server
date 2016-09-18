@@ -7,8 +7,17 @@ $navbar-mark-margin: $navbar-margin-bottom / 2;
 
 // Navbar drop-shadow
 .navbar {
+  z-index: 500;
   box-shadow: $gray-light 0px 0px 1px;
   border-radius: 0px;
+  &.navbar-inverse {
+    box-shadow: transparent 0px 0px;
+    padding-top: 10px;
+
+    .collapse.in {
+      background-color: #5c5d5b;
+    }
+  }
 }
 
 // Backstroke logo

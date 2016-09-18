@@ -10,7 +10,7 @@ export function ManageSettings({
   user,
   onTokenUpdate,
 }) {
-  if (subscribedTo) {
+  if (subscribedTo !== null) {
     return <div className="manage-settings container">
       <h1>Settings</h1>
 

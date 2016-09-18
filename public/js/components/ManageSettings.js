@@ -2,44 +2,54 @@ import React from 'react';
 import {connect} from 'react-redux';
 import StripeCheckout from 'react-stripe-checkout';
 
+import UserNotAuthenticated from 'components/UserNotAuthenticated';
 import fetchSettings from 'actions/fetchSettings';
 
 export function ManageSettings({
   subscribedTo,
+  user,
   onTokenUpdate,
 }) {
-  return <div className="manage-settings container">
-    <h1>Settings</h1>
+  if (subscribedTo) {
+    return <div className="manage-settings container">
+      <h1>Settings</h1>
 
-    <h2>Payments</h2>
-    <div className="payment-status">
-      <PaymentStatus info={subscribedTo} />
+      <h2>Payments</h2>
+      <div className="payment-status">
+        <PaymentStatus info={subscribedTo} />
 
-      <h1>Payment Method</h1>
-      <StripeCheckout
-        name="Enter a card:"
-        stripeKey="pk_test_k280ghlxr7GrqGF9lxBhy1Uj"
-        token={onTokenUpdate}
-        panelLabel="Add"
-      >
-        {
-          subscribedTo ?
-          <span className="payment-button">
-            We have a valid payment method.
-            <button className="btn btn-default btn-outline btn-outline-primary btn-lg">
-              Update Credit Card
-            </button>
-          </span>:
-          <span className="payment-button">
-            We don't have a payment method.
-            <button className="btn btn-default btn-outline btn-outline-primary btn-lg">
-              Add Credit Card
-            </button>
-          </span>
-        }
-      </StripeCheckout>
-    </div>
-  </div>;
+        <h1>Payment Method</h1>
+        <StripeCheckout
+          name="Enter a card:"
+          stripeKey="pk_test_k280ghlxr7GrqGF9lxBhy1Uj"
+          token={onTokenUpdate}
+          panelLabel="Add"
+        >
+          {
+            subscribedTo ?
+            <span className="payment-button">
+              We have a valid payment method.
+              <button className="btn btn-default btn-outline btn-outline-primary btn-lg">
+                Update Credit Card
+              </button>
+            </span>:
+            <span className="payment-button">
+              We don't have a payment method.
+              <button className="btn btn-default btn-outline btn-outline-primary btn-lg">
+                Add Credit Card
+              </button>
+            </span>
+          }
+        </StripeCheckout>
+      </div>
+    </div>;
+  } else if (user && !user._auth) {
+    return <UserNotAuthenticated />;
+  } else {
+    return <div className="loading container">
+      <span>Loading your settings</span>
+    </div>;
+  }
 }
 
 function PaymentStatus({info}) {
@@ -65,6 +75,7 @@ function PaymentStatus({info}) {
 export default connect((state, props) => {
   return {
     subscribedTo: state.subscribedTo,
+    user: state.user,
   };
 }, dispatch => {
   return {

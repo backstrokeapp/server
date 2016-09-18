@@ -18,7 +18,6 @@ export default function fetchSettings() {
   };
 }
 
-
 export function userSubscribedTo(data) {
   return {type: 'USER_SUBSCRIBES_TO', data};
 }

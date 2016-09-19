@@ -19,7 +19,7 @@ export default function fetchSettings() {
 }
 
 export function userSubscribedTo(data) {
-  mixpanel.track("Fetch Settings");
+  process.env.USE_MIXPANEL && mixpanel.track("Fetch Settings");
 
   return {type: 'USER_SUBSCRIBES_TO', data};
 }

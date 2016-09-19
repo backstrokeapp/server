@@ -1,3 +1,5 @@
+import {PremiumRequiresPaymentError} from 'helpers/errors';
+
 // A utility function to check if a user is authenticated, and if so, return
 // the authenticated user. Otherwise, this function will throw an error
 function assertLoggedIn(req, res) {
@@ -126,20 +128,18 @@ export function update(Link, User, isLinkPaid, addWebhooksForLink, updatePaidLin
 
     // verify a user can create a paid link, if the link is paid
     if (link.paid && !req.user.customerId) {
-      throw new Error('Cannot create private link without a payment method.');
+      throw new PremiumRequiresPaymentError('Cannot create private link without a payment method.');
     }
 
     // update the link
     return Link.update({_id: req.params.linkId, owner: user}, link).exec();
   }).then(doPayments(Link, User, updatePaidLinks, user, res)).then(() => {
     res.status(200).send({status: 'ok'});
+  }).catch(PremiumRequiresPaymentError, err => {
+    res.status(403).send({error: err.message});
   }).catch(err => {
-    if (err.message.indexOf('Cannot create private link without a payment method') === 0) {
-      res.status(403).send({error: err.message});
-    } else {
-      res.status(500).send({error: "Server error"});
-      process.env.NODE_ENV !== 'test' && (() => {throw err})()
-    }
+    res.status(500).send({error: "Server error"});
+    process.env.NODE_ENV !== 'test' && (() => {throw err})()
   });
 }
 
@@ -160,7 +160,7 @@ export function enable(Link, User, updatePaidLinks, req, res) {
       paid: true,
     }).exec().then(paidLink => {
       if (paidLink && !req.user.customerId) {
-        throw new Error(`Cannot add a private repo for a user that doesn't have payment info`);
+        throw new PremiumRequiresPaymentError(`Cannot add a private repo for a user that doesn't have payment info`);
       }
 
       // step 2: update the link with the new information
@@ -186,13 +186,11 @@ export function enable(Link, User, updatePaidLinks, req, res) {
       } else {
         res.status(400).send({status: 'not-complete'});
       }
+    }).catch(PremiumRequiresPaymentError, err => {
+      res.status(403).send({error: 'Cannot enable a private link without a payment method.'});
     }).catch(err => {
-      if (err.message.indexOf(`Cannot add a private repo for a user that doesn't have payment info`) === 0) {
-        res.status(403).send({error: 'Cannot enable a private link without a payment method.'});
-      } else {
-        process.env.NODE_ENV !== 'test' && console.trace(err);
-        return res.status(500).send({error: 'Database error.'});
-      }
+      process.env.NODE_ENV !== 'test' && console.trace(err);
+      return res.status(500).send({error: 'Database error.'});
     });
   }
 }

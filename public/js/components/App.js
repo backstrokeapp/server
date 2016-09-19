@@ -87,7 +87,7 @@ export function Pricing() {
           <div className="panel panel-success">
             <div className="panel-heading">
               Premium
-              <span className="pull-right">$5.00/month for 5 premium links</span>
+              <span className="pull-right">$5.00/month per 5 premium links</span>
             </div>
             <ul className="list-group">
               <li className="list-group-item">Sync changes from upstream to forks</li>

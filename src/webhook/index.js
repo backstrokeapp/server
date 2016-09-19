@@ -14,10 +14,10 @@ export default function webhook(gh, link, pageSize=100, botInstance=false) {
 
   process.env.USE_MIXPANEL && mixpanel.track('Webhook', {
     "Link Id": link._id,
-    "From Repo Name": link.from.name,
-    "From Repo Provider": link.from.provider,
-    "To Repo Name": link.to.name || link.to.type,
-    "To Repo Provider": link.to.provider,
+    "From Repo Name": link.from ? link.from.name : null,
+    "From Repo Provider": link.from ? link.from.provider : null,
+    "To Repo Name": link.to ? (link.to.name || link.to.type) : null,
+    "To Repo Provider": link.to ? link.to.provider : null,
   });
 
   function actOnRepo(link, from, to) {

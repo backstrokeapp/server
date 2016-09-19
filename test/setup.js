@@ -5,3 +5,9 @@
 import Promise from 'bluebird';
 import mongoose from 'mongoose';
 mongoose.Promise = Promise;
+
+// make mixpanel null
+global.mixpanel = {
+  track() { return null; },
+  identify() { return null; },
+};

@@ -40,7 +40,7 @@ describe('payments', function() {
       stripe.subscriptions.expects('retrieve').withArgs(user.subscriptionId).resolves(null);
       stripe.subscriptions.expects('create').withArgs({
         customer: user.customerId,
-        plan: '5_private_repo',
+        plan: 'premium_link',
         quantity: payments.getPaymentQuantityForLinks(3),
         metadata: {repos: 3},
       }).resolves({
@@ -70,7 +70,7 @@ describe('payments', function() {
       stripe.subscriptions.expects('retrieve').withArgs(user.subscriptionId).rejects();
       stripe.subscriptions.expects('create').withArgs({
         customer: user.customerId,
-        plan: '5_private_repo',
+        plan: 'premium_link',
         quantity: payments.getPaymentQuantityForLinks(3),
         metadata: {repos: 3},
       }).resolves({
@@ -275,18 +275,13 @@ describe('payments', function() {
   it('should test getPaymentQuantityForLinks', function() {
     assert.equal(payments.getPaymentQuantityForLinks( 0), 0);
     assert.equal(payments.getPaymentQuantityForLinks( 1), 1);
-    assert.equal(payments.getPaymentQuantityForLinks( 2), 1);
-    assert.equal(payments.getPaymentQuantityForLinks( 3), 1);
-    assert.equal(payments.getPaymentQuantityForLinks( 4), 1);
-    assert.equal(payments.getPaymentQuantityForLinks( 5), 1);
-    assert.equal(payments.getPaymentQuantityForLinks( 8), 2);
-    assert.equal(payments.getPaymentQuantityForLinks( 9), 2);
-    assert.equal(payments.getPaymentQuantityForLinks(10), 2);
-    assert.equal(payments.getPaymentQuantityForLinks(11), 3);
-    assert.equal(payments.getPaymentQuantityForLinks(11), 3);
+    assert.equal(payments.getPaymentQuantityForLinks( 2), 2);
+    assert.equal(payments.getPaymentQuantityForLinks( 3), 3);
+    assert.equal(payments.getPaymentQuantityForLinks( 4), 4);
+    assert.equal(payments.getPaymentQuantityForLinks( 5), 5);
 
-    assert.equal(payments.getPaymentQuantityForLinks(24), 5);
-    assert.equal(payments.getPaymentQuantityForLinks(25), 5);
-    assert.equal(payments.getPaymentQuantityForLinks(26), 6);
+    assert.equal(payments.getPaymentQuantityForLinks(24), 24);
+    assert.equal(payments.getPaymentQuantityForLinks(25), 25);
+    assert.equal(payments.getPaymentQuantityForLinks(26), 26);
   });
 });

@@ -1,6 +1,9 @@
 ![Backstroke](https://rawgit.com/1egoman/backstroke/master/assets/logo.svg)
-Backstroke
-===
+# Backstroke
+
+[![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.svg)](https://gratipay.com/Backstroke/)
+
+
 A Github bot to keep a fork updated with any changes made to its upstream.
 Heavily inspired by Greenkeeper.
 

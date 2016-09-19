@@ -7,7 +7,7 @@ import isLinkPaid from 'helpers/isLinkPaid';
 
 // Given a number of links, return the "payment quantity" that is set within stripe.
 export function getPaymentQuantityForLinks(linkCount) {
-  return Math.ceil(linkCount / 5);
+  return linkCount;
 }
 
 // Called when a paid link is added or changed
@@ -18,7 +18,7 @@ export function changePaidLinkQuantity(User, user, amount) {
       // create a subscription
       return stripe.subscriptions.create({
         customer: user.customerId,
-        plan: '5_private_repo',
+        plan: 'premium_link',
         quantity: getPaymentQuantityForLinks(amount),
         metadata: {
           repos: amount,

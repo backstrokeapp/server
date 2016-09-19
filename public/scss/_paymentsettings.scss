@@ -53,9 +53,9 @@
     font-size: 54px;
 
     &:after {
-      content: "private link block(s)";
+      content: "premium link(s)";
       display: block;
-      font-size: 16px;
+      font-size: 18px;
       margin-top: 5px;
     }
   }
@@ -76,13 +76,13 @@
   .payment-block {
     @include colored-block;
     &:after {
-      content: "price per block";
+      content: "price per premium link";
       display: block;
       font-size: 20px;
       margin-top: 18px;
     }
     &:before {
-      content: "$5.00";
+      content: "$1.00";
       display: block;
       font-size: 24px;
       margin-top: 24px;

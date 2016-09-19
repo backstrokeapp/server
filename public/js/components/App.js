@@ -66,12 +66,15 @@ Index.transparentNavBar = true;
 export function Pricing() {
   return <div className="pricing-page">
     <div className="container">
-      <h1>Five links for five bucks.</h1>
+      <h1>Pricing</h1>
 
       <div className="row">
         <div className="col-md-6">
           <div className="panel panel-default">
-            <div className="panel-heading">Free</div>
+            <div className="panel-heading">
+              Free
+              <span className="pull-right">Use for free</span>
+            </div>
             <ul className="list-group">
               <li className="list-group-item">Sync changes from upstream to forks</li>
               <li className="list-group-item">Sync changes between two repositories</li>
@@ -79,6 +82,7 @@ export function Pricing() {
               <li className="list-group-item">Changes are proposed as pull requests</li>
             </ul>
             <div className="panel-footer">
+              <h3 style={{color: "#333", textAlign: "center", marginBottom: 20}}>Use for free</h3>
               <a href="/setup/login" className="btn btn-default btn-block btn-lg">Sign up</a>
             </div>
           </div>
@@ -87,7 +91,7 @@ export function Pricing() {
           <div className="panel panel-success">
             <div className="panel-heading">
               Premium
-              <span className="pull-right">$5.00/month per 5 premium links</span>
+              <span className="pull-right">$1.00 per premium link per month</span>
             </div>
             <ul className="list-group">
               <li className="list-group-item">Sync changes from upstream to forks</li>
@@ -104,11 +108,14 @@ export function Pricing() {
               </li>
               <li className="list-group-item">
                 <span className="label label-success">Premium</span>
-                Sold in blocks of five
+                Less than the price of a lunch per year
               </li>
             </ul>
             <div className="panel-footer">
-              <a href="/setup/login" className="btn btn-success btn-block btn-lg">Sign up for Premium</a>
+              <h3 style={{color: "#333", textAlign: "center", marginBottom: 20}}>$1.00 per premium link per month</h3>
+            <a href="/setup/login" className="btn btn-success btn-block btn-lg">
+              Sign up for Premium
+            </a>
             </div>
           </div>
         </div>

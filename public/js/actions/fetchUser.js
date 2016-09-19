@@ -19,6 +19,15 @@ export default function fetchUser() {
 }
 
 export function userInfo(user) {
+  if (process.env.USE_MIXPANEL && user._id) {
+    mixpanel.identify(user._id);
+    mixpanel.people.set({
+      "$email": user.email,
+      "$first_name": user.user,
+      "have_payment": user.customerId ? true : false,
+      "are_paying": user.subscriptionId ? true : false,
+    });
+  }
   return {type: 'USER_INFO', user};
 }
 export function userNotAuthenticated() {

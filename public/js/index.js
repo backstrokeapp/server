@@ -17,6 +17,9 @@ import fetchLink from 'actions/fetchLink';
 import fetchLinks from 'actions/fetchLinks';
 import fetchSettings from 'actions/fetchSettings';
 
+// Setup Mixpanel.
+process.env.USE_MIXPANEL && mixpanel.track("Page view");
+
 // Which history store to use?
 const history = hashHistory;
 

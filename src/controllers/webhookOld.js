@@ -159,6 +159,12 @@ export default function webhook(req, res) {
     (req.body && req.body.repository && req.body.repository.fork) ||
     req.query.upstream
   ) {
+    process.env.USE_MIXPANEL && mixpanel.track('Webhook Old', {
+      "Location": "fork",
+      "Fork": req.body.repository.full_name,
+      "Upstream": req.body.repository.parent && req.body.repository.parent.name,
+    });
+
     // Try to merge upstream changes into the passed repo
     console.info("Merging upstream", req.body.repository.full_name);
     return isForkMergeUpstream(req.body.repository, req.query).then(msg => {
@@ -171,6 +177,11 @@ export default function webhook(req, res) {
       res.send(`Uhh, error: ${err}`);
     });
   } else {
+    process.env.USE_MIXPANEL && mixpanel.track('Webhook Old', {
+      "Location": "upstream",
+      "Upstream": req.body.repository.full_name,
+      "Fork": "all forks",
+    });
     // Find all forks of the current repo and merge the passed repo's changes
     // into each
     console.info("Finding forks", req.body.repository.full_name);

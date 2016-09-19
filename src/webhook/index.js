@@ -3,8 +3,22 @@ import getRepoName from 'helpers/getRepoName';
 import createGithubInstance from '../createGithubInstance';
 import createTemporaryRepo from 'helpers/createTemporaryRepo';
 
+import Mixpanel from 'mixpanel';
+let mixpanel;
+if (process.env.USE_MIXPANEL) {
+  mixpanel = Mixpanel.init(process.env.USE_MIXPANEL);
+}
+
 export default function webhook(gh, link, pageSize=100, botInstance=false) {
   let backstrokeBotInstance = botInstance || createGithubInstance({accessToken: process.env.GITHUB_TOKEN});
+
+  process.env.USE_MIXPANEL && mixpanel.track('Webhook', {
+    "Link Id": link._id,
+    "From Repo Name": link.from.name,
+    "From Repo Provider": link.from.provider,
+    "To Repo Name": link.to.name || link.to.type,
+    "To Repo Provider": link.to.provider,
+  });
 
   function actOnRepo(link, from, to) {
     return didRepoOptOut(gh, to.provider, to).then(didOptOut => {

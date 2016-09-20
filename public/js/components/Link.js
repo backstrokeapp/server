@@ -24,6 +24,7 @@ export function isRepoValid(repo, type) {
     repo.name.length > 0 &&
     repo.name.indexOf('/') !== -1 &&
     repo.branch && repo.branch.length > 0 &&
+    repo.branches.length > 0 && // must have al teast 1 branch
     (type === 'to' ? repo.fork : true) // to must be a fork
   ) || (
     repo.type === 'fork-all' &&

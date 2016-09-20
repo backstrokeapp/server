@@ -15,9 +15,11 @@ describe('payments', function() {
   beforeEach(() => {
     if (stripe) {
       stripe.subscriptions.restore();
+      stripe.customers.restore();
     }
     stripe = {
       subscriptions: sinon.mock(realStripe.subscriptions),
+      customers: sinon.mock(realStripe.customers),
     };
     isLinkPaid = sinon.stub();
     payments = proxyquire('controllers/payments', {
@@ -269,6 +271,142 @@ describe('payments', function() {
         {isAuthenticated: () => false},
         res
       );
+    });
+  });
+  describe('addPaymentToUser', function() {
+    it(`should add a payment method to a user with no payment method already`, function(done) {
+      let user = {
+        _id: 'userid',
+        user: 'userName',
+        provider: 'github',
+        customerId: null,
+        subscriptionId: null,
+      };
+
+      // no current subscription
+      stripe.customers.expects('retrieve').withArgs(user.customerId).rejects(true);
+      stripe.customers.expects('create').withArgs({
+        source: 'tok_stripetoken',
+        email: 'user@example.com',
+        metadata: {
+          provider: user.provider,
+          user: user.user,
+        },
+      }).resolves({id: 'cus_stripecustomer'});
+
+      let exec = sinon.stub().resolves({updated: 'user'});
+      sinon.stub(User, 'update').withArgs({_id: user._id}, {
+        customerId: 'cus_stripecustomer',
+      }).returns({exec});
+
+      res(function() {
+        stripe.customers.verify();
+        User.update.restore();
+        assert.deepEqual(res.statusCode, 200);
+        assert.deepEqual(res.data, {status: 'ok'});
+        done();
+      });
+
+      return payments.addPaymentToUser(
+        User,
+        {user, isAuthenticated: () => true, body: {source: 'tok_stripetoken', email: 'user@example.com'}},
+        res
+      );
+    });
+    it(`should update a payment method on a user that already has a payment method`, function(done) {
+      let user = {
+        _id: 'userid',
+        user: 'userName',
+        provider: 'github',
+        customerId: 'cus_customerid',
+        subscriptionId: 'sub_subscriptionid',
+      };
+
+      // no current subscription
+      stripe.customers.expects('retrieve').withArgs(user.customerId).resolves({id: 'cus_customerid'});
+      stripe.customers.expects('update').withArgs(user.customerId, {
+        source: 'tok_stripetoken',
+        email: 'user@example.com',
+        metadata: {
+          provider: user.provider,
+          user: user.user,
+        },
+      }).resolves({id: user.cus_customerid});
+
+      let exec = sinon.stub().resolves({updated: 'user'});
+      sinon.stub(User, 'update').withArgs({_id: user._id}, {
+        customerId: 'cus_stripecustomer',
+      }).returns({exec});
+
+      res(function() {
+        stripe.customers.verify();
+        User.update.restore();
+        assert.deepEqual(res.statusCode, 200);
+        assert.deepEqual(res.data, {status: 'ok'});
+        done();
+      });
+
+      return payments.addPaymentToUser(
+        User,
+        {user, isAuthenticated: () => true, body: {source: 'tok_stripetoken', email: 'user@example.com'}},
+        res
+      );
+    });
+    it(`should error when a stripe payment token is reused`, function(done) {
+      let user = {
+        _id: 'userid',
+        user: 'userName',
+        provider: 'github',
+        customerId: null,
+        subscriptionId: null,
+      };
+
+      // no current subscription
+      stripe.customers.expects('retrieve').withArgs(user.customerId).rejects(true);
+      stripe.customers.expects('create').withArgs({
+        source: 'tok_stripetoken',
+        email: 'user@example.com',
+        metadata: {
+          provider: user.provider,
+          user: user.user,
+        },
+      }).rejects(new Error('You cannot use a Stripe token more than once'));
+
+      let exec = sinon.stub().resolves({updated: 'user'});
+      sinon.stub(User, 'update').withArgs({_id: user._id}, {
+        customerId: 'cus_stripecustomer',
+      }).returns({exec});
+
+      res(function() {
+        stripe.customers.verify();
+        User.update.restore();
+        assert.deepEqual(res.statusCode, 400);
+        assert.deepEqual(res.data, {error: `You can't reuse payment source tokens!`});
+        done();
+      });
+
+      return payments.addPaymentToUser(
+        User,
+        {user, isAuthenticated: () => true, body: {source: 'tok_stripetoken', email: 'user@example.com'}},
+        res
+      );
+    });
+    it(`should error when not logged in`, function(done) {
+      res(function() {
+        assert.deepEqual(res.statusCode, 403);
+        assert.deepEqual(res.data, {error: `Not authenticated.`});
+        done();
+      });
+
+      return payments.addPaymentToUser(User, {isAuthenticated: () => false}, res);
+    });
+    it(`should error with a malformed body`, function() {
+      return payments.addPaymentToUser(User, {isAuthenticated: () => true, body: {}}, res).then(data => {
+        throw new Error('should not have resolved');
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.deepEqual(err.message, 'Payment source not provided in body.')
+      });
     });
   });
 

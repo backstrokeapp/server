@@ -4,7 +4,7 @@
   z-index: 5;
 
   color: #FFF;
-  height: 100%;
+  height: 98%;
   width: 100%;
 
   background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(/assets/img/hero.jpg);
@@ -46,3 +46,28 @@
     border-width: 3px !important;
   }
 }
+
+.used-by {
+  position: absolute;
+  top: 98%;
+  z-index: 5;
+  height: 20%;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  // "Used by"
+  span {
+    font-size: 2em;
+    vertical-align: middle;
+  }
+
+  img {
+    height: 3em;
+    margin-left: 3em;
+  }
+}
+

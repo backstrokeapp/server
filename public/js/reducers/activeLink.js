@@ -81,6 +81,7 @@ export default function activeLink(state=null, action) {
       return Object.assign({}, state, {
         _saveInProgress: false,
         _saveError: action.error,
+        enabled: false,
       });
 
     // Delete a repo

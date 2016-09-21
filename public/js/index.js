@@ -7,13 +7,18 @@ import reduxThunk from 'redux-thunk';
 import {routerMiddleware} from 'react-router-redux';
 
 import reducer from 'reducers/reducer';
-import App, {Index} from 'components/App';
+import App, {Index, Pricing} from 'components/App';
 import Link from 'components/Link';
 import LinkList from 'components/LinkList';
+import ManageSettings from 'components/ManageSettings';
 
 import fetchUser from 'actions/fetchUser';
 import fetchLink from 'actions/fetchLink';
 import fetchLinks from 'actions/fetchLinks';
+import fetchSettings from 'actions/fetchSettings';
+
+// Setup Mixpanel.
+process.env.USE_MIXPANEL && mixpanel.track("Page view");
 
 // Which history store to use?
 const history = hashHistory;
@@ -45,8 +50,20 @@ history.listen(event => {
   // /links/:linkId
   // When navigating to a new link's page, fetch its details
   if (match = pathname.match(/^\/links\/(.+)\/?$/)) {
-    dispatch(fetchLink({_id: match[1]}));
+    // only fetch the link if it has changed
+    // this is because links that are being created (but not saved) need to persist in memory.
+    // See https://github.com/1egoman/backstroke/issues/22
+    if (!(state.activeLink && match[1] === state.activeLink._id)) {
+      dispatch(fetchLink({_id: match[1]}));
+    }
   }
+
+  // /links/:linkId
+  // When navigating to a new link's page, fetch its details
+  if (match = pathname.indexOf('/settings') === 0) {
+    dispatch(fetchSettings());
+  }
+
 });
 
 // Render it all.
@@ -57,6 +74,8 @@ render(
         <IndexRoute component={Index} />
         <Route path="/links" component={LinkList} />
         <Route path="/links/:linkId" component={Link} />
+        <Route path="/settings" component={ManageSettings} />
+        <Route path="/pricing" component={Pricing} />
       </Route>
     </Router>
   </Provider>,

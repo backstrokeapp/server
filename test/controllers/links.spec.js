@@ -4,6 +4,7 @@ import Promise from 'bluebird';
 
 import {get, index, create, update, enable, del} from 'controllers/links';
 import Link from 'models/Link';
+import User from 'models/User';
 import {generateLink, res} from '../testHelpers';
 
 describe('links controller', function() {
@@ -16,6 +17,8 @@ describe('links controller', function() {
       provider_id: '12345',
       user: 'my-username',
       email: 'me@example.com',
+      customerId: 'cus_stripeid',
+      subscriptionId: 'sub_stripeid',
     },
   };
 
@@ -215,11 +218,12 @@ describe('links controller', function() {
       LinkMock.expects('update')
       .withArgs({_id: 'my-link-id', owner: loggedIn.user}, link1)
       .chain('exec')
-      .yields(null, link1);
+      .resolves(link1);
       LinkMock.expects('isValidLink').withArgs(link1).returns({errors: []});
 
       let isLinkPaid = sinon.stub().resolves(false);
       let addWebhooksForLink = sinon.stub().resolves(false);
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -233,8 +237,10 @@ describe('links controller', function() {
 
       return update(
         Link,
+        User,
         isLinkPaid,
         addWebhooksForLink,
+        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
         res
       );
@@ -247,11 +253,12 @@ describe('links controller', function() {
       LinkMock.expects('update')
       .withArgs({_id: 'my-link-id', owner: loggedIn.user}, link1)
       .chain('exec')
-      .yields(new Error('some database error'));
+      .rejects(new Error('some database error'));
       LinkMock.expects('isValidLink').withArgs(link1).returns({errors: []});
 
       let isLinkPaid = sinon.stub().resolves(false);
       let addWebhooksForLink = sinon.stub().resolves();
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -260,13 +267,15 @@ describe('links controller', function() {
         assert(addWebhooksForLink.calledWith(loggedIn.user, link1));
 
         assert.equal(res.statusCode, 500);
-        assert.deepEqual(res.data, {error: 'Database error.'});
+        assert.deepEqual(res.data, {error: 'Server error'});
       });
 
       return update(
         Link,
+        User,
         isLinkPaid,
         addWebhooksForLink,
+        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
         res
       );
@@ -276,6 +285,7 @@ describe('links controller', function() {
       link1.to.fork = true;
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         assert(isLinkPaid.calledWith(loggedIn.user, link1));
@@ -287,8 +297,10 @@ describe('links controller', function() {
 
       return update(
         Link,
+        User,
         isLinkPaid,
         addWebhooksForLink,
+        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
         res
       );
@@ -463,6 +475,7 @@ describe('links controller', function() {
 
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         assert.equal(res.statusCode, 400);
@@ -471,8 +484,10 @@ describe('links controller', function() {
 
       return update(
         Link,
+        User,
         isLinkPaid,
         addWebhooksForLink,
+        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
         res
       );
@@ -483,6 +498,7 @@ describe('links controller', function() {
 
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         assert.equal(res.statusCode, 400);
@@ -491,28 +507,10 @@ describe('links controller', function() {
 
       return update(
         Link,
+        User,
         isLinkPaid,
         addWebhooksForLink,
-        join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
-        res
-      );
-    });
-    it('should 400 on a paid repo', function() {
-      let link1 = generateLink();
-      link1.to.fork = true;
-
-      let isLinkPaid = sinon.stub().resolves(true);
-      let addWebhooksForLink = sinon.stub().resolves();
-
-      res(function() {
-        assert.equal(res.statusCode, 400);
-        assert.deepEqual(res.data, {error: 'Private repos are currently not supported.'});
-      });
-
-      return update(
-        Link,
-        isLinkPaid,
-        addWebhooksForLink,
+        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
         res
       );
@@ -523,6 +521,7 @@ describe('links controller', function() {
 
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         assert.equal(res.statusCode, 400);
@@ -531,8 +530,10 @@ describe('links controller', function() {
 
       return update(
         Link,
+        User,
         isLinkPaid,
         addWebhooksForLink,
+        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'})),
         res
       );
@@ -543,6 +544,7 @@ describe('links controller', function() {
 
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         assert.equal(res.statusCode, 403);
@@ -551,17 +553,31 @@ describe('links controller', function() {
 
       return update(
         Link,
+        User,
         isLinkPaid,
         addWebhooksForLink,
+        updatePaidLinks,
         join(params({linkId: 'my-link-id'}), body({link: link1})), // no `loggedIn`
         res
       );
     });
   });
   describe('enable', function() {
+    beforeEach(() => {
+      Link.update.restore && Link.update.restore();
+      Link.findOne.restore && Link.findOne.restore();
+    });
+
     it('should enable a link so it will run via webhook', function(done) {
       let link1 = generateLink();
-      let LinkMock = sinon.mock(Link).expects('update')
+      let LinkMock = sinon.mock(Link);
+      LinkMock.expects('findOne').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        paid: true,
+      }).chain('exec').resolves(link1);
+
+      LinkMock.expects('update')
         .withArgs({
           _id: link1._id,
           owner: loggedIn.user,
@@ -570,11 +586,12 @@ describe('links controller', function() {
           name: {$exists: true, $type: 2, $ne: ''},
         }, {enabled: true})
       .chain('exec')
-      .yields(null, {nModified: 1});
+      .resolves({nModified: 1});
+
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
-        Link.update.restore();
 
         assert.equal(res.statusCode, 200);
         assert.deepEqual(res.data, {status: 'ok'});
@@ -583,13 +600,22 @@ describe('links controller', function() {
 
       enable(
         Link,
+        User,
+        updatePaidLinks,
         join(loggedIn, params({linkId: link1._id}), body({enabled: true})),
         res
       );
     })
     it('should disable a link', function(done) {
       let link1 = generateLink();
-      let LinkMock = sinon.mock(Link).expects('update')
+      let LinkMock = sinon.mock(Link);
+      LinkMock.expects('findOne').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        paid: true,
+      }).chain('exec').resolves(link1);
+
+      LinkMock.expects('update')
         .withArgs({
           _id: link1._id,
           owner: loggedIn.user,
@@ -598,11 +624,12 @@ describe('links controller', function() {
           name: {$exists: true, $type: 2, $ne: ''},
         }, {enabled: false})
       .chain('exec')
-      .yields(null, {nModified: 1});
+      .resolves({nModified: 1});
+
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
-        Link.update.restore();
 
         assert.equal(res.statusCode, 200);
         assert.deepEqual(res.data, {status: 'ok'});
@@ -611,26 +638,32 @@ describe('links controller', function() {
 
       enable(
         Link,
+        User,
+        updatePaidLinks,
         join(loggedIn, params({linkId: link1._id}), body({enabled: false})),
         res
       );
     });
     it('should change link state on an incomplete state', function(done) {
       let link1 = generateLink();
-      let LinkMock = sinon.mock(Link).expects('update')
-        .withArgs({
-          _id: link1._id,
-          owner: loggedIn.user,
-          'to.type': {$exists: true},
-          'from.type': {$exists: true},
-          name: {$exists: true, $type: 2, $ne: ''},
-        }, {enabled: true})
-      .chain('exec')
-      .yields(null, {nModified: 0});
+      let LinkMock = sinon.mock(Link);
+      LinkMock.expects('findOne').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        paid: true,
+      }).chain('exec').resolves(link1);
+      LinkMock.expects('update').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        'to.type': {$exists: true},
+        'from.type': {$exists: true},
+        name: {$exists: true, $type: 2, $ne: ''},
+      }, {enabled: true}).chain('exec').resolves({nModified: 0});
+
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
-        Link.update.restore();
 
         assert.equal(res.statusCode, 400);
         assert.deepEqual(res.data, {status: 'not-complete'});
@@ -639,12 +672,15 @@ describe('links controller', function() {
 
       enable(
         Link,
+        User,
+        updatePaidLinks,
         join(loggedIn, params({linkId: link1._id}), body({enabled: true})),
         res
       );
     });
     it('should 400 on malformed body', function(done) {
       let link1 = generateLink();
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         assert.equal(res.statusCode, 400);
@@ -654,12 +690,15 @@ describe('links controller', function() {
 
       enable(
         Link,
+        User,
+        updatePaidLinks,
         join(loggedIn, params({linkId: link1._id}), body({enabled: 'not valid'})),
         res
       );
     });
     it('should 403 when unauthenticated', function(done) {
       let link1 = generateLink();
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         assert.equal(res.statusCode, 403);
@@ -669,26 +708,34 @@ describe('links controller', function() {
 
       enable(
         Link,
+        User,
+        updatePaidLinks,
         join(params({linkId: link1._id})), // no loggedIn
         res
       );
     });
     it('should 500 on database error', function(done) {
       let link1 = generateLink();
-      let LinkMock = sinon.mock(Link).expects('update')
-        .withArgs({
-          _id: link1._id,
-          owner: loggedIn.user,
-          'to.type': {$exists: true},
-          'from.type': {$exists: true},
-          name: {$exists: true, $type: 2, $ne: ''},
-        }, {enabled: false})
+      let LinkMock = sinon.mock(Link);
+      LinkMock.expects('findOne').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        paid: true,
+      }).chain('exec').resolves(link1);
+      LinkMock.expects('update').withArgs({
+        _id: link1._id,
+        owner: loggedIn.user,
+        'to.type': {$exists: true},
+        'from.type': {$exists: true},
+        name: {$exists: true, $type: 2, $ne: ''},
+      }, {enabled: false})
       .chain('exec')
-      .yields(new Error('a fancy error'));
+      .rejects(new Error('a fancy error'));
+
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
-        Link.update.restore();
 
         assert.equal(res.statusCode, 500);
         assert.deepEqual(res.data, {error: 'Database error.'});
@@ -697,18 +744,21 @@ describe('links controller', function() {
 
       enable(
         Link,
+        User,
+        updatePaidLinks,
         join(loggedIn, params({linkId: link1._id}), body({enabled: false})),
         res
       );
     });
   });
-  describe('del', function() {
+  describe('delete', function() {
     it('should delete a link when it is no longer needed', function(done) {
       let link1 = generateLink();
       let LinkMock = sinon.mock(Link).expects('remove')
       .withArgs({_id: link1._id, owner: loggedIn.user})
       .chain('exec')
       .resolves(true);
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -721,6 +771,8 @@ describe('links controller', function() {
 
       del(
         Link,
+        User,
+        updatePaidLinks,
         join(loggedIn, params({id: link1._id})),
         res
       );
@@ -731,6 +783,7 @@ describe('links controller', function() {
       .withArgs({_id: link1._id, owner: loggedIn.user})
       .chain('exec')
       .rejects(new Error('screaming'));
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -743,12 +796,15 @@ describe('links controller', function() {
 
       del(
         Link,
+        User,
+        updatePaidLinks,
         join(loggedIn, params({id: link1._id})),
         res
       );
     });
     it('should 403 when unauthenticated', function(done) {
       let link1 = generateLink();
+      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         assert.equal(res.statusCode, 403);
@@ -758,6 +814,8 @@ describe('links controller', function() {
 
       del(
         Link,
+        User,
+        updatePaidLinks,
         join(params({id: link1._id})), // no loggedIn
         res
       );

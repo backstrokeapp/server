@@ -68,7 +68,7 @@ export function Index() {
         <span>Used by</span>
         <img src="/assets/img/github.png" alt="Github" />
         <img src="/assets/img/conda.svg" alt="Conda" />
-        {/*<img src="/assets/img/cachet.png" alt="Cachet" />*/}
+        <img src="/assets/img/cachet.png" alt="Cachet" />
       </div>
     </div>
   </div>;

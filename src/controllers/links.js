@@ -88,7 +88,7 @@ export function create(Link, req, res) {
 
 // Update a Link. This method requires a body with a link property.
 // Responds with {"status": "ok"} on success.
-export function update(Link, User, isLinkPaid, addWebhooksForLink, updatePaidLinks, req, res) {
+export function update(Link, User, isLinkPaid, addWebhooksForLink, removeOldWebhooksForLink, updatePaidLinks, req, res) {
   let user = assertLoggedIn(req, res);
 
   // Ensure the user is authenticated, and they passed a seeminly correct body.
@@ -118,12 +118,24 @@ export function update(Link, User, isLinkPaid, addWebhooksForLink, updatePaidLin
   return isLinkPaid(req.user, link)
   .then(paid => {
     link.paid = paid;
+
+  // Remove any existing webhooks on the old repository
   }).then(() => {
-    // Add webhooks to the link in the provider
+    return Link.findOne({_id: req.params.linkId, owner: user}).exec();
+  }).then(oldLink => {
+    return removeOldWebhooksForLink(req.user, oldLink);
+
+  // Add webhooks to the link in the provider
+  }).then(() => {
     return addWebhooksForLink(req.user, link)
   }).then(hooks => {
-    if (hooks && hooks.error) {
-      return res.status(400).send({error: hooks.error});
+    if (hooks) {
+      if (hooks.error) {
+        return res.status(400).send({error: hooks.error});
+      } else {
+        // update the hook id in the hook too.
+        link.hookId = hooks.id;
+      }
     }
 
     // verify a user can create a paid link, if the link is paid

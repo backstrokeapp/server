@@ -8,7 +8,7 @@ export function getBackstrokeUrlFor(link) {
 }
 
 // Given a link, try to add a webhook within the parent repository.
-export default function addWebhooksForLink(user, link) {
+export function addWebhooksForLink(user, link) {
   let gh = createGithubInstance(user);
   let config = {
     url: getBackstrokeUrlFor(link),
@@ -40,5 +40,20 @@ export default function addWebhooksForLink(user, link) {
     });
   } else {
     return Promise.resolve(true); // no webhook to add
+  }
+}
+
+export function removeOldWebhooksForLink(user, link) {
+  let gh = createGithubInstance(user);
+
+  if (link.from.type === 'repo' && link.hookId) {
+    let [fromUser, fromRepo] = getRepoName(link.from);
+    return gh.reposDeleteHook({
+      user: fromUser,
+      repo: fromRepo,
+      id: link.hookId,
+    });
+  } else {
+    return Promise.resolve(true); // no webhook to remove
   }
 }

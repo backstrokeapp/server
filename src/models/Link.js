@@ -39,6 +39,7 @@ const LINK_SCHEMA = {
     paid: {type: 'boolean'}, // will be overriden, so not required
     from: repo,
     to: {oneOf: [repo, forks]},
+    hookId: {type: 'string'},
 
     ephemeralRepo: {type: 'boolean'},
     pushUsers: {type: 'array', items: {type: 'string'}},
@@ -67,6 +68,7 @@ const link = new mongoose.Schema({
   owner: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
   from: RepoSchema,
   to: RepoSchema,
+  hookId: 'string',
 
   ephemeralRepo: 'boolean',
   pushUsers: ['string'],

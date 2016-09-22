@@ -12,7 +12,7 @@ import webhookOld from 'controllers/webhookOld';
 import {getSubscriptionInformation, updatePaidLinks, addPaymentToUser} from 'controllers/payments';
 
 import isLinkPaid from 'helpers/isLinkPaid';
-import addWebhooksForLink from 'helpers/addWebhooksForLink';
+import {addWebhooksForLink, removeOldWebhooksForLink} from 'helpers/addWebhooksForLink';
 
 // ----------------------------------------------------------------------------
 // Mongo stuff
@@ -93,7 +93,7 @@ app.post('/api/v1/links', bodyParser.json(), links.create.bind(null, Link));
 
 // POST link updates
 app.post('/api/v1/links/:linkId', bodyParser.json(),
-  links.update.bind(null, Link, User, isLinkPaid, addWebhooksForLink, updatePaidLinks));
+  links.update.bind(null, Link, User, isLinkPaid, addWebhooksForLink, removeOldWebhooksForLink, updatePaidLinks));
 
 // get the info to the currently subscribed plan
 app.get('/api/v1/subscribed', getSubscriptionInformation);

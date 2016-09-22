@@ -17,6 +17,7 @@ export function constructor(github) {
     pullRequestsMerge: Promise.promisify(github.pullRequests.merge),
 
     reposCreateHook: Promise.promisify(github.repos.createHook),
+    reposDeleteHook: Promise.promisify(github.repos.deleteHook),
     reposFork: Promise.promisify(github.repos.fork),
     reposGetCollaborators: Promise.promisify(github.repos.getCollaborators),
     searchIssues: Promise.promisify(github.search.issues),

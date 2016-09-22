@@ -12,6 +12,14 @@ if (process.env.GITHUB_TOKEN) {
   console.warn("Warning: No github token specified.");
 }
 
+// Setup mixpanel
+import Mixpanel from 'mixpanel';
+let mixpanel;
+if (process.env.USE_MIXPANEL) {
+  mixpanel = Mixpanel.init(process.env.USE_MIXPANEL);
+}
+
+
 // import the libraries that are required for communication
 const ghFactory = require('../github');
 let gh = ghFactory.constructor(github);

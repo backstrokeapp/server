@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import RouteMethod from './route';
 import {Link} from 'react-router';
 import GitHubButton from 'react-github-button';
+import {Tooltip, OverlayTrigger} from 'react-bootstrap';
 
 import {Navbar, Nav, NavItem} from 'react-bootstrap';
 
@@ -170,7 +171,18 @@ export function Pricing() {
               </li>
             </ul>
             <div className="panel-footer">
-              <h3 style={{color: "#333", textAlign: "center", marginBottom: 20}}>$1.00 per premium link per month</h3>
+              <OverlayTrigger placement="top" overlay={
+                <Tooltip id="prorated">
+                  You only pay for the time that your premium link is enabled.
+                  For example, if you have a premium link enabled for half of a month,
+                  you'll pay 50 cents instead of $1.00.
+                </Tooltip>
+              }>
+                <h3 style={{color: "#333", textAlign: "center", marginBottom: 20}}>
+                  $1.00 per premium link per month&nbsp;
+                  <small>(prorated)</small>
+                </h3>
+              </OverlayTrigger>
             <a href="/setup/login" className="btn btn-success btn-block btn-lg">
               Sign up for Premium
             </a>

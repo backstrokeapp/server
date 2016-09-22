@@ -1,3 +1,10 @@
+// call to action button used in the header and above the footer (both in ctas)
+.btn-cta {
+  font-size: 2em;
+  padding: $padding-large-vertical*2 $padding-large-horizontal*2;
+  border-width: 3px !important;
+}
+
 .index-page {
   position: absolute;
   top: 0px;
@@ -39,35 +46,141 @@
       margin-bottom: 1em;
     }
   }
-
-  .btn-cta {
-    font-size: 2em;
-    padding: $padding-large-vertical*2 $padding-large-horizontal*2;
-    border-width: 3px !important;
-  }
 }
 
 .used-by {
   position: absolute;
   top: 98%;
   z-index: 5;
-  height: 20%;
+  height: 30%;
   width: 100%;
 
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  flex-direction: row;
 
-  // "Used by"
-  span {
-    font-size: 2em;
-    vertical-align: middle;
+  .used-by-list {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+
+    // "Used by"
+    span {
+      font-size: 2em;
+      vertical-align: middle;
+    }
+
+    img {
+      height: 3em;
+      margin-left: 3em;
+    }
   }
 
-  img {
-    height: 3em;
-    margin-left: 3em;
+  // for mobile
+  @media (max-width: $screen-sm-min) {
+    .used-by-list {
+      flex-direction: column;
+      span {
+        display: block;
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+      }
+      img {
+        display: block;
+        height: 2.8em;
+        margin-bottom: 2em;
+        margin-left: 0em;
+      }
+      img:last-child {
+        display: none;
+      }
+    }
   }
 }
 
+.content {
+  position: absolute;
+  top: 130%;
+  width: 100%;
+  overflow: hidden;
+
+  ol, p {
+    font-size: 1.4em;
+  }
+
+  // title images
+  .img-pr {
+    margin-top: 2em; // space above/below on mobile
+    margin-bottom: 2em;
+    img {
+      height: 300px;
+    }
+
+    @media (min-width: $screen-sm-min) { // remove that space on desktop
+      margin-top: 0em;
+      margin-bottom: 0em;
+    }
+  }
+
+  .cta {
+    text-align: center;
+    min-height: 400px;
+
+    h1 {
+      margin-top: 80px;
+      font-weight: 300;
+    }
+
+    // the cta at the end of the home page
+    .btn-cta-end {
+      @extend .btn-cta;
+      margin-top: 50px;
+    }
+  }
+}
+
+
+.footer {
+  @include clearfix;
+  width: 100%;
+  background-color: $gray-dark;
+  color: #FFF;
+
+  padding: 2em 2em 3.2em 2em;
+
+  span {
+    float: left;
+    font-weight: 700;
+    margin-bottom: 1em;
+  }
+
+  ul {
+    float: left;
+    list-style-type: none;
+    padding-left: 0px;
+    width: 100%;
+
+    li {
+      padding-left: 0.2em;
+      a {
+        color: #FFF;
+      }
+    }
+  }
+
+  @media (min-width: $screen-md-min) {
+    text-align: center;
+
+    span {
+      margin-bottom: 0em;
+    }
+
+    ul {
+      float: right;
+      width: auto;
+      li { display: inline-block; }
+    }
+  }
+}

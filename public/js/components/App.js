@@ -69,7 +69,55 @@ export function Index() {
         <img src="/assets/img/github.png" alt="Github" />
         <img src="/assets/img/conda.svg" alt="Conda" />
         <img src="/assets/img/cachet.png" alt="Cachet" />
+        <img src="/assets/img/logo.png" alt="Backstroke" />
       </div>
+    </div>
+    <div className="content">
+      <div className="container">
+        <div className="col-md-6 col-xs-12">
+          <h2>Incorporate new changes as they happen, not in 6 months.</h2>
+          <p>
+            In no time, that newly forked copy of a popular project will become out of date.
+            Backstroke takes away the chore of manually updating your forks and provides
+            a <strong>simple</strong>, <strong>hosted bot</strong> that will propose any upstream
+            updates to your fork.
+          </p>
+        </div>
+        <div className="col-md-6 col-xs-12 img-pr">
+          <img src="/assets/img/backstroke-pr.png" alt="A Backstroke pull request" />
+        </div>
+      </div>
+      <div className="container">
+        <div className="col-md-6 col-xs-12">
+          <h2>How does Backstroke work?</h2>
+          <p>
+            Backstroke watches a Github repository via a webhook. When the repo is updated,
+            Backstroke sends a pull request to all of that repository's forks.&nbsp;
+            <a href="https://github.com/1egoman/backstroke#how-it-works">Read more.</a>
+          </p>
+        </div>
+        <div className="col-md-6 col-xs-12 img-pr">
+          <img src="/assets/img/backstroke-pr.png" alt="A Backstroke pull request" />
+        </div>
+      </div>
+      <div className="container">
+        <div className="col-md-6 col-xs-12">
+          <h2>Always free for open source.</h2>
+          <p>
+            Backstroke is free for public Github repositories. If you want to use Backstroke with
+            private repositories, there's a nominal charge of $1 per month.&nbsp;
+            <a href="#/pricing">Read more about pricing.</a>
+          </p>
+        </div>
+        <div className="col-md-6 col-xs-12 img-pr">
+          <img src="/assets/img/backstroke-pr.png" alt="A Backstroke pull request" />
+        </div>
+      </div>
+      <div className="container cta">
+        <h1>Give Backstroke a try for free.</h1>
+        <a className="btn btn-info btn-lg btn-cta-end" href="/setup/login">Sign in with Github</a>
+      </div>
+      <Footer />
     </div>
   </div>;
 }
@@ -134,6 +182,17 @@ export function Pricing() {
       </div>
     </div>
   </div>;
+}
+
+export function Footer() {
+  return <footer className="footer">
+    <span>Backstroke</span>
+    <ul>
+      <li><a href="https://github.com/1egoman/backstroke">Backstroke is ISC licensed.</a></li>
+      <li><a href="https://github.com/1egoman/backstroke"></a></li>
+      <li><a href="http://rgaus.net">Maintained by Ryan Gaus. Backstroke is copyright Ryan Gaus and contributors.</a></li>
+    </ul>
+  </footer>;
 }
 
 function UserNav({user, transparent}) {

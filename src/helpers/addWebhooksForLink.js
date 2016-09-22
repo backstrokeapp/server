@@ -52,7 +52,13 @@ export function removeOldWebhooksForLink(user, link) {
       user: fromUser,
       repo: fromRepo,
       id: link.hookId,
-    });
+    }).catch(err => {
+      if (err.status === 'Not Found') {
+        return true; // The given webhook was deleted by the user.
+      } else {
+        throw err; // rethrow error
+      }
+    })
   } else {
     return Promise.resolve(true); // no webhook to remove
   }

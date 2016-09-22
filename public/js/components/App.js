@@ -96,21 +96,19 @@ export function Index() {
             <a href="https://github.com/1egoman/backstroke#how-it-works">Read more.</a>
           </p>
         </div>
-        <div className="col-md-6 col-xs-12 img-pr">
-          <img src="/assets/img/backstroke-pr.png" alt="A Backstroke pull request" />
+        <div className="col-md-6 col-xs-12">
         </div>
       </div>
       <div className="container">
         <div className="col-md-6 col-xs-12">
-          <h2>Always free for open source.</h2>
+          <h2>Open source is 1000% free.</h2>
           <p>
             Backstroke is free for public Github repositories. If you want to use Backstroke with
             private repositories, there's a nominal charge of $1 per month.&nbsp;
             <a href="#/pricing">Read more about pricing.</a>
           </p>
         </div>
-        <div className="col-md-6 col-xs-12 img-pr">
-          <img src="/assets/img/backstroke-pr.png" alt="A Backstroke pull request" />
+        <div className="col-md-6 col-xs-12">
         </div>
       </div>
       <div className="container cta">

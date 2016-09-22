@@ -7,7 +7,8 @@ import reduxThunk from 'redux-thunk';
 import {routerMiddleware} from 'react-router-redux';
 
 import reducer from 'reducers/reducer';
-import App, {Index, Pricing} from 'components/App';
+import App, {Index} from 'components/App';
+import {Pricing} from 'components/Pricing';
 import Link from 'components/Link';
 import LinkList from 'components/LinkList';
 import ManageSettings from 'components/ManageSettings';

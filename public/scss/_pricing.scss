@@ -3,7 +3,8 @@
   background-color: $brand-info;
   color: #FFF;
 
-  height: 100%;
+  min-height: 100%;
+  min-height: calc(100% - #{$navbar-height});
 
 
   h1 {
@@ -23,4 +24,11 @@
       margin-right: 10px;
     }
   }
+}
+
+.pricing-faq {
+  background-color: #FFF;
+  color: $text-color;
+
+  display: none; // still working on this
 }

@@ -5,7 +5,6 @@ export function Pricing() {
   return <div className="pricing-page">
     <div className="container">
       <h1>Pricing</h1>
-
       <div className="row">
         <div className="col-md-6">
           <div className="panel panel-default">
@@ -26,7 +25,7 @@ export function Pricing() {
           </div>
         </div>
         <div className="col-md-6">
-          <div className="panel panel-success">
+          <div className="panel panel-success panel-premium">
             <div className="panel-heading">
               Premium
               <span className="pull-right">$1.00 per premium link per month</span>
@@ -69,6 +68,16 @@ export function Pricing() {
           </div>
         </div>
       </div>
+    </div>
+
+    <div className="pricing-faq">
+      <h2>What is a link?</h2>
+      <p>
+        Links let you easily tie two (or more) repositorys together and describe how changes will
+        flow throughout. A link always has a source &mdash; usually the upstream &mdash; and a
+        destination &mdash; usually one or more forks of the upstream. When you commit to the
+        source, the changes flow to the destination.
+      </p>
     </div>
   </div>;
 }

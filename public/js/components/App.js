@@ -65,7 +65,6 @@ export function Index() {
     <div className="used-by">
       <div className="used-by-list">
         <span>Used by</span>
-        <img src="/assets/img/github.png" alt="Github" />
         <img src="/assets/img/conda.svg" alt="Conda" />
         <img src="/assets/img/cachet.png" alt="Cachet" />
         <img src="/assets/img/logo.png" alt="Backstroke" />

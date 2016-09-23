@@ -11,37 +11,8 @@ export function ManageSettings({
   onTokenUpdate,
 }) {
   if (subscribedTo !== null) {
-    return <div className="manage-settings container">
-      <h1>Settings</h1>
-
-      <h2>Payments</h2>
-      <div className="payment-status">
-        <PaymentStatus info={subscribedTo} />
-
-        <h1>Payment Method</h1>
-        <StripeCheckout
-          name="Enter a card:"
-          stripeKey="pk_test_k280ghlxr7GrqGF9lxBhy1Uj"
-          token={onTokenUpdate}
-          panelLabel="Add"
-        >
-          {
-            subscribedTo ?
-            <span className="payment-button">
-              We have a valid payment method.
-              <button className="btn btn-default btn-outline btn-outline-primary btn-lg">
-                Update Credit Card
-              </button>
-            </span>:
-            <span className="payment-button">
-              We don't have a payment method.
-              <button className="btn btn-default btn-outline btn-outline-primary btn-lg">
-                Add Credit Card
-              </button>
-            </span>
-          }
-        </StripeCheckout>
-      </div>
+    return <div className="manage-settings">
+      <PaymentSettings />
     </div>;
   } else if (user && !user._auth) {
     return <UserNotAuthenticated />;
@@ -51,6 +22,52 @@ export function ManageSettings({
     </div>;
   }
 }
+
+export const PaymentSettings = connect(state => ({subscribedTo: state.subscribedTo}), dispatch => {
+  return {
+    onTokenUpdate(data) {
+      fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/payments`, {
+        credentials: 'include',
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify({source: data.id, email: data.email, type: data.type}),
+      }).then(response => {
+        dispatch({type: 'PAYMENT_UPDATE'});
+        dispatch(fetchSettings());
+      });
+    },
+  };
+})(function PaymentSettings({subscribedTo, onTokenUpdate}) {
+  return <div className="payment-status">
+    <div className="container">
+      <PaymentStatus info={subscribedTo} />
+
+      <h1>Payment Method</h1>
+      <StripeCheckout
+        name="Enter a card:"
+        stripeKey="pk_test_k280ghlxr7GrqGF9lxBhy1Uj"
+        token={onTokenUpdate}
+        panelLabel="Add"
+      >
+        {
+          subscribedTo ?
+          <span className="payment-button">
+            We have a valid payment method.
+            <button className="btn btn-default btn-outline btn-outline-primary btn-lg">
+              Update Credit Card
+            </button>
+          </span>:
+          <span className="payment-button">
+            We don't have a payment method.
+            <button className="btn btn-default btn-outline btn-outline-primary btn-lg">
+              Add Credit Card
+            </button>
+          </span>
+        }
+      </StripeCheckout>
+    </div>
+  </div>;
+});
 
 function PaymentStatus({info}) {
   if (info === false) {
@@ -79,16 +96,5 @@ export default connect((state, props) => {
   };
 }, dispatch => {
   return {
-    onTokenUpdate(data) {
-      fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/payments`, {
-        credentials: 'include',
-        method: 'POST',
-        headers: {'content-type': 'application/json'},
-        body: JSON.stringify({source: data.id, email: data.email, type: data.type}),
-      }).then(response => {
-        dispatch({type: 'PAYMENT_UPDATE'});
-        dispatch(fetchSettings());
-      });
-    },
   };
 })(ManageSettings);

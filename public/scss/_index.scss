@@ -54,6 +54,7 @@
   z-index: 5;
   height: 30%;
   width: 100%;
+  background-color: #FFF;
 
   display: flex;
   align-items: center;
@@ -105,13 +106,16 @@
   top: 130%;
   width: 100%;
   overflow: hidden;
+  background-color: #FFF;
 
   ol, p {
     font-size: 1.4em;
   }
 
-  .container {
-    min-height: 400px;
+  @media (min-width: $screen-sm-min) {
+    .container {
+      min-height: 400px;
+    }
   }
 
   // title images
@@ -124,7 +128,7 @@
 
     @media (min-width: $screen-sm-min) { // remove that space on desktop
       margin-top: 0em;
-      margin-bottom: 0em;
+      margin-bottom: 3em;
     }
   }
 

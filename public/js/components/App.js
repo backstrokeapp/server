@@ -87,15 +87,14 @@ export function Index() {
         </div>
       </div>
       <div className="container">
-        <div className="col-md-6 col-xs-12">
+        <div className="col-md-6 col-xs-12 col-md-push-6">image here</div>
+        <div className="col-md-6 col-xs-12 col-md-pull-6">
           <h2>How does Backstroke work?</h2>
           <p>
             Backstroke watches a Github repository via a webhook. When the repo is updated,
             Backstroke sends a pull request to all of that repository's forks.&nbsp;
             <a href="https://github.com/1egoman/backstroke#how-it-works">Read more.</a>
           </p>
-        </div>
-        <div className="col-md-6 col-xs-12">
         </div>
       </div>
       <div className="container">

@@ -20,3 +20,12 @@
 @import "usernotauthenticated";
 @import "paymentsettings";
 @import "buttonstyle";
+
+.root, .app-container-parent, .app-container {
+  min-height: calc(100% - #{$navbar-height});
+}
+
+.app-container {
+  background-color: lighten($gray-lighter, 3.6%);
+  margin-top: -20px;
+}

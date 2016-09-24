@@ -68,9 +68,8 @@ export function LinkList({
           {/* When there are no links */}
           {links.data.length === 0 ? <li className="link-empty">
             <h1>
-              Links bind an upstream<br/>
-              to one or many<br/>
-              downstream repositories.
+              Links connect an upstream repository<br/>
+              to one or many downstream repositories.
             </h1>
             <i className="fa fa-anchor" />
             <p>

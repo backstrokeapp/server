@@ -2,7 +2,8 @@ import React from 'react';
 import {connect} from 'react-redux';
 import Select from 'react-select';
 import Switch from 'react-ios-switch';
-import {FormControl, OverlayTrigger, Tooltip} from 'react-bootstrap';
+import {InputGroup, FormControl, OverlayTrigger, Tooltip} from 'react-bootstrap';
+import Collapse, {Panel} from 'rc-collapse';
 
 import RepositoryBox from 'components/RepositoryBox';
 import ForkAllBox from 'components/ForkAllBox';
@@ -115,22 +116,30 @@ export function Link({
         </div>
       </div>
 
-      <div className="webhook-container">
-        <h1>Webhook URL</h1>
+      <Collapse>
+        <Panel header="Webhook" className="webhook-container">
+          {/* The webhook url */}
+          <InputGroup>
+            <InputGroup.Addon>Webhook URL</InputGroup.Addon>
+            <FormControl
+              type="text"
+              onFocus={event => event.target.select()}
+              readOnly={true}
+              value={`${process.env.BACKSTROKE_SERVER}/_${link._id}`}
+            />
+          </InputGroup>
 
-        {/* The webhook url */}
-        <FormControl
-          type="text"
-          onFocus={event => event.target.select()}
-          readOnly={true}
-          value={`${process.env.BACKSTROKE_SERVER}/_${link._id}`}
-        />
-
-        <p>
-          Every time this url is visited, we'll make sure that any new changes are
-          synced according to what's been configured above.
-        </p>
-      </div>
+          <h3>What is this?</h3>
+          <p>
+            Whenever this url is pinged, we'll check for updates and propose any necessary changes
+            to this link according to the configuration defined above.
+          </p>
+          <p>
+            Here's a CURL snippet to ping this url:&nbsp;
+            <code>curl -X POST {process.env.BACKSTROKE_SERVER}/_{link._id}</code>
+          </p>
+        </Panel>
+      </Collapse>
 
       {/* <div className="other-container">
         <h1>Other</h1>

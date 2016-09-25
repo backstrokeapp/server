@@ -105,14 +105,18 @@
     }
   }
 
-  .webhook-container {
-    h1 {
-      font-weight: 300;
-    }
-    p {
-      margin-top: 1em;
-      margin-bottom: 1em;
-      font-size: 1.2em;
+  .rc-collapse {
+    margin-bottom: 2em;
+
+    .webhook-container {
+      h1 {
+        font-weight: 300;
+      }
+      p {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        font-size: 1.2em;
+      }
     }
   }
 

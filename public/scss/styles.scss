@@ -27,5 +27,8 @@
 
 .app-container {
   background-color: lighten($gray-lighter, 3.6%);
+
+  // make sure the bg color covers the navbar too
   margin-top: -20px;
+  padding-top: 20px;
 }

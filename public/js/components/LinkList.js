@@ -21,7 +21,6 @@ export function LinkList({
 }) {
   if (links) {
     return <div className="repo container">
-
       <div className="link-list">
         <ul className="list-group">
           {/* Section header */}

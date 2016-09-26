@@ -10,7 +10,7 @@ export function App({user, children}) {
     <MainNav user={user} transparent={children && children.type.transparentNavBar} />
     <div className="app-container">
       {children}
-      <Footer />
+      {children && children.type.transparentNavBar ? null : <Footer />}
     </div>
   </div>
 }

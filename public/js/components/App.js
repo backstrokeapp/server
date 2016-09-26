@@ -89,7 +89,9 @@ export function Index() {
         </div>
       </div>
       <div className="container">
-        <div className="col-md-6 col-xs-12 col-md-push-6">image here</div>
+        <div className="col-md-6 col-xs-12 col-md-push-6">
+          <img src="/assets/img/howitworks.png" alt="How Backstroke works" />
+        </div>
         <div className="col-md-6 col-xs-12 col-md-pull-6">
           <h2>How does Backstroke work?</h2>
           <p>
@@ -109,6 +111,7 @@ export function Index() {
           </p>
         </div>
         <div className="col-md-6 col-xs-12">
+          <img src="/assets/img/heart.png" alt="We love open source." />
         </div>
       </div>
       <div className="container cta">

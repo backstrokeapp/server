@@ -9,7 +9,7 @@ Heavily inspired by Greenkeeper.
 [![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.svg)](https://gratipay.com/Backstroke/)
 
 ## Add Backstroke to a repository
-1. Sign in [here](http://backstroke.us/signup/login) with your Github account.
+1. Sign in [here](https://backstroke.us/setup/login) with your Github account.
 2. Add a new link:
   - Between an upstream and its forks: when the upstream changes, the forks are updated. (Most common)
   - Between two repos: When the first repo updates, update the second.

@@ -6,6 +6,8 @@ Heavily inspired by Greenkeeper.
 [![Build Status](https://travis-ci.org/1egoman/backstroke.svg?branch=master)](https://travis-ci.org/1egoman/backstroke)
 [![Gratipay Team](https://img.shields.io/gratipay/team/Backstroke.svg?maxAge=2592001)](https://gratipay.com/Backstroke/)
 
+[![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.svg)](https://gratipay.com/Backstroke/)
+
 ## Add Backstroke to a repository
 1. Sign in [here](http://backstroke.us/signup/login) with your Github account.
 2. Add a new link:

@@ -50,7 +50,7 @@ export const PaymentSettings = connect(state => ({subscribedTo: state.subscribed
       <h1>Payment Method</h1>
       <StripeCheckout
         name="Enter a card:"
-        stripeKey="pk_test_k280ghlxr7GrqGF9lxBhy1Uj"
+        stripeKey={process.env.STRIPE_PUB_TOKEN || "pk_test_k280ghlxr7GrqGF9lxBhy1Uj"}
         token={onTokenUpdate}
         panelLabel="Add"
       >

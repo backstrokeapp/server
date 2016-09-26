@@ -18,7 +18,7 @@ import {addWebhooksForLink, removeOldWebhooksForLink} from 'helpers/addWebhooksF
 // Mongo stuff
 // ----------------------------------------------------------------------------
 import mongoose from 'mongoose';
-mongoose.connect(process.env.MONGO_URI);
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI);
 mongoose.Promise = Promise;
 import User from 'models/User';
 import Link from 'models/Link';

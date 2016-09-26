@@ -140,7 +140,7 @@ export function update(Link, User, isLinkPaid, addWebhooksForLink, removeOldWebh
 
     // verify a user can create a paid link, if the link is paid
     if (link.paid && !req.user.customerId) {
-      throw new PremiumRequiresPaymentError('Cannot create private link without a payment method.');
+      throw new PremiumRequiresPaymentError('Cannot create premium link without a payment method. Add one in `Settings`.');
     }
 
     // update the link

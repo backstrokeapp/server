@@ -120,12 +120,14 @@ Index.transparentNavBar = true;
 
 export function Footer() {
   return <footer className="footer">
-    <span>Backstroke</span>
-    <ul>
-      <li><a href="https://github.com/1egoman/backstroke">Backstroke is ISC licensed.</a></li>
-      <li><a href="https://github.com/1egoman/backstroke"></a></li>
-      <li><a href="http://rgaus.net">Maintained by Ryan Gaus. Backstroke is copyright Ryan Gaus and contributors.</a></li>
-    </ul>
+    <div className="container">
+      <span>Backstroke is maintained by <a href="http://rgaus.net">Ryan Gaus</a>.</span>
+      <ul>
+        <li><a href="/#/legal">Legal</a></li>
+        <li><a href="https://github.com/1egoman/backstroke">Github</a></li>
+        <li><a href="https://gratipay.com/Backstroke/">Gratipay</a></li>
+      </ul>
+    </div>
   </footer>;
 }
 

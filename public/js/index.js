@@ -9,6 +9,7 @@ import {routerMiddleware} from 'react-router-redux';
 import reducer from 'reducers/reducer';
 import App, {Index} from 'components/App';
 import {Pricing} from 'components/Pricing';
+import TermsOfService from 'components/TermsOfService';
 import Link from 'components/Link';
 import LinkList from 'components/LinkList';
 import ManageSettings from 'components/ManageSettings';
@@ -64,7 +65,6 @@ history.listen(event => {
   if (match = pathname.indexOf('/settings') === 0) {
     dispatch(fetchSettings());
   }
-
 });
 
 // Render it all.
@@ -77,6 +77,7 @@ render(
         <Route path="/links/:linkId" component={Link} />
         <Route path="/settings" component={ManageSettings} />
         <Route path="/pricing" component={Pricing} />
+        <Route path="/legal" component={TermsOfService} />
       </Route>
     </Router>
   </Provider>,

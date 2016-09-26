@@ -1,63 +1,35 @@
-$main: #3a4881;
-$second: #82743b;
+@import 'https://fonts.googleapis.com/css?family=Lato:300,400,700';
 
-.jumbotron {
-  background-color: $main;
-  color: #fff;
-  margin-bottom: 0em;
+@import "bootstrap";
+@import "fontawesome/font-awesome";
+@import "react-select";
+@import "switch";
+@import "navbar";
+@import "rc-collapse"; // for the react-components/collapse component
 
-  .container h2 {
-    margin-bottom: 1.8em;
-  }
+@import "repo-box";
+
+@import "index";
+@import "pricing";
+@import "buttons";
+@import "loading";
+@import "repositorylist";
+@import "repo";
+@import "repositorybox";
+@import "boxproperties";
+@import "addnewbox";
+@import "usernotauthenticated";
+@import "paymentsettings";
+@import "buttonstyle";
+
+.root, .app-container-parent, .app-container {
+  min-height: calc(100% - #{$navbar-height});
 }
 
-.new-backstroke {
-  ol li {
-    width: 100%;
-    font-size: 3rem;
+.app-container {
+  background-color: lighten($gray-lighter, 3.6%);
 
-    h3 {
-      font-size: 2.4rem;
-    }
-    p {
-      font-size: 1.8rem;
-    }
-  }
-}
-
-.new-backstroke-intro {
-  .github-leadin {
-    font-size: 1.75em;
-    float: left;
-    text-align: center;
-    width: 100%;
-    margin-bottom: 0.5em;
-    @media (min-width: 992px) {
-      text-align: left;
-      width: auto;
-    }
-  }
-  input[type=text] {
-    margin-top: 0.2em;
-    margin-bottom: 0.2em;
-  }
-  .input-slash {
-    display: block;
-    float: left;
-    font-size: 1.75em;
-    text-align: center;
-  }
-  input[type=submit] {
-    margin-left: 1em;
-    margin-top: 0.2em;
-  }
-}
-
-.quote {
-  text-align: center;
-  padding-top: 2em;
-  padding-bottom: 2em;
-  background-color: $second;
-  color: #fff;
-  margin-bottom: 2em;
+  // make sure the bg color covers the navbar too
+  margin-top: -20px;
+  padding-top: 20px;
 }

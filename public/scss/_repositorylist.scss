@@ -1,0 +1,101 @@
+.link-list {
+  height: 100%;
+
+  p {
+    font-size: 16px;
+  }
+
+  & > ul {
+    padding-left: 0px;
+    list-style-type: none;
+    font-size: $font-size-base * 1.2;
+
+    // each repo
+    & > li {
+      padding: $padding-large-vertical * 3 $padding-base-horizontal * 3;
+      font-size: 1.2em;
+      display: flex;
+
+      border-color: $gray-light;
+
+      // the link header
+      &.list-header {
+        padding-top: $padding-large-vertical;
+        padding-bottom: $padding-large-vertical;
+        display: flex;
+        background-color: $brand-info;
+
+        border-top-left-radius: $border-radius-base;
+        border-top-right-radius: $border-radius-base;
+
+        h1 {
+          margin-bottom: 1em;
+          line-height: 1.25;
+          font-weight: 300;
+          color: #FFF;
+          flex: 1;
+        }
+
+        button {
+          height: 84px;
+          font-size: 20px;
+          margin-top: 20px;
+        }
+      }
+
+      // when there aren't any links
+      &.link-empty {
+        text-align: center;
+        display: block;
+
+        h1 {
+          font-weight: 300;
+          margin-bottom: 1em;
+        }
+        i {
+          font-size: 6em;
+          color: $gray-light;
+          width: 1em;
+          margin: 0px auto;
+          display: block;
+        }
+        p {
+          margin-top: 2em;
+          font-size: 1.1em;
+          font-weight: 300;
+          display: inline-block;
+          a { cursor: pointer; }
+        }
+      }
+
+      &.grayed {
+        opacity: 0.8;
+        background-color: $gray-lighter;
+      }
+
+      // The repo name
+      .item-title {
+        cursor: pointer;
+        display: inline-block;
+        flex: 1;
+        white-space: nowrap;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        padding-right: 0.5em;
+        font-weight: 300;
+        &:hover, &:focus, &:active { text-decoration: underline; }
+      }
+
+      i {
+        font-size: 1.5em;
+        vertical-align: middle;
+        display: inline-block;
+        margin-right: 0.2em;
+      }
+
+      .react-ios-switch-Switch-switch {
+        width: 50px;
+      }
+    }
+  }
+}

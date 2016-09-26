@@ -1,0 +1,52 @@
+// base outline button styles
+.btn.btn-outline {
+  border-width: 2px;
+}
+
+// White "outline" button
+// Use like: .btn-default.btn-outline.btn-outline-primary
+// An white outline button that on hover will have text that becomes $brand-primary colored.
+.btn.btn-default.btn-outline {
+  @include button-variant(#FFF, transparent, #FFF);
+  &.btn-outline-primary:hover { @include button-variant($brand-primary, #FFF, #FFF); }
+  &.btn-outline-success:hover { @include button-variant($brand-success, #FFF, #FFF); }
+  &.btn-outline-info:hover { @include button-variant($brand-info, #FFF, #FFF); }
+  &.btn-outline-warning:hover { @include button-variant($brand-warning, #FFF, #FFF); }
+  &.btn-outline-danger:hover { @include button-variant($brand-danger, #FFF, #FFF); }
+}
+
+
+
+// Colored "outline" button
+// Use like: .btn-primary.btn-outline
+// A $brand-primary outline button.
+.btn.btn-primary.btn-outline {
+  @include button-variant($brand-primary, transparent, $brand-primary);
+  &:hover {
+    @include button-variant(#FFF, $brand-primary, $brand-primary);
+  }
+}
+.btn.btn-info.btn-outline {
+  @include button-variant($brand-info, transparent, $brand-info);
+  &:hover {
+    @include button-variant(#FFF, $brand-info, $brand-info);
+  }
+}
+.btn.btn-success.btn-outline {
+  @include button-variant($brand-success, transparent, $brand-success);
+  &:hover {
+    @include button-variant(#FFF, $brand-success, $brand-success);
+  }
+}
+.btn.btn-warning.btn-outline {
+  @include button-variant($brand-warning, transparent, $brand-warning);
+  &:hover {
+    @include button-variant(#FFF, $brand-warning, $brand-warning);
+  }
+}
+.btn.btn-danger.btn-outline {
+  @include button-variant($brand-danger, transparent, $brand-danger);
+  &:hover {
+    @include button-variant(#FFF, $brand-danger, $brand-danger);
+  }
+}

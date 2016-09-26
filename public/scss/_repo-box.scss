@@ -1,0 +1,25 @@
+@mixin repo-box {
+  border: 1px solid $gray-light;
+  border-radius: $border-radius-base;
+  padding: $padding-large-vertical $padding-large-horizontal;
+  position: relative;
+  height: 196px;
+  margin-top: 1em;
+
+  // label for the container
+  &:before {
+    content: "";
+    position: absolute;
+    top: 1em;
+  }
+
+  .icon-wrapper {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 1em;
+    i {
+      font-size: 72px;
+      &:before { color: #fff; }
+    }
+  }
+}

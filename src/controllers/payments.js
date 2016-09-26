@@ -101,12 +101,9 @@ export function getSubscriptionInformation(req, res) {
 
 // Add a card to a user
 export function addPaymentToUser(User, req, res) {
-  console.log(1)
   if (req.isAuthenticated()) {
-    console.log(2)
     if (req.body.source) {
       function createCustomer() {
-        console.log(7)
         // create a customer
         return stripe.customers.create({
           source: req.body.source,
@@ -116,17 +113,13 @@ export function addPaymentToUser(User, req, res) {
             user: req.user.user,
           },
         }).then(customer => {
-          console.log(8)
           return User.update({_id: req.user._id}, {customerId: customer.id}).exec();
         });
       }
 
       // create or update subscription?
-      console.log(3)
       return stripe.customers.retrieve(req.user.customerId).then(customer => {
-        console.log(4)
         if (customer) {
-          console.log(5)
           // update the customer
           return stripe.customers.update(req.user.customerId, {
             source: req.body.source,
@@ -137,11 +130,9 @@ export function addPaymentToUser(User, req, res) {
             },
           });
         } else {
-          console.log(6)
           return createCustomer();
         }
       }).catch(createCustomer).then(() => {
-        console.log(100)
         res.status(200).send({status: 'ok'});
       }).catch(error => {
         if (error.message.indexOf('You cannot use a Stripe token more than once') === 0) {

@@ -138,7 +138,8 @@ export function addPaymentToUser(User, req, res) {
         if (error.message.indexOf('You cannot use a Stripe token more than once') === 0) {
           res.status(400).send({error: `You can't reuse payment source tokens!`});
         } else {
-          return Promise.reject(error);
+          res.status(500).send({error: "Server error"});
+          process.env.NODE_ENV !== 'test' && (() => {throw err})();
         }
       });
     } else {

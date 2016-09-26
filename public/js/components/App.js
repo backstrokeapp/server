@@ -8,7 +8,10 @@ import {Navbar, Nav, NavItem} from 'react-bootstrap';
 export function App({user, children}) {
   return <div className="app-container-parent">
     <MainNav user={user} transparent={children && children.type.transparentNavBar} />
-    <div className="app-container">{children}</div>
+    <div className="app-container">
+      {children}
+      <Footer />
+    </div>
   </div>
 }
 

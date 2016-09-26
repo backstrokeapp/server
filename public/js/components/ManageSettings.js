@@ -12,6 +12,11 @@ export function ManageSettings({
 }) {
   if (subscribedTo !== null) {
     return <div className="manage-settings">
+      <div className="user-info container">
+        <img src={user.picture} className="pull-left" />
+        <h1>Hi, {user.user}!</h1>
+        <a href={`https://github.com/${user.user}`}>Github Account</a>
+      </div>
       <PaymentSettings />
     </div>;
   } else if (user && !user._auth) {

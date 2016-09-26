@@ -1,4 +1,5 @@
 .link-item {
+  @extend .app-container;
   padding: 0px $padding-base-horizontal;
 
   .link-header {

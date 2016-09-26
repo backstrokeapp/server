@@ -1,3 +1,7 @@
+.manage-settings {
+  @extend .app-container;
+}
+
 .payment-status {
   background-color: $brand-info;
   color: #FFF;
@@ -109,5 +113,13 @@
         white-space: pre-wrap;
       }
     }
+  }
+}
+
+.user-info {
+  img {
+    height: 200px;
+    margin-right: 2em;
+    margin-bottom: 2em;
   }
 }

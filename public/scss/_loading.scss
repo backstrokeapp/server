@@ -1,4 +1,5 @@
 .loading {
+  @extend .app-container;
   text-align: center;
   font-size: 1.4em;
   font-weight: 300;

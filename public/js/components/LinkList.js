@@ -48,7 +48,7 @@ export function LinkList({
               {
                 link.paid ?
                 <OverlayTrigger placement="left" overlay={<Tooltip id="is-paid">
-                  This link is paid since it has a private repository inside.
+                  This link is premium since it has a private repository inside.
                 </Tooltip>}>
                   <i className={classname('fa', 'fa-money', 'move-to-repo')} />
                 </OverlayTrigger>

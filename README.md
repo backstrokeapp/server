@@ -4,7 +4,7 @@ A Github bot to keep a fork updated with any changes made to its upstream.
 Heavily inspired by Greenkeeper.
 
 [![Build Status](https://travis-ci.org/1egoman/backstroke.svg?branch=master)](https://travis-ci.org/1egoman/backstroke)
-[![Gratipay Team](https://img.shields.io/gratipay/team/Backstroke.svg?maxAge=2592000)]()
+[![Gratipay Team](https://img.shields.io/gratipay/team/Backstroke.svg?maxAge=2592000)](https://gratipay.com/Backstroke)
 
 ## Add Backstroke to a repository
 1. Sign in [here](http://backstroke.us/signup/login) with your Github account.

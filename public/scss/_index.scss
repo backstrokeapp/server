@@ -28,6 +28,7 @@
     line-height: 1.6;
     font-weight: 300;
     max-width: 32em;
+    margin-bottom: 0.75em;
 
     span {
       font-weight: 400;
@@ -36,7 +37,7 @@
   }
 
   .row {
-    margin-top: 4em;
+    margin-top: 6em;
     .button-section {
       @include make-xs-column(12);
       @include make-md-column(6);

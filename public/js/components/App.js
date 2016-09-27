@@ -48,8 +48,7 @@ export function Index() {
           <span>Open source maintainers</span> can merge contributor's code with one click.<br/>
           <span>Contributors</span> don't have to worry about hefty merge conflicts.
         </p>
-        {/* <GitHubButton type="stargazers" size="large" namespace="1egoman" repo="backstroke" /> */}
-
+        <GitHubButton type="stargazers" size="large" namespace="1egoman" repo="backstroke" />
         <div className="row">
           <div className="button-section">
             <a href="/setup/login" className="btn btn-success btn-block btn-cta">Sign in with Github</a>

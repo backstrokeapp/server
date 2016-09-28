@@ -39,7 +39,7 @@ const LINK_SCHEMA = {
     paid: {type: 'boolean'}, // will be overriden, so not required
     from: repo,
     to: {oneOf: [repo, forks]},
-    hookId: {type: 'string'},
+    // hookId can be a string or null
 
     ephemeralRepo: {type: 'boolean'},
     pushUsers: {type: 'array', items: {type: 'string'}},

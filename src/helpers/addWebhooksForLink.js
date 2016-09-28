@@ -16,9 +16,6 @@ export function addWebhooksForLink(user, link) {
   };
   let webhooks = [];
 
-  let [fromUser, fromRepo] = getRepoName(link.from);
-  let [toUser, toRepo] = getRepoName(link.to);
-
   function webhookWrapper(hook) {
     return hook.catch(err => {
       if (err.code === 422) {
@@ -30,6 +27,7 @@ export function addWebhooksForLink(user, link) {
   }
 
   if (link.from.type === 'repo') {
+    let [fromUser, fromRepo] = getRepoName(link.from);
     webhooks.push(webhookWrapper(gh.reposCreateHook({
       user: fromUser,
       repo: fromRepo,
@@ -40,6 +38,7 @@ export function addWebhooksForLink(user, link) {
   } 
 
   if (link.to.type === 'repo') {
+    let [toUser, toRepo] = getRepoName(link.to);
     webhooks.push(webhookWrapper(gh.reposCreateHook({
       user: toUser,
       repo: toRepo,
@@ -55,7 +54,7 @@ export function addWebhooksForLink(user, link) {
       // Adding both wehhooks failed
       return {
         error: [
-          `No permission to add a webhook to either ${toUser}/${toRepo} and ${fromUser}/${fromRepo}`,
+          `No permission to add a webhook to either repos`,
           `Make sure ${user.user} has given Backstroke permission to access to at least one of those`,
           `repos via OAuth.`,
         ].join(' '),

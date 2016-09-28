@@ -27,6 +27,10 @@
         border: 1px solid $gray-light;
         margin-left: 0px;
       }
+
+      &.invalid {
+        @include invalid-control;
+      }
     }
   }
 

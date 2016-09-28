@@ -34,12 +34,19 @@ export function isRepoValid(repo, type) {
 }
 
 export function isLinkValid(link) {
-  return (
-    link.name && link.name.length > 0 &&
-    link.to && link.to.type && link.to.provider &&
-    link.from && link.from.type && link.from.provider &&
-    isRepoValid(link.to, 'to') && isRepoValid(link.from, 'from')
-  )
+  if (link.name && link.name.length > 0) {
+    if (link.to && link.to.type && link.to.provider) {
+      if (link.from && link.from.type && link.from.provider) {
+        return isRepoValid(link.to, 'to') && isRepoValid(link.from, 'from');
+      } else {
+        return 'from';
+      }
+    } else {
+      return 'to';
+    }
+  } else {
+    return 'name';
+  }
 }
 
 export function Link({

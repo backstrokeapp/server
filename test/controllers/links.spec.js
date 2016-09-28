@@ -375,9 +375,6 @@ describe('links controller', function() {
               "enabled": {
                 "type": "boolean"
               },
-              "hookId": {
-                "type": "string"
-              },
               "name": {
                 "type": "string"
               },

@@ -75,6 +75,7 @@ export default function activeLink(state=null, action) {
         _saveInProgress: false,
         _saveStatus: action.status,
         _saveError: false,
+        _invalidControl: false,
       });
 
     case 'LINK_SAVE_ERROR':
@@ -82,6 +83,7 @@ export default function activeLink(state=null, action) {
         _saveInProgress: false,
         _saveError: action.error,
         enabled: false,
+        _invalidControl: false,
       });
 
     // Delete a repo
@@ -136,6 +138,10 @@ export default function activeLink(state=null, action) {
 
     case 'CHANGE_PUSH_USERS':
       return Object.assign({}, state, {pushUsers: action.users});
+
+    // when a user tries to save and the link isn't valid, tell the user.
+    case 'ACTIVE_LINK_INVALID':
+      return Object.assign({}, state, {_invalidControl: action.how});
 
     default:
       return state;

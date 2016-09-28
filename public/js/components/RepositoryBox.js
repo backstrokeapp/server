@@ -2,6 +2,7 @@ import React from 'react';
 import Select from 'react-select';
 import {connect} from 'react-redux';
 import {InputGroup, FormControl, OverlayTrigger, Tooltip} from 'react-bootstrap';
+import classname from 'classname';
 
 import verifyRepositoryName from 'actions/verifyRepositoryName';
 import repoBranch from 'actions/repoBranch';
@@ -11,6 +12,7 @@ export function RepositoryBox({
   repository: repo,
   branch,
   type,
+  invalid,
 
   onVerifyRepositoryName,
   onRepoBranch,
@@ -18,7 +20,7 @@ export function RepositoryBox({
   let branchOptions = repo.branches.map(branch => {
     return {value: branch, label: branch};
   });
-  return <div className="repository-box">
+  return <div className={classname('repository-box', {invalid})}>
     <div className="icon-wrapper">
       <a target="_blank" href={generateRepoUrl(repo)}>
         <i className={'fa fa-'+repo.provider} />

@@ -19,24 +19,34 @@ export function addWebhooksForLink(user, link) {
   let [fromUser, fromRepo] = getRepoName(link.from);
   let [toUser, toRepo] = getRepoName(link.to);
 
+  function webhookWrapper(hook) {
+    return hook.catch(err => {
+      if (err.code === 422) {
+        return true; // already a webhook on this repository, so resolve this one!
+      } else {
+        return Promise.reject(err); // another error
+      }
+    });
+  }
+
   if (link.from.type === 'repo') {
-    webhooks.push(gh.reposCreateHook({
+    webhooks.push(webhookWrapper(gh.reposCreateHook({
       user: fromUser,
       repo: fromRepo,
       config,
       name: 'web',
       events: ['push'],
-    }));
+    })));
   } 
 
   if (link.to.type === 'repo') {
-    webhooks.push(gh.reposCreateHook({
+    webhooks.push(webhookWrapper(gh.reposCreateHook({
       user: toUser,
       repo: toRepo,
       config,
       name: 'web',
       events: ['push'],
-    }));
+    })));
   }
 
   if (webhooks.length > 0) {

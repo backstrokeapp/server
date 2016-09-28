@@ -137,6 +137,10 @@ export default function activeLink(state=null, action) {
     case 'CHANGE_PUSH_USERS':
       return Object.assign({}, state, {pushUsers: action.users});
 
+    // when a user tries to save and the link isn't valid, tell the user.
+    case 'ACTIVE_LINK_INVALID':
+      return Object.assign({}, state, {_invalidControl: action.how});
+
     default:
       return state;
   }

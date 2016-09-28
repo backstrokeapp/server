@@ -14,6 +14,7 @@ import changeLinkName from 'actions/changeLinkName';
 import isDeletingLink from 'actions/isDeletingLink';
 import deleteLink from 'actions/deleteLink';
 import changePushUsers from 'actions/changePushUsers';
+import invalidLink from 'actions/invalidLink';
 
 import linkSave from 'actions/linkSave';
 
@@ -93,7 +94,7 @@ export function Link({
         {/* The name of the link */}
         <FormControl
           type="text"
-          className="link-name"
+          className={`link-name ${link._invalidControl === 'name' ? 'invalid' : null}`}
           value={link.name || ""}
           onChange={onChangeLinkName}
           placeholder="Enter a link name"
@@ -169,7 +170,6 @@ export function Link({
         <button
           className="btn btn-primary"
           onClick={onLinkSave.bind(null, link)}
-          disabled={!isLinkValid(link)}
         >Save</button>
       }
 
@@ -219,8 +219,14 @@ export default connect((state, props) => {
 }, dispatch => {
   return {
     onLinkSave(link) {
-      link.enabled = true;
-      dispatch(linkSave(link));
+      let linkValid = isLinkValid(link);
+      if (linkValid === true) {
+        link.enabled = true;
+        dispatch(linkSave(link));
+      } else {
+        // not a valid link yet
+        dispatch(invalidLink(linkValid));
+      }
     },
     onLinkEnable(link, enabled) {
       dispatch(enableDisableLink(link, enabled));

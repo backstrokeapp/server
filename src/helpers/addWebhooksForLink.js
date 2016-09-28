@@ -14,19 +14,44 @@ export function addWebhooksForLink(user, link) {
     url: getBackstrokeUrlFor(link),
     content_type: 'json',
   };
+  let webhooks = [];
+
+  function webhookWrapper(webhook) {
+    return webhook.catch(err => {
+      if (err.code === 422) {
+        return false;
+      } else {
+        return Promise.reject(err);
+      }
+    });
+  }
 
   if (link.from.type === 'repo') {
     let [fromUser, fromRepo] = getRepoName(link.from);
-    return gh.reposCreateHook({
+    webhooks.push(webhookWrapper(gh.reposCreateHook({
       user: fromUser,
       repo: fromRepo,
       config,
       name: 'web',
       events: ['push'],
-    }).catch(err => {
-      if (err.code === 422) { // The webhook already exists
-        return false;
-      } else if (err.code === 404) { // No permission to add a webhook
+    })));
+  } 
+
+  if (link.to.type === 'repo') {
+    let [toUser, toRepo] = getRepoName(link.to);
+    webhooks.push(webhookWrapper(gh.reposCreateHook({
+      user: toUser,
+      repo: toRepo,
+      config,
+      name: 'web',
+      events: ['push'],
+    })));
+  }
+
+  if (webhooks.length > 0) {
+    // Create at least one webhook, first try on the upstream, then try on the child.
+    return Promise.some(webhooks, 1).catch(err => {
+      if (err.code === 404) { // No permission to add a webhook
         return {
           error: [
             `No permission to add a webhook to the repository ${fromUser}/${fromRepo}.`,
@@ -41,6 +66,7 @@ export function addWebhooksForLink(user, link) {
   } else {
     return Promise.resolve(true); // no webhook to add
   }
+
 }
 
 export function removeOldWebhooksForLink(user, link) {

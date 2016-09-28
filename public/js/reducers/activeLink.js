@@ -75,6 +75,7 @@ export default function activeLink(state=null, action) {
         _saveInProgress: false,
         _saveStatus: action.status,
         _saveError: false,
+        _invalidControl: false,
       });
 
     case 'LINK_SAVE_ERROR':
@@ -82,6 +83,7 @@ export default function activeLink(state=null, action) {
         _saveInProgress: false,
         _saveError: action.error,
         enabled: false,
+        _invalidControl: false,
       });
 
     // Delete a repo

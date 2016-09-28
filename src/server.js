@@ -80,7 +80,7 @@ app.get("/auth/github/callback", passport.authenticate("github", {
     "have_payment": false,
     "are_paying": false,
   });
-  process.env.USE_MIXPANEL && mixpanel.track('Logged In', {distinct_id: user._id});
+  process.env.USE_MIXPANEL && mixpanel.track('Logged In', {distinct_id: req.user._id});
 
   res.redirect('/#/links'); // on success
 });

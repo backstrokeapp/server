@@ -13,6 +13,7 @@ export default function webhook(gh, link, pageSize=100, botInstance=false) {
   let backstrokeBotInstance = botInstance || createGithubInstance({accessToken: process.env.GITHUB_TOKEN});
 
   process.env.USE_MIXPANEL && mixpanel.track('Webhook', {
+    "distinct_id": req.user._id,
     "Link Id": link._id,
     "From Repo Name": link.from ? link.from.name : null,
     "From Repo Provider": link.from ? link.from.provider : null,

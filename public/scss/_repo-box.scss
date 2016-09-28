@@ -6,6 +6,10 @@
   height: 196px;
   margin-top: 1em;
 
+  &.invalid {
+    @include invalid-control;
+  }
+
   // label for the container
   &:before {
     content: "";

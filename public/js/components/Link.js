@@ -4,6 +4,7 @@ import Select from 'react-select';
 import Switch from 'react-ios-switch';
 import {InputGroup, FormControl, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import Collapse, {Panel} from 'rc-collapse';
+import classname from 'classname';
 
 import RepositoryBox from 'components/RepositoryBox';
 import ForkAllBox from 'components/ForkAllBox';
@@ -38,7 +39,15 @@ export function isLinkValid(link) {
   if (link.name && link.name.length > 0) {
     if (link.to && link.to.type && link.to.provider) {
       if (link.from && link.from.type && link.from.provider) {
-        return isRepoValid(link.to, 'to') && isRepoValid(link.from, 'from');
+        if (isRepoValid(link.to, 'to')) {
+          if (isRepoValid(link.from, 'from')) {
+            return true;
+          } else {
+            return 'from';
+          }
+        } else {
+          return 'to';
+        }
       } else {
         return 'from';
       }
@@ -94,7 +103,7 @@ export function Link({
         {/* The name of the link */}
         <FormControl
           type="text"
-          className={`link-name ${link._invalidControl === 'name' ? 'invalid' : null}`}
+          className={classname('link-name', {invalid: link._invalidControl === 'name'})}
           value={link.name || ""}
           onChange={onChangeLinkName}
           placeholder="Enter a link name"
@@ -111,6 +120,7 @@ export function Link({
             slot="from"
             repository={link.from}
             branch={link.from && link.from.branch}
+            invalid={link._invalidControl === 'from'}
           />
         </div>
         <div className="slot to-slot">
@@ -120,6 +130,7 @@ export function Link({
             repository={link.to}
             branch={link.to && link.to.branch}
             from={link.from}
+            invalid={link._invalidControl === 'to'}
           />
         </div>
       </div>
@@ -194,16 +205,16 @@ export function Link({
   }
 }
 
-export function RepoWrapper({repository, branch, from, slot}) {
+export function RepoWrapper({repository, branch, from, slot, invalid}) {
   if (repository && repository.type === 'repo') {
     // A bare repository / branch combo
     return <BoxProperties repository={repository}>
-      <RepositoryBox repository={repository} branch={branch} type={slot} />
+      <RepositoryBox repository={repository} branch={branch} type={slot} invalid={invalid} />
     </BoxProperties>;
   } else if (repository && repository.type === 'fork-all') {
     // All forks for the upstream
     return <BoxProperties repository={repository}>
-      <ForkAllBox repository={repository} from={from} />
+      <ForkAllBox repository={repository} from={from} invalid={invalid} />
     </BoxProperties>;
   } else {
     // add a new item

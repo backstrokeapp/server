@@ -67,26 +67,47 @@ export function addWebhooksForLink(user, link) {
   } else {
     return Promise.resolve(true); // no webhook to add
   }
-
 }
 
 export function removeOldWebhooksForLink(user, link) {
   let gh = createGithubInstance(user);
+  let config = {
+    url: getBackstrokeUrlFor(link),
+    content_type: 'json',
+  };
+  let webhooks = [];
 
-  if (link.from.type === 'repo' && link.hookId) {
+  if (link.from.type === 'repo') {
     let [fromUser, fromRepo] = getRepoName(link.from);
-    return gh.reposDeleteHook({
+    webhooks.push(gh.reposDeleteHook({
       user: fromUser,
       repo: fromRepo,
       id: link.hookId,
+    }));
+  } 
+
+  if (link.to.type === 'repo') {
+    let [toUser, toRepo] = getRepoName(link.to);
+    webhooks.push(gh.reposDeleteHook({
+      user: toUser,
+      repo: toRepo,
+      id: link.hookId,
+    }));
+  }
+
+  if (webhooks.length > 0) {
+    // Delete the specific hook.
+    return Promise.some(webhooks, 1).catch(Promise.AggregateError, err => {
+      // Deleting both hooks failed, probably because the hook id was invalid.
+      return false;
     }).catch(err => {
       if (err.status === 'Not Found') {
         return true; // The given webhook was deleted by the user.
       } else {
         throw err; // rethrow error
       }
-    })
+    });
   } else {
-    return Promise.resolve(true); // no webhook to remove
+    return Promise.resolve(true); // no webhook to add
   }
 }

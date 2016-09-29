@@ -168,6 +168,7 @@ export default function webhook(req, res) {
     req.query.upstream
   ) {
     process.env.USE_MIXPANEL && mixpanel.track('Webhook Old', {
+      "distinct_id": req.user._id,
       "Location": "fork",
       "Fork": req.body.repository.full_name,
       "Upstream": req.body.repository.parent && req.body.repository.parent.name,

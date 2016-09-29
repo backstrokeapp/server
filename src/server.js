@@ -24,6 +24,15 @@ import User from 'models/User';
 import Link from 'models/Link';
 
 // ----------------------------------------------------------------------------
+// Setup mixpanel
+// ----------------------------------------------------------------------------
+import Mixpanel from 'mixpanel';
+let mixpanel;
+if (process.env.USE_MIXPANEL) {
+  mixpanel = Mixpanel.init(process.env.USE_MIXPANEL);
+}
+
+// ----------------------------------------------------------------------------
 // Set up session store
 // ----------------------------------------------------------------------------
 const MongoStore = require('connect-mongo')(session),
@@ -65,6 +74,14 @@ app.get('/setup/login/public', passport.authenticate('github', {
 app.get("/auth/github/callback", passport.authenticate("github", {
   failureRedirect: '/setup/login',
 }), (req, res) => {
+  process.env.USE_MIXPANEL && mixpanel.people.set(req.user._id, {
+    "$email": req.user.email,
+    "$first_name": req.user.user,
+    "have_payment": false,
+    "are_paying": false,
+  });
+  process.env.USE_MIXPANEL && mixpanel.track('Logged In', {distinct_id: req.user._id});
+
   res.redirect('/#/links'); // on success
 });
 

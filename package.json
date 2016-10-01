@@ -1,39 +1,106 @@
 {
-  "name": "forkupdater",
-  "version": "1.1.0",
+  "name": "backstroke",
+  "private": true,
+  "version": "2.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/server.js",
   "dependencies": {
+    "autoprefixer": "^6.4.1",
+    "autoprefixer-core": "^6.0.1",
     "babel-cli": "^6.10.1",
-    "babel-preset-es2017": "^1.4.0",
-    "bluebird": "^3.4.1",
+    "babel-plugin-istanbul": "^2.0.1",
+    "babel-preset-es2015": "^6.13.2",
+    "babel-preset-react": "^6.11.1",
+    "babelify": "^7.3.0",
+    "bluebird": "^3.4.3",
     "body-parser": "^1.15.2",
     "bootstrap": "^3.3.6",
-    "ejs": "^2.4.2",
-    "express": "^4.14.0",
-    "github": "^2.0.1",
-    "jquery": "^3.0.0"
-  },
-  "devDependencies": {
-    "babel-cli": "^6.10.1",
-    "babel-istanbul": "^0.11.0",
-    "babelify": "^7.3.0",
+    "browser-sync": "^2.14.0",
     "browserify": "^13.0.1",
+    "classname": "0.0.0",
+    "connect-mongo": "^1.3.2",
+    "del": "^2.2.2",
+    "ejs": "^2.4.2",
+    "envify": "^3.4.1",
+    "express": "^4.14.0",
+    "express-session": "^1.14.1",
+    "github": "^2.0.1",
+    "gulp": "^3.9.1",
+    "gulp-if": "^2.0.1",
+    "gulp-notify": "^2.2.0",
+    "gulp-postcss": "^6.1.1",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-util": "^3.0.7",
+    "jquery": "^3.0.0",
+    "jsonschema": "^1.1.0",
+    "mixpanel": "^0.5.0",
     "mocha": "^2.5.3",
+    "mock-res": "^0.3.0",
+    "mongoose": "^4.5.10",
+    "morgan": "^1.7.0",
     "node-sass": "^3.8.0",
+    "nyc": "^8.1.0",
+    "passport": "^0.3.2",
+    "passport-github2": "^0.1.10",
     "proxyquire": "^1.7.10",
-    "sinon": "^1.17.4",
-    "sinon-as-promised": "^4.0.0"
+    "rc-collapse": "^1.6.6",
+    "react": "^15.3.1",
+    "react-bootstrap": "^0.30.3",
+    "react-dom": "^15.3.1",
+    "react-github-button": "^0.1.10",
+    "react-ios-switch": "^0.1.10",
+    "react-redux": "^4.4.5",
+    "react-router": "^2.7.0",
+    "react-router-redux": "^4.0.5",
+    "react-select": "^1.0.0-beta14",
+    "react-stripe-checkout": "^2.2.5",
+    "react-toggle-switch": "^2.1.2",
+    "redux": "^3.5.2",
+    "redux-thunk": "^2.1.0",
+    "sinon": "^1.17.5",
+    "sinon-as-promised": "^4.0.0",
+    "sinon-mongoose": "^1.2.1",
+    "stripe": "^4.11.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0",
+    "whatwg-fetch": "^1.0.0",
+    "yargs": "^5.0.0"
   },
   "scripts": {
-    "start": "babel-node src/index.js",
-    "build:js": "browserify public/js -t [babelify] > public/bundle.js",
-    "build:css": "node-sass --source-map true public/scss/styles.scss > public/bundle.css",
-    "serve": "npm run build:js && npm run build:css && npm start",
-    "watch": "nodemon --exec 'npm run serve' -e 'js scss' -w src/ -w public/js -w public/scss",
-    "test": "mocha",
-    "coverage": "babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha"
+    "start": "NODE_PATH=src/ babel-node src/server.js",
+    "test": "NODE_PATH=src/ NODE_ENV=test mocha",
+    "coverage": "NODE_PATH=src/ NODE_ENV=test nyc --reporter=lcov --reporter=text mocha",
+    "coverageopen": "open coverage/lcov-report/index.html",
+    "build:production": "./node_modules/.bin/gulp build --production",
+    "postinstall": "./postinstall.sh"
   },
-  "author": "",
+  "babel": {
+    "presets": [
+      "es2015",
+      "react"
+    ],
+    "env": {
+      "test": {
+        "plugins": [
+          "istanbul"
+        ]
+      }
+    }
+  },
+  "nyc": {
+    "include": [
+      "src/*.js",
+      "src/**/*.js"
+    ],
+    "require": [
+      "babel-register"
+    ],
+    "sourceMap": false,
+    "instrument": false
+  },
+  "author": "Ryan Gaus <rgaus.net>",
   "license": "ISC"
 }

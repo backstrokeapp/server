@@ -1,0 +1,133 @@
+.link-item {
+  @extend .app-container;
+  padding: 0px $padding-base-horizontal;
+
+  .link-header {
+    margin-top: -1.2em;
+    margin-bottom: 1.2em;
+    display: flex;
+
+    div.react-ios-switch-Switch-switch {
+      width: 50px;
+      vertical-align: middle;
+      margin-top: 1.75em;
+      margin-right: 1em;
+    }
+
+    .link-name {
+      flex: 1;
+      font-weight: 300;
+      font-size: 2.8em;
+      padding-top: 0.2em;
+      height: 2em;
+
+      border: 0px;
+      margin-left: 1px;
+      &:hover, &:active, &:focus {
+        border: 1px solid $gray-light;
+        margin-left: 0px;
+      }
+
+      &.invalid {
+        @include invalid-control;
+      }
+    }
+  }
+
+  // pick the branch that the given item will act against
+  .master-branch-box {
+    text-align: center;
+    padding: 0.5em;
+
+    .lead-in, .lead-out {
+      font-size: 1.2em;
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0em 0.5em;
+    }
+    
+    .select-wrapper {
+      width: 25%;
+      display: inline-block;
+      vertical-align: middle;
+      text-align: left;
+    }
+  }
+
+  li {
+    list-style-type: none;
+    .sub-change {
+      text-align: center;
+      font-size: $font-size-base;
+      position: relative;
+      padding: 2em;
+
+      &:nth-child(even) {
+        background-color: $gray-lighter;
+      }
+
+      // A list item count that is on the right in big numbers
+      .count-item { display: none; }
+      @media (min-width: $screen-sm-min) {
+        .count-item {
+          position: absolute;
+          display: block;
+          font-size: 8em;
+          color: $brand-success;
+          &:after {
+            content: ".";
+          }
+        }
+      }
+
+      .change-description {
+        font-size: 1.2em;
+        &:after {
+          content: ":";
+        }
+      }
+
+      .repository-box {
+        max-width: 400px;
+        margin: 1.2em auto;
+        text-align: left;
+        background-color: #FFF;
+      }
+    }
+  }
+
+  // a group of slots (to/from repos or other things)
+  .slot-container {
+    @extend .row;
+    margin-bottom: 2em;
+
+    .slot {
+      @include make-xs-column(12);
+      @include make-md-column(6);
+
+      h1 {
+        font-weight: 300;
+      }
+    }
+  }
+
+  .rc-collapse {
+    margin-bottom: 2em;
+
+    .webhook-container {
+      h1 {
+        font-weight: 300;
+      }
+      p {
+        margin-top: 1em;
+        margin-bottom: 1em;
+        font-size: 1.2em;
+      }
+    }
+  }
+
+  // footer with buttons
+  .btn.btn-danger.btn-del {
+    float: right;
+  }
+}

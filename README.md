@@ -4,6 +4,10 @@ Backstroke
 A Github bot to keep a fork updated with any changes made to its upstream.
 Heavily inspired by Greenkeeper.
 
+[![Build Status](https://travis-ci.org/1egoman/backstroke.svg?branch=master)](https://travis-ci.org/1egoman/backstroke)
+[![Gratipay Team](https://img.shields.io/gratipay/team/Backstroke.svg?maxAge=2592001)](https://gratipay.com/Backstroke/)
+[![Website](https://img.shields.io/website-up-down-green-red/http/backstroke.us.svg?maxAge=2592000)](https://backstroke.us)
+
 [![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.svg)](https://gratipay.com/Backstroke/)
 
 ## Add Backstroke to a repository

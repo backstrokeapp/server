@@ -4,6 +4,8 @@ Backstroke
 A Github bot to keep a fork updated with any changes made to its upstream.
 Heavily inspired by Greenkeeper.
 
+[![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.svg)](https://gratipay.com/Backstroke/)
+
 ## Add Backstroke to a repository
 1. Create a webhook in either a fork or a upstream repository. (`Settings` => `Webhooks & Services` => `Add Webhook`)
 3. Add `http://backstroke.us` as the payload url.

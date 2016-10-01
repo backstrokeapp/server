@@ -1,4 +1,4 @@
-![Backstroke](https://rawgit.com/1egoman/backstroke/master/assets/logo.svg)
+![Backstroke](https://backstroke.us/assets/img/logo.png)
 Backstroke
 ===
 A Github bot to keep a fork updated with any changes made to its upstream.

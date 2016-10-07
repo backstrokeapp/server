@@ -11,6 +11,14 @@ Heavily inspired by Greenkeeper.
 [![Support via Gratipay](https://cdn.rawgit.com/gratipay/gratipay-badge/2.3.0/dist/gratipay.svg)](https://gratipay.com/Backstroke/)
 
 ## Add Backstroke to a repository
+
+1. Go to [backstroke.us](https://backstroke.us), and sign in with your Github account.
+2. Click 
+
+### Use Backstroke classic
+Backstroke classic is no longer the recommended way to set up Backstroke,
+however, if you'd prefer to live with the limitation of batched updates to
+forks, it's still available.
 1. Create a webhook in either a fork or a upstream repository. (`Settings` => `Webhooks & Services` => `Add Webhook`)
 3. Add `http://backstroke.us` as the payload url.
 4. Create the webhook, and push some code to the upstream repository to see Backstroke in action.

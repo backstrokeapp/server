@@ -1,0 +1,26 @@
+.box-properties {
+  position: relative;
+
+  $delete-size: 24px;
+  .btn.btn-delete {
+    position: absolute;
+    top: -$delete-size / 2;
+    right: -$delete-size / 2;
+    width: $delete-size;
+    height: $delete-size;
+
+    background-color: $gray-darker;
+    z-index: 5;
+    border-radius: $delete-size/2;
+    color: #FFF;
+    font-size: 1.2em;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease-in;
+
+    &.btn-delete-expanded {
+      width: 8em;
+      font-size: 1em;
+    }
+  }
+}

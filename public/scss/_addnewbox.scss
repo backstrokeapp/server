@@ -11,6 +11,18 @@
       @include make-md-column(12);
     }
 
+    // When the option shouldn't be selected yet
+    &.add-new-option-muted {
+      opacity: 0.5;
+    }
+
+    &.add-new-option-from {
+      button {
+        background: $brand-success;
+        color: #FFF;
+      }
+    }
+
     button {
       @include repo-box;
       width: 100%;

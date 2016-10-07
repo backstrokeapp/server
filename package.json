@@ -74,7 +74,7 @@
     "test": "NODE_PATH=src/ NODE_ENV=test mocha",
     "coverage": "NODE_PATH=src/ NODE_ENV=test nyc --reporter=lcov --reporter=text mocha",
     "coverageopen": "open coverage/lcov-report/index.html",
-    "build:production": "BACKSTROKE_SERVER=https://dev.backstroke.us USE_MIXPANEL=51d78a87db2422d7403a63755e58ec31 ./node_modules/.bin/gulp build --production",
+    "build:production": "./node_modules/.bin/gulp build --production",
     "postinstall": "./postinstall.sh"
   },
   "babel": {

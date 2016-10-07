@@ -17,12 +17,15 @@
       background-color: #FFF;
       font-size: 1.5em;
       font-weight: 300;
+      white-space: normal;
 
       // override styles
       margin-top: 0.2em;
 
       i {
-        margin-right: 0.25em;
+        display: block;
+        font-size: 2em;
+        margin-bottom: 0.2em;
       }
     }
   }

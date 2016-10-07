@@ -10,7 +10,11 @@ export function AddNewBox({type, onAddNewRepository, onAddAllForks}) {
     <div className="add-new-option">
       <button className="btn" onClick={onAddNewRepository.bind(null, type)}>
         <i className="fa fa-plus-square-o" />
-        Repository
+        {
+          type === 'to' ?
+          'Sync changes to a repository':
+          'First, add a source to sync changes from.'
+        }
       </button>
     </div>
     {
@@ -18,7 +22,7 @@ export function AddNewBox({type, onAddNewRepository, onAddAllForks}) {
       <div className="add-new-option">
         <button className="btn" onClick={onAddAllForks.bind(null, type)}>
           <i className="fa fa-plus-square-o" />
-          All Forks
+          Sync changes to all forks
         </button>
       </div>:
       null

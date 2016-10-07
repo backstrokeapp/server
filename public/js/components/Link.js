@@ -112,6 +112,8 @@ export function Link({
             repository={link.to}
             branch={link.to && link.to.branch}
             from={link.from}
+
+            dim={!(link.from && link.from.branch)}
           />
         </div>
       </div>
@@ -187,7 +189,7 @@ export function Link({
   }
 }
 
-export function RepoWrapper({repository, branch, from, slot}) {
+export function RepoWrapper({repository, branch, from, slot, dim}) {
   if (repository && repository.type === 'repo') {
     // A bare repository / branch combo
     return <BoxProperties repository={repository}>
@@ -200,7 +202,7 @@ export function RepoWrapper({repository, branch, from, slot}) {
     </BoxProperties>;
   } else {
     // add a new item
-    return <AddNewBox type={slot} />;
+    return <AddNewBox type={slot} dim={dim} />;
   }
 }
 

@@ -113,9 +113,7 @@ export function Link({
             branch={link.to && link.to.branch}
             from={link.from}
 
-            dim={!(
-              link.from && link.from.branch
-            )}
+            dim={!(link.from && link.from.branch)}
           />
         </div>
       </div>

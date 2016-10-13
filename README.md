@@ -60,7 +60,7 @@ however, if you'd prefer to live with a few limitations, it's still available.
   on?**: This is because the upstream added backstroke to their repository.
   Some project maintainers use backstroke as an easy way to keep contributor's
   local forks up-to-date with later changes, but if you'd rather tackle that
-  unassisted, here's how to [disable backstroke on a fork](https://github.com/1egoman/backstroke/blob/master/public/assets/disable-on-a-fork.md).
+  unassisted, here's how to [disable backstroke on a fork](./public/assets/disable-on-a-fork.md).
 
 - **Why isn't Backstroke working?**: Take a look at the webhook response logs. Most likely, you'll see an error. Otherwise, open an issue.
 

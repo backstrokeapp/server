@@ -29,7 +29,7 @@ however, if you'd prefer to live with a few limitations, it's still available.
 3. Create the webhook, and push some code to the upstream repository to see Backstroke in action.
 
 ## How it works
-![How Backstroke Works](https://raw.githubusercontent.com/1egoman/backstroke/master/public/assets/map.png)
+![How Backstroke Works](public/assets/map.png)
 
 ### For a contributor
 1. You push code to Github.

@@ -18,7 +18,7 @@ export function RepositoryBox({
   let branchOptions = repo.branches.map(branch => {
     return {value: branch, label: branch};
   });
-  return <div className="repository-box">
+  return <div className="link-box">
     <div className="icon-wrapper">
       <a target="_blank" href={generateRepoUrl(repo)}>
         <i className={'fa fa-'+repo.provider} />

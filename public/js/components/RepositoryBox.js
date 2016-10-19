@@ -24,7 +24,7 @@ export function RepositoryBox({
         <i className={'fa fa-'+repo.provider} />
       </a>
     </div>
-    <InputGroup className="repo-name-box">
+    <InputGroup className="link-name-box">
       <FormControl
         type="text"
         placeholder="Start typing a username/repo"

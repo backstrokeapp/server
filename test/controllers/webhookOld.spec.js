@@ -17,13 +17,13 @@ describe("github", function() {
         gh = require('github/');
         let reposGetBranch = sinon.stub();
         // fork (user/repo)
-        reposGetBranch.withArgs({user: "user", repo: "repo", branch: "master"}).resolves({
+        reposGetBranch.withArgs({owner: "user", repo: "repo", branch: "master"}).resolves({
           commit: {
             sha: "forkRepoCommitSha",
           },
         });
         // upstream (parent/upstream_repo)
-        reposGetBranch.withArgs({user: "parent", repo: "upstream_repo", branch: "master"}).resolves({
+        reposGetBranch.withArgs({owner: "parent", repo: "upstream_repo", branch: "master"}).resolves({
           commit: {
             sha: "upstreamRepoCommitSha",
           },
@@ -65,11 +65,11 @@ describe("github", function() {
         gh = require('github/');
         let reposGetBranch = sinon.stub();
         // fork (user/repo)
-        reposGetBranch.withArgs({user: "user", repo: "repo", branch: "master"}).resolves({
+        reposGetBranch.withArgs({owner: "user", repo: "repo", branch: "master"}).resolves({
           commit: { sha: "commonSha", },
         });
         // upstream (parent/upstream_repo)
-        reposGetBranch.withArgs({user: "parent", repo: "upstream_repo", branch: "master"}).resolves({
+        reposGetBranch.withArgs({owner: "parent", repo: "upstream_repo", branch: "master"}).resolves({
           commit: { sha: "commonSha", },
         });
 
@@ -195,7 +195,7 @@ describe("github", function() {
         // mock the github constructor
         let ghMock = {
           pullRequestsGetAll: sinon.stub().withArgs({
-            user: "user",
+            owner: "user",
             repo: "repo",
             state: "open",
             head: "parent/parentRepo",
@@ -241,7 +241,7 @@ describe("github", function() {
         // mock the github constructor
         let ghMock = {
           pullRequestsGetAll: sinon.stub().withArgs({
-            user: "user",
+            owner: "user",
             repo: "repo",
             state: "open",
             head: "parent/parentRepo",
@@ -346,7 +346,7 @@ describe("routes", function() {
       };
       let ghMock = sinon.mock(gh);
 
-      ghMock.expects('reposGet').withArgs({user: "forkuser", repo: "fork0"}).resolves({
+      ghMock.expects('reposGet').withArgs({owner: "forkuser", repo: "fork0"}).resolves({
         parent: {
           owner: {
             login: "upstreamuser",
@@ -359,7 +359,7 @@ describe("routes", function() {
         owner: {login: 'forkuser'},
         name: 'fork0',
       });
-      ghMock.expects('reposGet').withArgs({user: "forkuser", repo: "fork1"}).resolves({
+      ghMock.expects('reposGet').withArgs({owner: "forkuser", repo: "fork1"}).resolves({
         parent: {
           owner: {
             login: "upstreamuser",
@@ -374,26 +374,26 @@ describe("routes", function() {
       });
 
       ghMock.expects('reposGetBranch').twice()
-      .withArgs({user: "upstreamuser", repo: "repo", branch: "master"}).resolves({
+      .withArgs({owner: "upstreamuser", repo: "repo", branch: "master"}).resolves({
         commit: {
           sha: "upstreamRepoCommitSha",
         },
       });
       ghMock.expects('reposGetBranch')
-      .withArgs({user: "forkuser", repo: "fork0", branch: "master"}).resolves({
+      .withArgs({owner: "forkuser", repo: "fork0", branch: "master"}).resolves({
         commit: {
           sha: "fork0RepoCommitSha",
         },
       });
       ghMock.expects('reposGetBranch')
-      .withArgs({user: "forkuser", repo: "fork1", branch: "master"}).resolves({
+      .withArgs({owner: "forkuser", repo: "fork1", branch: "master"}).resolves({
         commit: {
           sha: "fork1RepoCommitSha",
         },
       });
 
       // Get upstream forks
-      ghMock.expects('reposGetForks').withArgs({user: "upstreamuser", repo: "repo"}).resolves([
+      ghMock.expects('reposGetForks').withArgs({owner: "upstreamuser", repo: "repo"}).resolves([
         {
           name: 'fork0',
           owner: {login: 'forkuser'},
@@ -422,13 +422,13 @@ describe("routes", function() {
 
       // Check for existing PRs
       ghMock.expects('pullRequestsGetAll').withArgs({
-        user: 'forkuser',
+        owner: 'forkuser',
         repo: 'fork0',
         state: 'open',
         head: 'upstreamuser:master',
       }).resolves([]);
       ghMock.expects('pullRequestsGetAll').withArgs({
-        user: 'forkuser',
+        owner: 'forkuser',
         repo: 'fork1',
         state: 'open',
         head: 'upstreamuser:master',
@@ -436,18 +436,20 @@ describe("routes", function() {
 
       // Make the pull request
       ghMock.expects('pullRequestsCreate').withArgs({
-        user: 'forkuser', repo: 'fork0',
+        owner: 'forkuser', repo: 'fork0',
         title: 'Update from upstream repo upstreamuser/repo',
         head: 'upstreamuser:master',
         base: 'master',
         body: generateUpdateBody('upstreamuser/repo'),
+        maintainer_can_modify: false,
       }).resolves({created: 'pull request'}),
       ghMock.expects('pullRequestsCreate').withArgs({
-        user: 'forkuser', repo: 'fork1',
+        owner: 'forkuser', repo: 'fork1',
         title: 'Update from upstream repo upstreamuser/repo',
         head: 'upstreamuser:master',
         base: 'master',
         body: generateUpdateBody('upstreamuser/repo'),
+        maintainer_can_modify: false,
       }).resolves({created: 'pull request'}),
 
       ghOriginal.constructor = () => gh
@@ -493,7 +495,7 @@ describe("routes", function() {
       };
       let ghMock = sinon.mock(gh);
 
-      ghMock.expects('reposGet').withArgs({user: "forkuser", repo: "fork0"}).resolves({
+      ghMock.expects('reposGet').withArgs({owner: "forkuser", repo: "fork0"}).resolves({
         parent: {
           owner: {
             login: "upstreamuser",
@@ -508,13 +510,13 @@ describe("routes", function() {
       });
 
       ghMock.expects('reposGetBranch')
-      .withArgs({user: "upstreamuser", repo: "repo", branch: "master"}).resolves({
+      .withArgs({owner: "upstreamuser", repo: "repo", branch: "master"}).resolves({
         commit: {
           sha: "upstreamRepoCommitSha",
         },
       });
       ghMock.expects('reposGetBranch')
-      .withArgs({user: "forkuser", repo: "fork0", branch: "master"}).resolves({
+      .withArgs({owner: "forkuser", repo: "fork0", branch: "master"}).resolves({
         commit: {
           sha: "fork0RepoCommitSha",
         },
@@ -526,7 +528,7 @@ describe("routes", function() {
 
       // Check for existing PRs
       ghMock.expects('pullRequestsGetAll').withArgs({
-        user: 'forkuser',
+        owner: 'forkuser',
         repo: 'fork0',
         state: 'open',
         head: 'upstreamuser:master',
@@ -534,11 +536,12 @@ describe("routes", function() {
 
       // Make the pull request
       ghMock.expects('pullRequestsCreate').withArgs({
-        user: 'forkuser', repo: 'fork0',
+        owner: 'forkuser', repo: 'fork0',
         title: 'Update from upstream repo upstreamuser/repo',
         head: 'upstreamuser:master',
         base: 'master',
         body: generateUpdateBody('upstreamuser/repo'),
+        maintainer_can_modify: false,
       }).resolves({created: 'pull request'}),
 
       ghOriginal.constructor = () => gh
@@ -582,7 +585,7 @@ describe("routes", function() {
       };
       let ghMock = sinon.mock(gh);
 
-      ghMock.expects('reposGet').withArgs({user: "forkuser", repo: "fork0"}).resolves({
+      ghMock.expects('reposGet').withArgs({owner: "forkuser", repo: "fork0"}).resolves({
         parent: {
           owner: {
             login: "upstreamuser",
@@ -597,13 +600,13 @@ describe("routes", function() {
       });
 
       ghMock.expects('reposGetBranch')
-      .withArgs({user: "upstreamuser", repo: "repo", branch: "master"}).resolves({
+      .withArgs({owner: "upstreamuser", repo: "repo", branch: "master"}).resolves({
         commit: {
           sha: "upstreamRepoCommitSha",
         },
       });
       ghMock.expects('reposGetBranch')
-      .withArgs({user: "forkuser", repo: "fork0", branch: "master"}).resolves({
+      .withArgs({owner: "forkuser", repo: "fork0", branch: "master"}).resolves({
         commit: {
           sha: "fork0RepoCommitSha",
         },
@@ -615,7 +618,7 @@ describe("routes", function() {
 
       // Check for existing PRs
       ghMock.expects('pullRequestsGetAll').withArgs({
-        user: 'forkuser',
+        owner: 'forkuser',
         repo: 'fork0',
         state: 'open',
         head: 'upstreamuser:master',
@@ -623,11 +626,12 @@ describe("routes", function() {
 
       // Make the pull request
       ghMock.expects('pullRequestsCreate').withArgs({
-        user: 'forkuser', repo: 'fork0',
+        owner: 'forkuser', repo: 'fork0',
         title: 'Update from upstream repo upstreamuser/repo',
         head: 'upstreamuser:master',
         base: 'master',
         body: generateUpdateBody('upstreamuser/repo'),
+        maintainer_can_modify: false,
       }).rejects(new Error('Explosion in the starboard engine room!'));
 
       ghOriginal.constructor = () => gh
@@ -671,7 +675,7 @@ describe("routes", function() {
       };
       let ghMock = sinon.mock(gh);
 
-      ghMock.expects('reposGet').withArgs({user: "forkuser", repo: "fork0"}).resolves({
+      ghMock.expects('reposGet').withArgs({owner: "forkuser", repo: "fork0"}).resolves({
         parent: {
           owner: {
             login: "upstreamuser",
@@ -686,13 +690,13 @@ describe("routes", function() {
       });
 
       ghMock.expects('reposGetBranch')
-      .withArgs({user: "upstreamuser", repo: "repo", branch: "master"}).resolves({
+      .withArgs({owner: "upstreamuser", repo: "repo", branch: "master"}).resolves({
         commit: {
           sha: "theSameSha",
         },
       });
       ghMock.expects('reposGetBranch')
-      .withArgs({user: "forkuser", repo: "fork0", branch: "master"}).resolves({
+      .withArgs({owner: "forkuser", repo: "fork0", branch: "master"}).resolves({
         commit: {
           sha: "theSameSha",
         },

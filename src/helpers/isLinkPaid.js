@@ -9,12 +9,12 @@ export default function isLinkPaid(user, link) {
 
   // always check `from`
   let [fromUser, fromRepo] = getRepoName(link.from);
-  checks.push(gh.reposGet({user: fromUser, repo: fromRepo}));
+  checks.push(gh.reposGet({owner: fromUser, repo: fromRepo}));;
 
   // need to check `to`?
   if (link.to.type === 'repo') {
     let [toUser, toRepo] = getRepoName(link.to);
-    checks.push(gh.reposGet({user: toUser, repo: toRepo}));
+    checks.push(gh.reposGet({owner: toUser, repo: toRepo}));
   }
 
   // Get both of the repos

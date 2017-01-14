@@ -18,7 +18,7 @@ export function addWebhooksForLink(user, link) {
   if (link.from.type === 'repo') {
     let [fromUser, fromRepo] = getRepoName(link.from);
     return gh.reposCreateHook({
-      user: fromUser,
+      owner: fromUser,
       repo: fromRepo,
       config,
       name: 'web',
@@ -49,7 +49,7 @@ export function removeOldWebhooksForLink(user, link) {
   if (link.from.type === 'repo' && link.hookId) {
     let [fromUser, fromRepo] = getRepoName(link.from);
     return gh.reposDeleteHook({
-      user: fromUser,
+      owner: fromUser,
       repo: fromRepo,
       id: link.hookId,
     }).catch(err => {

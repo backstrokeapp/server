@@ -106,6 +106,7 @@ function mergeChangesIntoEphemeralRepo(
     title: 'Merge in new changes from the upstream into this ephemeral snapshot',
     head: `${fromUser}:${fromBranch}`,
     base: ephemeralBranch,
+    maintainer_can_modify: false,
   }).then(pr => {
     // step 2: Merge the pull request that was created
     return inst.pullRequestsMerge({

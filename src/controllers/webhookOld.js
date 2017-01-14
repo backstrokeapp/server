@@ -29,19 +29,19 @@ export function hasDivergedFromUpstream(platform, user, repo) {
   switch (platform) {
     case "github":
       let repoContents;
-      return gh.reposGet({user, repo}).then(repoData => {
+      return gh.reposGet({owner: user, repo}).then(repoData => {
         repoContents = repoData;
         if (repoData.parent) {
           return Promise.all([
             // base branch
             gh.reposGetBranch({
-              user,
+              owner: user,
               repo,
               branch: repoData.default_branch,
             }),
             // upstream branch
             gh.reposGetBranch({
-              user: repoData.parent.owner.login,
+              owner: repoData.parent.owner.login,
               repo: repoData.parent.name,
               branch: repoData.parent.default_branch,
             }),
@@ -103,7 +103,7 @@ export function postUpdate(platform, repo, upstreamSha) {
       if (repo) {
         if (repo.parent) {
           return gh.pullRequestsGetAll({
-            user: repo.owner.login || repo.owner.name,
+            owner: repo.owner.login || repo.owner.name,
             repo: repo.name,
             state: "open",
             head: `${repo.parent.owner.login}:${repo.parent.default_branch}`,
@@ -115,7 +115,7 @@ export function postUpdate(platform, repo, upstreamSha) {
               console.info("Making pull to", repo.owner.login, repo.name);
               // create a pull request to merge in remote changes
               return gh.pullRequestsCreate({
-                user: repo.owner.login, repo: repo.name,
+                owner: repo.owner.login, repo: repo.name,
                 title: `Update from upstream repo ${repo.parent.full_name}`,
                 head: `${repo.parent.owner.login}:${repo.parent.default_branch}`,
                 base: repo.default_branch,
@@ -234,7 +234,7 @@ export function isForkMergeUpstream(repository, opts={}) {
 
 export function isParentFindForks(repository, opts={}) {
   return gh.reposGetForks({
-    user: repository.owner.name || repository.owner.login,
+    owner: repository.owner.name || repository.owner.login,
     repo: repository.name,
   }).then(forks => {
     let pullreqs = forks.map(fork => {

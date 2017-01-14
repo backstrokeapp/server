@@ -80,7 +80,7 @@ export default function webhook(gh, link, pageSize=100, botInstance=false) {
     function getForks(page) {
       let allForks = [];
       return gh.reposGetForks({
-        user, repo, page,
+        owner: user, repo, page,
         per_page: pageSize,
       }).then(forks => {
         // Act on each fork, and add each's response to `forkGroup`.

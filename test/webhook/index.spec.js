@@ -82,14 +82,14 @@ describe('webhook v2', function() {
 
       // Receive 2 pages of forks, the first a full page, and the second with only 1 item (len=2)
       let reposGetForks = sinon.stub();
-      reposGetForks.withArgs({user, repo, page: 0, per_page: 2}).resolves([{
+      reposGetForks.withArgs({owner: user, repo, page: 0, per_page: 2}).resolves([{
         full_name: firstForkPage[0].name,
         private: firstForkPage[0].private,
       }, {
         full_name: firstForkPage[1].name,
         private: firstForkPage[1].private,
       }]);
-      reposGetForks.withArgs({user, repo, page: 1, per_page: 2}).resolves([{
+      reposGetForks.withArgs({owner: user, repo, page: 1, per_page: 2}).resolves([{
         full_name: secondForkPage[0].name,
         private: secondForkPage[0].private,
       }]);

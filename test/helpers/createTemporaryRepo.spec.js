@@ -112,6 +112,7 @@ describe('webhook (with ephemeralRepo: true)', function() {
         title: 'Merge in new changes from the upstream into this ephemeral snapshot',
         head: `${userName}:${repo1.branch}`,
         base: ephemeralRepo.branch,
+        maintainer_can_modify: false,
       }).resolves({number: prNumber}),
       pullRequestsMerge: sinon.mock().withArgs({
         user: 'backstroke-bot',
@@ -203,6 +204,7 @@ describe('webhook (with ephemeralRepo: true)', function() {
         title: 'Merge in new changes from the upstream into this ephemeral snapshot',
         head: `${userName}:${repo1.branch}`,
         base: ephemeralRepo.branch,
+        maintainer_can_modify: false,
       }).resolves({number: prNumber}),
       pullRequestsMerge: sinon.mock().withArgs({
         user: 'backstroke-bot',
@@ -249,6 +251,7 @@ describe('webhook (with ephemeralRepo: true)', function() {
         title: 'Merge in new changes from the upstream into this ephemeral snapshot',
         head: `${userName}:${repo1.branch}`,
         base: ephemeralRepo.branch,
+        maintainer_can_modify: false,
       }).rejects(new Error('explosion')),
       pullRequestsMerge: sinon.mock().withArgs({
         user: 'backstroke-bot',
@@ -296,6 +299,7 @@ describe('webhook (with ephemeralRepo: true)', function() {
         title: 'Merge in new changes from the upstream into this ephemeral snapshot',
         head: `${userName}:${repo1.branch}`,
         base: ephemeralRepo.branch,
+        maintainer_can_modify: false,
       }).resolves({number: prNumber}),
       pullRequestsMerge: sinon.mock().withArgs({
         user: 'backstroke-bot',

@@ -441,6 +441,7 @@ describe("routes", function() {
         head: 'upstreamuser:master',
         base: 'master',
         body: generateUpdateBody('upstreamuser/repo'),
+        maintainer_can_modify: false,
       }).resolves({created: 'pull request'}),
       ghMock.expects('pullRequestsCreate').withArgs({
         owner: 'forkuser', repo: 'fork1',
@@ -448,6 +449,7 @@ describe("routes", function() {
         head: 'upstreamuser:master',
         base: 'master',
         body: generateUpdateBody('upstreamuser/repo'),
+        maintainer_can_modify: false,
       }).resolves({created: 'pull request'}),
 
       ghOriginal.constructor = () => gh
@@ -539,6 +541,7 @@ describe("routes", function() {
         head: 'upstreamuser:master',
         base: 'master',
         body: generateUpdateBody('upstreamuser/repo'),
+        maintainer_can_modify: false,
       }).resolves({created: 'pull request'}),
 
       ghOriginal.constructor = () => gh
@@ -628,6 +631,7 @@ describe("routes", function() {
         head: 'upstreamuser:master',
         base: 'master',
         body: generateUpdateBody('upstreamuser/repo'),
+        maintainer_can_modify: false,
       }).rejects(new Error('Explosion in the starboard engine room!'));
 
       ghOriginal.constructor = () => gh

@@ -199,6 +199,7 @@ export function createPullRequest(inst, provider, upstreamRepoModel, childRepoMo
           // if an ephemeral repo wasn't generated, this should be falsey
           upstreamRepo === realUpstreamRepo ? false : upstreamRepo
         ),
+        maintainer_can_modify: false,
       });
     default:
       throw new Error(`No such provider ${provider}`);

@@ -120,6 +120,7 @@ export function postUpdate(platform, repo, upstreamSha) {
                 head: `${repo.parent.owner.login}:${repo.parent.default_branch}`,
                 base: repo.default_branch,
                 body: generateUpdateBody(repo.parent.full_name),
+                maintainer_can_modify: false,
               });
             } else {
               throw new Error(`The PR already has been made.`);

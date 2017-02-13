@@ -184,12 +184,8 @@ export function createPullRequest(inst, provider, upstreamRepoModel, childRepoMo
 
   switch (provider) {
     case 'github':
-      // console.ephemeralBranchlog("Create pull request on", childUser, childRepo);
-      // console.log("  base:", childRepoModel.branch);
-      // console.log("  head:", upstreamUser, upstreamRepoModel.branch);
-      // break;
       return inst.pullRequestsCreate({
-        user: childUser, repo: childRepo,
+        owner: childUser, repo: childRepo,
         title: generatePullRequestTitle(realUpstreamUser, realUpstreamRepo),
         head: `${upstreamUser}:${upstreamRepoModel.branch}`,
         base: childRepoModel.branch,

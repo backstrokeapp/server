@@ -7,7 +7,6 @@ import {Navbar, Nav, NavItem} from 'react-bootstrap';
 
 export function App({user, children}) {
   return <div className="app-container-parent">
-    <MainNav user={user} transparent={children && children.type.transparentNavBar} />
     <div className="app-container">
       {children}
       {children && children.type.transparentNavBar ? null : <Footer />}
@@ -29,9 +28,7 @@ export function MainNav({user, transparent}) {
     </Navbar.Header>
     <Navbar.Collapse>
       <Nav>
-        <NavItem eventKey={2} href="#/pricing">Pricing</NavItem>
         {user && user._auth ? <NavItem eventKey={2} href="#/links">Links</NavItem> : null}
-        {user && user._auth ? <NavItem eventKey={3} href="#/settings">Settings</NavItem> : null}
       </Nav>
       <UserNav user={user} transparent={transparent} />
     </Navbar.Collapse>

@@ -4,6 +4,7 @@ import Select from 'react-select';
 import Switch from 'react-ios-switch';
 import {InputGroup, FormControl, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import Collapse, {Panel} from 'rc-collapse';
+import {push} from 'react-router-redux';
 
 import RepositoryBox from 'components/RepositoryBox';
 import ForkAllBox from 'components/ForkAllBox';
@@ -53,6 +54,7 @@ export function Link({
   onDeleteLink,
   onIsDeletingLink,
   onChangePushUsers,
+  onBackToLinkList,
 }) {
   if (link) {
     // fetch branches, if required
@@ -231,6 +233,9 @@ export default connect((state, props) => {
     },
     onChangePushUsers(event) {
       dispatch(changePushUsers(event.target.value));
+    },
+    onBackToLinkList() {
+      dispatch(push('/links'));
     },
   };
 })(Link);

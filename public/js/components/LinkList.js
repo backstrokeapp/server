@@ -78,11 +78,6 @@ export function LinkList({
             </p>
           </li> : null}
         </ul>
-
-        {/* Coming later */}
-        {/*<div className="monthly-price">
-          ${links.totalPrice && links.totalPrice.toFixed(2)} per month
-        </div>*/}
       </div>
 
       {children}

@@ -23,7 +23,7 @@ export default function webhookRoute(Link, req, res) {
   }).catch(NoSuchLinkError, err => {
     res.status(400).send({error: err.message});
   }).catch(err => {
-    res.status(500).send({error: 'Server error.'});
+    res.status(500).send({error: err});
     throw err;
   });
 }

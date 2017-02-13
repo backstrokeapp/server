@@ -1,9 +1,9 @@
 .link-item {
   @extend .app-container;
-  padding: 0px $padding-base-horizontal;
+  padding: 20px $padding-base-horizontal;
 
   .link-header {
-    margin-top: -1.2em;
+    margin-top: 2.4em;
     margin-bottom: 1.2em;
     display: flex;
 
@@ -12,6 +12,7 @@
       vertical-align: middle;
       margin-top: 1.75em;
       margin-right: 1em;
+      display: block;
     }
 
     .link-name {
@@ -96,7 +97,8 @@
   // a group of slots (to/from repos or other things)
   .slot-container {
     @extend .row;
-    margin-bottom: 2em;
+    margin-top: 2em;
+    margin-bottom: 4em;
 
     .slot {
       @include make-xs-column(12);
@@ -124,7 +126,12 @@
   }
 
   // footer with buttons
-  .btn.btn-danger.btn-del {
-    float: right;
+  .action-button-container {
+    display: flex;
+    margin-top: 20px;
+
+    .btn:first-child {
+      margin-right: auto;
+    }
   }
 }

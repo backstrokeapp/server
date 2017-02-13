@@ -21,18 +21,28 @@ export function LinkList({
 }) {
   if (links) {
     return <div className="repo container">
+      <img className="backstroke-logo" src="/assets/img/logo.png" alt="Backstroke" />
+
       <div className="link-list">
         <ul className="list-group">
           {/* Section header */}
           {links.data.length > 0 ? <li className="list-header">
-            <h1>
-              Links join two repos together.<br/>
-              Here are yours.
-            </h1>
+            <span className="title-text">
+              <h1>My Links</h1>
+              <h2>
+                A link represents a flow of changes from one repository to another.
+              </h2>
+            </span>
 
             <button className="btn btn-outline btn-outline-primary btn-default btn-lg" onClick={onNewLink}>
               Add link
             </button>
+          </li> : null}
+
+          {/* Link list header */}
+          {links.data.length > 0 ?  <li className="list-group-item item-header">
+            <span className="header header-name">Link Name</span>
+            <span className="header header-enabled">Enabled</span>
           </li> : null}
 
           {/* Link list */}
@@ -77,6 +87,8 @@ export function LinkList({
               </a>
             </p>
           </li> : null}
+
+          <a className="logout" href="/logout">Logout {user.user}</a>
         </ul>
       </div>
 

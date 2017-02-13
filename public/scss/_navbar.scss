@@ -29,15 +29,3 @@ $navbar-mark-margin: $navbar-margin-bottom / 2;
     margin-left: 0px;
   }
 }
-
-// User login picture
-.user-nav img {
-  @include navbar-icon;
-  position: absolute;
-  top: 0px;
-  left: -1 * ($navbar-height - $navbar-mark-margin);
-}
-
-.user-nav {
-  padding-left: $navbar-height - $navbar-mark-margin;
-}

@@ -5,34 +5,13 @@ import {Link} from 'react-router';
 import GitHubButton from 'react-github-button';
 import {Navbar, Nav, NavItem} from 'react-bootstrap';
 
-export function App({user, children}) {
+export default function App({children}) {
   return <div className="app-container-parent">
     <div className="app-container">
       {children}
       {children && children.type.transparentNavBar ? null : <Footer />}
     </div>
   </div>
-}
-
-export function MainNav({user, transparent}) {
-  return <Navbar className={transparent ? "navbar-inverse" : null}>
-    <Navbar.Header>
-      <Link to="/">
-        {
-          transparent ?
-          <img className="navbar-mark" src="/assets/img/inverse.png" alt="Backstroke" />:
-          <img className="navbar-mark" src="/assets/img/logo.png" alt="Backstroke" />
-        }
-      </Link>
-      <Navbar.Toggle />
-    </Navbar.Header>
-    <Navbar.Collapse>
-      <Nav>
-        {user && user._auth ? <NavItem eventKey={2} href="#/links">Links</NavItem> : null}
-      </Nav>
-      <UserNav user={user} transparent={transparent} />
-    </Navbar.Collapse>
-  </Navbar>;
 }
 
 export function Index() {
@@ -151,7 +130,3 @@ function UserNav({user, transparent}) {
     return null;
   }
 }
-
-export default connect((state, props) => {
-  return {user: state.user, children: props.children};
-}, dispatch => new Object)(App)

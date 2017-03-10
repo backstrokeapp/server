@@ -14,6 +14,7 @@
     // When the option shouldn't be selected yet
     &.add-new-option-muted {
       opacity: 0.5;
+      button { cursor: default; }
     }
 
     &.add-new-option-from {

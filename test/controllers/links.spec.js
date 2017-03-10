@@ -228,7 +228,6 @@ describe('links controller', function() {
       let isLinkPaid = sinon.stub().resolves(false);
       let addWebhooksForLink = sinon.stub().resolves(false);
       let removeOldWebhooksForLink = sinon.stub().resolves(false);
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -246,7 +245,6 @@ describe('links controller', function() {
         isLinkPaid,
         addWebhooksForLink,
         removeOldWebhooksForLink,
-        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
         res
       );
@@ -269,7 +267,6 @@ describe('links controller', function() {
       let isLinkPaid = sinon.stub().resolves(false);
       let addWebhooksForLink = sinon.stub().withArgs(loggedIn.user, link1).resolves({id: 'my-webhook-id'});
       let removeOldWebhooksForLink = sinon.stub().withArgs(loggedIn.user, link1).resolves(true);
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -287,7 +284,6 @@ describe('links controller', function() {
         isLinkPaid,
         addWebhooksForLink,
         removeOldWebhooksForLink,
-        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
         res
       );
@@ -309,7 +305,6 @@ describe('links controller', function() {
 
       let isLinkPaid = sinon.stub().resolves(false);
       let addWebhooksForLink = sinon.stub().resolves();
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
       let removeOldWebhooksForLink = sinon.stub().resolves(false);
 
       res(function() {
@@ -328,7 +323,6 @@ describe('links controller', function() {
         isLinkPaid,
         addWebhooksForLink,
         removeOldWebhooksForLink,
-        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
         res
       );
@@ -338,7 +332,6 @@ describe('links controller', function() {
       link1.to.fork = true;
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
       let removeOldWebhooksForLink = sinon.stub().resolves(false);
 
       res(function() {
@@ -355,7 +348,6 @@ describe('links controller', function() {
         isLinkPaid,
         addWebhooksForLink,
         removeOldWebhooksForLink,
-        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
         res
       );
@@ -533,7 +525,6 @@ describe('links controller', function() {
 
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
       let removeOldWebhooksForLink = sinon.stub().resolves(false);
 
       res(function() {
@@ -547,7 +538,6 @@ describe('links controller', function() {
         isLinkPaid,
         addWebhooksForLink,
         removeOldWebhooksForLink,
-        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
         res
       );
@@ -558,7 +548,6 @@ describe('links controller', function() {
 
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
       let removeOldWebhooksForLink = sinon.stub().resolves(false);
 
       res(function() {
@@ -572,7 +561,6 @@ describe('links controller', function() {
         isLinkPaid,
         addWebhooksForLink,
         removeOldWebhooksForLink,
-        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'}), body({link: link1})),
         res
       );
@@ -583,7 +571,6 @@ describe('links controller', function() {
 
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
       let removeOldWebhooksForLink = sinon.stub().resolves(false);
 
       res(function() {
@@ -597,7 +584,6 @@ describe('links controller', function() {
         isLinkPaid,
         addWebhooksForLink,
         removeOldWebhooksForLink,
-        updatePaidLinks,
         join(loggedIn, params({linkId: 'my-link-id'})),
         res
       );
@@ -608,7 +594,6 @@ describe('links controller', function() {
 
       let isLinkPaid = sinon.stub().rejects(new Error('stuff failed'))
       let addWebhooksForLink = sinon.stub().resolves();
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
       let removeOldWebhooksForLink = sinon.stub().resolves(false);
 
       res(function() {
@@ -622,7 +607,6 @@ describe('links controller', function() {
         isLinkPaid,
         addWebhooksForLink,
         removeOldWebhooksForLink,
-        updatePaidLinks,
         join(params({linkId: 'my-link-id'}), body({link: link1})), // no `loggedIn`
         res
       );
@@ -654,7 +638,6 @@ describe('links controller', function() {
       .chain('exec')
       .resolves({nModified: 1});
 
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -667,7 +650,6 @@ describe('links controller', function() {
       enable(
         Link,
         User,
-        updatePaidLinks,
         join(loggedIn, params({linkId: link1._id}), body({enabled: true})),
         res
       );
@@ -692,7 +674,6 @@ describe('links controller', function() {
       .chain('exec')
       .resolves({nModified: 1});
 
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -705,7 +686,6 @@ describe('links controller', function() {
       enable(
         Link,
         User,
-        updatePaidLinks,
         join(loggedIn, params({linkId: link1._id}), body({enabled: false})),
         res
       );
@@ -726,7 +706,6 @@ describe('links controller', function() {
         name: {$exists: true, $type: 2, $ne: ''},
       }, {enabled: true}).chain('exec').resolves({nModified: 0});
 
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -739,14 +718,12 @@ describe('links controller', function() {
       enable(
         Link,
         User,
-        updatePaidLinks,
         join(loggedIn, params({linkId: link1._id}), body({enabled: true})),
         res
       );
     });
     it('should 400 on malformed body', function(done) {
       let link1 = generateLink();
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         assert.equal(res.statusCode, 400);
@@ -757,14 +734,12 @@ describe('links controller', function() {
       enable(
         Link,
         User,
-        updatePaidLinks,
         join(loggedIn, params({linkId: link1._id}), body({enabled: 'not valid'})),
         res
       );
     });
     it('should 403 when unauthenticated', function(done) {
       let link1 = generateLink();
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         assert.equal(res.statusCode, 403);
@@ -775,7 +750,6 @@ describe('links controller', function() {
       enable(
         Link,
         User,
-        updatePaidLinks,
         join(params({linkId: link1._id})), // no loggedIn
         res
       );
@@ -798,7 +772,6 @@ describe('links controller', function() {
       .chain('exec')
       .rejects(new Error('a fancy error'));
 
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -811,7 +784,6 @@ describe('links controller', function() {
       enable(
         Link,
         User,
-        updatePaidLinks,
         join(loggedIn, params({linkId: link1._id}), body({enabled: false})),
         res
       );
@@ -824,7 +796,6 @@ describe('links controller', function() {
       .withArgs({_id: link1._id, owner: loggedIn.user})
       .chain('exec')
       .resolves(true);
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -838,7 +809,6 @@ describe('links controller', function() {
       del(
         Link,
         User,
-        updatePaidLinks,
         join(loggedIn, params({id: link1._id})),
         res
       );
@@ -849,7 +819,6 @@ describe('links controller', function() {
       .withArgs({_id: link1._id, owner: loggedIn.user})
       .chain('exec')
       .rejects(new Error('screaming'));
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         LinkMock.verify();
@@ -863,14 +832,12 @@ describe('links controller', function() {
       del(
         Link,
         User,
-        updatePaidLinks,
         join(loggedIn, params({id: link1._id})),
         res
       );
     });
     it('should 403 when unauthenticated', function(done) {
       let link1 = generateLink();
-      let updatePaidLinks = sinon.stub().resolves(true); // update payments perfectly
 
       res(function() {
         assert.equal(res.statusCode, 403);
@@ -881,7 +848,6 @@ describe('links controller', function() {
       del(
         Link,
         User,
-        updatePaidLinks,
         join(params({id: link1._id})), // no loggedIn
         res
       );

@@ -10,19 +10,6 @@ function assertLoggedIn(req, res) {
   }
 }
 
-function doPayments(Link, User, updatePaidLinks, user, res) {
-  return () => {
-    return updatePaidLinks(Link, User, user).catch(err => {
-      if (err.message === 'Payment info not specified.') {
-        return res.status(400).send({error: 'Payment info not specified.'});
-      } else {
-        // rethrow error
-        return Promise.reject(err);
-      }
-    });
-  };
-}
-
 // Return all links in a condensed format. Included is {_id, name, paid, enabled}.
 // This will support pagination.
 export function index(Link, req, res) {
@@ -88,7 +75,7 @@ export function create(Link, req, res) {
 
 // Update a Link. This method requires a body with a link property.
 // Responds with {"status": "ok"} on success.
-export function update(Link, User, isLinkPaid, addWebhooksForLink, removeOldWebhooksForLink, updatePaidLinks, req, res) {
+export function update(Link, User, isLinkPaid, addWebhooksForLink, removeOldWebhooksForLink, req, res) {
   let user = assertLoggedIn(req, res);
 
   // Ensure the user is authenticated, and they passed a seeminly correct body.
@@ -145,7 +132,7 @@ export function update(Link, User, isLinkPaid, addWebhooksForLink, removeOldWebh
 
     // update the link
     return Link.update({_id: req.params.linkId, owner: user}, link).exec();
-  }).then(doPayments(Link, User, updatePaidLinks, user, res)).then(() => {
+  }).then(() => {
     res.status(200).send({status: 'ok'});
   }).catch(PremiumRequiresPaymentError, err => {
     res.status(403).send({error: err.message});
@@ -157,7 +144,7 @@ export function update(Link, User, isLinkPaid, addWebhooksForLink, removeOldWebh
 
 // Enable or disable a link. Requires a body like {"enabled": true/false}, and
 // responds with {"status": "ok"}
-export function enable(Link, User, updatePaidLinks, req, res) {
+export function enable(Link, User, req, res) {
   let user = assertLoggedIn(req, res), queryData;
 
   if (!req.isAuthenticated()) {
@@ -192,9 +179,7 @@ export function enable(Link, User, updatePaidLinks, req, res) {
     .then(() => {
       // step 4: return a status message
       if (queryData.nModified > 0) {
-        return doPayments(Link, User, updatePaidLinks, user, res)().then(() => {
-          res.status(200).send({status: 'ok'});
-        });
+        res.status(200).send({status: 'ok'});
       } else {
         res.status(400).send({status: 'not-complete'});
       }
@@ -207,14 +192,13 @@ export function enable(Link, User, updatePaidLinks, req, res) {
   }
 }
 
-export function del(Link, User, updatePaidLinks, req, res) {
+export function del(Link, User, req, res) {
   let user = assertLoggedIn(req, res);
 
   if (!req.isAuthenticated()) {
     return
   } else {
     Link.remove({_id: req.params.id, owner: user}).exec()
-    .then(doPayments(Link, User, updatePaidLinks, user, res))
     .then(() => {
       // it worked!
       res.status(200).send({status: 'ok'});

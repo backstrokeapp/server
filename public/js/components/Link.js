@@ -4,6 +4,7 @@ import Select from 'react-select';
 import Switch from 'react-ios-switch';
 import {InputGroup, FormControl, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import Collapse, {Panel} from 'rc-collapse';
+import {push} from 'react-router-redux';
 
 import RepositoryBox from 'components/RepositoryBox';
 import ForkAllBox from 'components/ForkAllBox';
@@ -53,6 +54,7 @@ export function Link({
   onDeleteLink,
   onIsDeletingLink,
   onChangePushUsers,
+  onBackToLinkList,
 }) {
   if (link) {
     // fetch branches, if required
@@ -68,20 +70,35 @@ export function Link({
     }
 
     return <div className="link-item container">
+      <div className="action-button-container action-button-header">
+        <button className="btn btn-default" onClick={onBackToLinkList}>&larr; Back</button>
+
+        {
+          link._deleting ?
+          <button
+            className="btn btn-danger"
+            onClick={onDeleteLink.bind(null, link._id)}
+          >Are you sure?</button> :
+          <button className="btn btn-danger" onClick={onIsDeletingLink}>Delete Link</button>
+        }
+      </div>
+
       <header className="link-header">
-        <OverlayTrigger placement="bottom" overlay={
-          <Tooltip id="link-state">
-            {link.enabled ? 'Disable' : 'Enable'} this link
-          </Tooltip>
-        }>
-          <span> {/* Required to let react-bootstrap bind to the switch */}
-            <Switch
-              onChange={onLinkEnable.bind(null, link, !link.enabled)}
-              checked={link.enabled}
-              disabled={link._pending}
-            />
-          </span>
-        </OverlayTrigger>
+        <span>
+          <OverlayTrigger placement="bottom" overlay={
+            <Tooltip id="link-state">
+              {link.enabled ? 'Disable' : 'Enable'} this link
+            </Tooltip>
+          }>
+            <span> {/* Required to let react-bootstrap bind to the switch */}
+              <Switch
+                onChange={onLinkEnable.bind(null, link, !link.enabled)}
+                checked={link.enabled}
+                disabled={link._pending}
+              />
+            </span>
+          </OverlayTrigger>
+        </span>
 
         {/* The name of the link */}
         <FormControl
@@ -98,7 +115,7 @@ export function Link({
 
       <div className="slot-container">
         <div className="slot from-slot">
-          <h1>From</h1>
+          <h1>Upstream</h1>
           <RepoWrapper
             slot="from"
             repository={link.from}
@@ -106,7 +123,7 @@ export function Link({
           />
         </div>
         <div className="slot to-slot">
-          <h1>To</h1>
+          <h1>Fork</h1>
           <RepoWrapper
             slot="to"
             repository={link.to}
@@ -133,49 +150,26 @@ export function Link({
 
           <h3>What is this?</h3>
           <p>
-            Whenever this url is pinged, we'll check for updates and propose any necessary changes
-            to this link according to the configuration defined above.
+            This is the URL that Backstroke adds as a webhook to your repositories. Coincidently, if
+            you want to programmatically trigger Backstroke to look for changes (if you haven't
+            pushed to your fork in a while), you can query this endpoint either manually or in a
+            script.
           </p>
-          <p>
-            Here's a CURL snippet to ping this url:&nbsp;
-            <code>curl -X POST {process.env.BACKSTROKE_SERVER}/_{link._id}</code>
-          </p>
+          <code>curl -X POST {process.env.BACKSTROKE_SERVER}/_{link._id}</code>
         </Panel>
       </Collapse>
 
-      {/* <div className="other-container">
-        <h1>Other</h1>
-        <div className="form-group">
-          <label>Create a temporary repo to fix merge conflicts</label>
-        </div>
-        <div className="form-group">
-          <label>Who can push to the temporary repo?</label>
-          <input
-            type="text"
-            value={link.pushUsers.join(' ')}
-            onChange={onChangePushUsers}
-          />
-        </div>
-      </div> */}
-
-      {
-        link._saveInProgress ? 
-        <button className="btn btn-primary disabled">Loading</button> :
-        <button
-          className="btn btn-primary"
-          onClick={onLinkSave.bind(null, link)}
-          disabled={!isLinkValid(link)}
-        >Save</button>
-      }
-
-      {
-        link._deleting ?
-        <button
-          className="btn btn-danger btn-del"
-          onClick={onDeleteLink.bind(null, link._id)}
-        >Sure?</button> :
-        <button className="btn btn-danger btn-del" onClick={onIsDeletingLink}>Delete</button>
-      }
+      <div style={{float: 'right'}}>
+        {
+          link._saveInProgress ? 
+          <button className="btn btn-primary btn-lg disabled">Loading</button> :
+          <button
+            className="btn btn-lg btn-primary"
+            onClick={onLinkSave.bind(null, link)}
+            disabled={!isLinkValid(link)}
+          >Save</button>
+        }
+      </div>
 
       {children}
     </div>;
@@ -231,6 +225,9 @@ export default connect((state, props) => {
     },
     onChangePushUsers(event) {
       dispatch(changePushUsers(event.target.value));
+    },
+    onBackToLinkList() {
+      dispatch(push('/links'));
     },
   };
 })(Link);

@@ -1,5 +1,15 @@
+
+// The backstroke logo at the top of the page.
+.repo.container .backstroke-logo {
+  margin: 20px auto;
+  width: 300px;
+  display: block;
+}
+
+
 .link-list {
   height: 100%;
+  margin-top: 30px;
 
   p {
     font-size: 16px;
@@ -9,6 +19,13 @@
     padding-left: 0px;
     list-style-type: none;
     font-size: $font-size-base * 1.2;
+
+    .logout {
+      text-align: center;
+      width: 100%;
+      display: inline-block;
+      margin-top: 20px;
+    }
 
     // each repo
     & > li {
@@ -28,18 +45,47 @@
         border-top-left-radius: $border-radius-base;
         border-top-right-radius: $border-radius-base;
 
-        h1 {
+        // The text explaining how a link works.
+        span.title-text {
+          flex: 1;
           margin-bottom: 1em;
-          line-height: 1.25;
           font-weight: 300;
           color: #FFF;
-          flex: 1;
+          line-height: 1.25;
+
+          a {
+            color: #FFF;
+          }
+
+          h2 {
+            font-size: 1em;
+          }
         }
 
         button {
           height: 84px;
           font-size: 20px;
           margin-top: 20px;
+        }
+      }
+
+      // A column-header for items to describe the contents of a link at a high level.
+      // Has the labels `Name` and `Enabled`
+      &.item-header {
+        padding-top: 0.2em;
+        padding-bottom: 0.2em;
+        background-color: $gray-light;
+        color: #FFF;
+        display: flex;
+
+        .header {
+          font-weight: 300;
+        }
+        .header.header-name {
+          flex: 1;
+        }
+        .header.header-enabled {
+          width: 60px;
         }
       }
 

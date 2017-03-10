@@ -1,4 +1,4 @@
-import webhook from 'webhook/';
+import webhook from '../webhook';
 import createGithubInstance from '../createGithubInstance';
 import {NoSuchLinkError} from 'helpers/errors';
 

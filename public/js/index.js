@@ -75,8 +75,6 @@ render(
         <IndexRoute component={Index} />
         <Route path="/links" component={LinkList} />
         <Route path="/links/:linkId" component={Link} />
-        <Route path="/settings" component={ManageSettings} />
-        <Route path="/pricing" component={Pricing} />
         <Route path="/legal" component={TermsOfService} />
       </Route>
     </Router>

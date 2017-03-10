@@ -2,7 +2,6 @@
 Backstroke
 ===
 A Github bot to keep a fork updated with any changes made to its upstream.
-Heavily inspired by Greenkeeper.
 
 [![Build Status](https://travis-ci.org/1egoman/backstroke.svg?branch=master)](https://travis-ci.org/1egoman/backstroke)
 [![Gratipay Team](https://img.shields.io/gratipay/team/Backstroke.svg?maxAge=2592001)](https://gratipay.com/Backstroke/)
@@ -20,14 +19,6 @@ Heavily inspired by Greenkeeper.
 5. Click `Save`. If you push a change to the repo listed under `From`, you'll
    get a pull request with any updates in the repo(s) under `To`!
 
-### Use Backstroke classic
-Backstroke classic is no longer the recommended way to set up Backstroke,
-however, if you'd prefer to live with a few limitations, it's still available.
-
-1. Create a webhook in either a fork or a upstream repository. (`Settings` => `Webhooks & Services` => `Add Webhook`)
-2. Add `http://backstroke.us` as the payload url.
-3. Create the webhook, and push some code to the upstream repository to see Backstroke in action.
-
 ## How it works
 ![How Backstroke Works](public/assets/img/map.png)
 
@@ -42,15 +33,6 @@ however, if you'd prefer to live with a few limitations, it's still available.
 2. Backstroke will create a pull request on their fork that lets them merge in
    your upstream changes.
 3. They accept Backstroke's pull request, and you merge in their code.
-
-<!--
-## Advanced Usage
-- `upstream`: A string following the format `user/repo` corresponding to a
-  custom upstream to merge from into a fork. For example, adding a webhook on a
-  fork with `http://backstroke.us/?upstream=foo/upstream` will create a pull
-  request (on the fork) that merge in new changes from the custom upstream
-  (`foo/upstream`).
--->
 
 ## FAQ
 - **I don't see any pull requests on the upstream....**: Pull requests are

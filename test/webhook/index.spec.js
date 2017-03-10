@@ -4,7 +4,7 @@ import webhook, {
   generatePullRequestTitle,
   generatePullRequestBody,
   didRepoOptOut,
-} from 'webhook/';
+} from '../../src/webhook';
 import {res, generateLink} from '../testHelpers';
 import getRepoName from 'helpers/getRepoName';
 
@@ -43,11 +43,11 @@ describe('webhook v2', function() {
       let [user, repo] = getRepoName(link1.from);
       let [childUser, childRepo] = getRepoName(link1.to);
       let pullRequestsCreate = sinon.stub().withArgs({
-          user: childUser, repo: childRepo,
-          title: generatePullRequestTitle(user, repo),
-          head: `${user}:${link1.from.branch}`,
-          base: link1.to.branch,
-          body: generatePullRequestBody(user, repo),
+        user: childUser, repo: childRepo,
+        title: generatePullRequestTitle(user, repo),
+        head: `${user}:${link1.from.branch}`,
+        base: link1.to.branch,
+        body: generatePullRequestBody(user, repo),
       }).resolves({created: 'pull request'});
 
       let gh = {
@@ -97,25 +97,28 @@ describe('webhook v2', function() {
       // Ensure a PR is created for each repo
       let pullRequestsCreate = sinon.stub();
       pullRequestsCreate.withArgs({
-          user: user0, repo: repo0,
+          owner: user0, repo: repo0,
           title: generatePullRequestTitle(user, repo),
           head: `${user0}:${link1.from.branch}`,
           base: firstForkPage[0].branch,
           body: generatePullRequestBody(user, repo),
+          maintainer_can_modify: false,
       }).resolves({created: 'pull request'});
       pullRequestsCreate.withArgs({
-          user: user1, repo: repo1,
+          owner: user1, repo: repo1,
           title: generatePullRequestTitle(user, repo),
           head: `${user}:${link1.from.branch}`,
           base: firstForkPage[1].branch,
           body: generatePullRequestBody(user, repo),
+          maintainer_can_modify: false,
       }).resolves({created: 'pull request'});
       pullRequestsCreate.withArgs({
-          user: user2, repo: repo2,
+          owner: user2, repo: repo2,
           title: generatePullRequestTitle(user, repo),
           head: `${user}:${link1.from.branch}`,
           base: secondForkPage[0].branch,
           body: generatePullRequestBody(user, repo),
+          maintainer_can_modify: false,
       }).resolves({created: 'pull request'});
 
       // Get All pull requests for each repo
@@ -193,7 +196,7 @@ describe('webhook v2', function() {
         assert.equal(data.many, false);
         assert.equal(data.forkCount, 1);
         assert.deepEqual(data.pullRequest, {
-          msg: "There's already a pull request for this repo, no need to create another.",
+          msg: `There's already a pull request on ${childUser}/${childRepo}.`,
         });
       });
     });
@@ -269,7 +272,7 @@ describe('webhook v2', function() {
       let searchIssues = sinon.stub().withArgs({q: `repo:user/repo is:pr label:optout`}).resolves({
         total_count: 1,
       });
-      return didRepoOptOut({searchIssues}, 'github', {name: 'user/repo', provider: 'github'})
+      return didRepoOptOut({searchIssues}, {name: 'user/repo', provider: 'github'})
       .then(didOptOut => {
         assert.equal(didOptOut, true);
       });
@@ -278,7 +281,7 @@ describe('webhook v2', function() {
       let searchIssues = sinon.stub().withArgs({q: `repo:user/repo is:pr label:optout`}).resolves({
         total_count: 0,
       });
-      return didRepoOptOut({searchIssues}, 'github', {name: 'user/repo', provider: 'github'})
+      return didRepoOptOut({searchIssues}, {name: 'user/repo', provider: 'github'})
       .then(didOptOut => {
         assert.equal(didOptOut, false);
       });

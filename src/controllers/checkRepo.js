@@ -9,19 +9,17 @@ export function checkRepo(req, res) {
       owner: req.params.user,
       repo: req.params.repo,
     }).then(repoData => {
-      let branches = gh.reposGetBranches({
+      return gh.reposGetBranches({
         owner: req.params.user,
         repo: req.params.repo,
-      });
-
-      return Promise.all([repoData.private, repoData.fork, branches]);
-    }).then(([_private, fork, branches]) => {
-      // format as a response
-      res.status(200).send({
-        valid: true,
-        private: _private,
-        fork,
-        branches: branches.map(b => b.name),
+      }).then(branches => {
+        // format as a response
+        res.status(200).send({
+          valid: true,
+          private: repoData.private,
+          fork: repoData.fork,
+          branches: branches.map(b => b.name),
+        });
       });
     }).catch(err => {
       // repo doesn't exist.

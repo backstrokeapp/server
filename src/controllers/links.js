@@ -3,7 +3,7 @@ import {PremiumRequiresPaymentError} from 'helpers/errors';
 // Return all links in a condensed format. Included is {_id, name, paid, enabled}.
 // This will support pagination.
 export function index(Link, req, res) {
-  return Link.find({owner: req.user}).then(data => {
+  return Link.all({where: {owner: req.user}}).then(data => {
     // calculate the last id so more pages can be fetched.
     let lastId = data.length > 0 ? data.slice(-1)[0]._id : null;
     res.status(200).send({data, lastId});

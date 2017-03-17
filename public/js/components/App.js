@@ -119,7 +119,7 @@ function UserNav({user, transparent}) {
     return <Nav pullRight>
       <NavItem eventKey={2} href="/logout" className="user-nav">
         <img src={user.picture} />
-        Logout {user.user}
+        Logout {user.username}
       </NavItem>
     </Nav>;
   } else if (!transparent) {

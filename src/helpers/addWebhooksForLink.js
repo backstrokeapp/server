@@ -42,11 +42,11 @@ export function addWebhooksForLink(user, link) {
 
   let operations = [];
 
-  if (link.from.type === 'repo') {
+  if (link && link.from && link.from.type === 'repo') {
     let [fromUser, fromRepo] = getRepoName(link.from);
     operations.push(addWebhookToRepo(gh, config, user, fromUser, fromRepo));
   }
-  if (link.to.type === 'repo') {
+  if (link && link.to && link.to.type === 'repo') {
     let [toUser, toRepo] = getRepoName(link.to);
     operations.push(addWebhookToRepo(gh, config, user, toUser, toRepo));
   }

@@ -12,6 +12,7 @@ export function checkRepo(req, res) {
       return gh.reposGetBranches({
         owner: req.params.user,
         repo: req.params.repo,
+        per_page: 100,
       }).then(branches => {
         // format as a response
         res.status(200).send({

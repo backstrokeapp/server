@@ -1,50 +1,21 @@
 import {PremiumRequiresPaymentError} from 'helpers/errors';
 
-// A utility function to check if a user is authenticated, and if so, return
-// the authenticated user. Otherwise, this function will throw an error
-function assertLoggedIn(req, res) {
-  if (req.isAuthenticated()) {
-    return req.user;
-  } else {
-    res.status(403).send({error: 'Not authenticated.'});
-  }
-}
-
 // Return all links in a condensed format. Included is {_id, name, paid, enabled}.
 // This will support pagination.
 export function index(Link, req, res) {
-  let user = assertLoggedIn(req, res);
-
-  if (!req.isAuthenticated()) {
-    return;
-  }
-
-  return Link.find({owner: user}).exec((err, links) => {
-    if (err) {
-      process.env.NODE_ENV !== 'test' && console.trace(err);
-      return res.status(500).send({error: 'Database error.'});
-    }
-
-    // calculate metadata fields
-    let lastId = links.length > 0 ? links.slice(-1)[0]._id : null
-    let totalPrice = links.reduce((acc, link) => acc + Link.price(link), 0);
-
-    res.status(200).send({
-      data: links.map(link => {
-        return {_id: link._id, name: link.name, enabled: link.enabled, paid: link.paid};
-      }),
-      lastId,
-      totalPrice,
-    });
+  return Link.find({owner: req.user}).then(data => {
+    // calculate the last id so more pages can be fetched.
+    let lastId = data.length > 0 ? data.slice(-1)[0]._id : null;
+    res.status(200).send({data, lastId});
+  }).catch(error => {
+    return res.status(500).send({error});
   });
 }
 
 // Return one single link in full, expanded format.
 // This will support pagination.
 export function get(Link, req, res) {
-  let user = assertLoggedIn(req, res);
-
-  return Link.findOne({_id: req.params.id, owner: user}).exec((err, link) => {
+  return Link.findOne({_id: req.params.id, owner: req.user}).exec((err, link) => {
     if (err) {
       process.env.NODE_ENV !== 'test' && console.trace(err);
       return res.status(500).send({error: 'Database error.'});
@@ -58,16 +29,14 @@ export function get(Link, req, res) {
 // placeholder for an update later on.
 // This will support pagination.
 export function create(Link, req, res) {
-  let user = assertLoggedIn(req, res);
-
-  let link = new Link({enabled: false, owner: user, to: null, false: null});
+  let link = new Link({enabled: false, owner: req.user, to: null, from: null});
   link.save(err => {
     if (err) {
       process.env.NODE_ENV !== 'test' && console.trace(err);
       return res.status(500).send({error: 'Database error.'});
     }
 
-    res.status(201).send(link.format());
+    res.status(201).send(link.toObject());
   });
 }
 
@@ -75,41 +44,24 @@ export function create(Link, req, res) {
 
 // Update a Link. This method requires a body with a link property.
 // Responds with {"status": "ok"} on success.
-export function update(Link, User, isLinkPaid, addWebhooksForLink, removeOldWebhooksForLink, req, res) {
-  let user = assertLoggedIn(req, res);
-
-  // Ensure the user is authenticated, and they passed a seeminly correct body.
-  if (!req.isAuthenticated()) {
-    return
-  } else if (!req.body || !req.body.link) {
+export function update(Link, User, addWebhooksForLink, removeOldWebhooksForLink, req, res) {
+  if (!req.body || !req.body.link) {
     return res.status(400).send({error: 'No link field in json body.'});
   }
 
   let link = req.body.link;
 
-  // Vaidate the body against a schema
-  let formatErrors = Link.isValidLink(req.body.link).errors;
-  if (formatErrors.length > 0) {
-    return res.status(400).send(formatErrors);
-  }
-
   // make sure `to` is a fork
-  if (req.body.link.to.fork === false) {
+  if (req.body && req.body.link && req.body.link.to && req.body.link.to.fork === false) {
     return res.status(400).send({error: `The 'to' repo must be a fork.`});
   }
 
   // remove a link's id when updating, if it exists
   link._id = req.params.linkId;
 
-  // Set the payment state of the link
-  return isLinkPaid(req.user, link)
-  .then(paid => {
-    link.paid = paid;
-
   // Remove any existing webhooks on the old repository
-  }).then(() => {
-    return Link.findOne({_id: req.params.linkId, owner: user}).exec();
-  }).then(oldLink => {
+  return Link.findOne({_id: req.params.linkId, owner: req.user}).exec()
+  .then(oldLink => {
     return removeOldWebhooksForLink(req.user, oldLink);
 
   // Add webhooks to the link in the provider
@@ -125,20 +77,17 @@ export function update(Link, User, isLinkPaid, addWebhooksForLink, removeOldWebh
       }
     }
 
-    // verify a user can create a paid link, if the link is paid
-    if (link.paid && !req.user.customerId) {
-      throw new PremiumRequiresPaymentError('Cannot create premium link without a payment method. Add one in `Settings`.');
-    }
-
     // update the link
     return Link.update({_id: req.params.linkId, owner: user}, link).exec();
   }).then(() => {
     res.status(200).send({status: 'ok'});
-  }).catch(PremiumRequiresPaymentError, err => {
-    res.status(403).send({error: err.message});
   }).catch(err => {
-    res.status(500).send({error: "Server error"});
-    process.env.NODE_ENV !== 'test' && (() => {throw err})()
+    if (err.name === 'CastError') {
+      res.status(400).send(err);
+    } else {
+      res.status(500).send({error: "Server error", err});
+      process.env.NODE_ENV !== 'test' && (() => {throw err})()
+    }
   });
 }
 

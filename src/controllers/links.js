@@ -1,27 +1,42 @@
-import {PremiumRequiresPaymentError} from 'helpers/errors';
+const PAGE_SIZE = 20;
+
+function paginate(req) {
+  let page = req.query.page || 0;
+  return {skip: page * PAGE_SIZE, limit: PAGE_SIZE};
+}
+
+// Something bad happened. Throw a 500.
+function internalServerErrorOnError(res) {
+  return error => {
+    res.status(500);
+    res.headers['Content-Type'] = 'text/plain';
+    res.send(error.toString());
+  };
+}
 
 // Return all links in a condensed format. Included is {_id, name, paid, enabled}.
 // This will support pagination.
 export function index(Link, req, res) {
-  return Link.all({where: {owner: req.user}}).then(data => {
-    // calculate the last id so more pages can be fetched.
-    let lastId = data.length > 0 ? data.slice(-1)[0]._id : null;
-    res.status(200).send({data, lastId});
-  }).catch(error => {
-    return res.status(500).send({error});
-  });
+  return Link.all({
+    where: {owner: req.user},
+    ...paginate(req),
+  }).then(data => {
+    res.status(200).send({
+      data,
+      lastItem: paginate(req).skip + data.length,
+    });
+  }).catch(internalServerErrorOnError(res));
 }
 
 // Return one single link in full, expanded format.
 // This will support pagination.
 export function get(Link, req, res) {
-  return Link.findOne({_id: req.params.id, owner: req.user}).exec((err, link) => {
-    if (err) {
-      process.env.NODE_ENV !== 'test' && console.trace(err);
-      return res.status(500).send({error: 'Database error.'});
+  return Link.findOne({where: {id: req.params.id, owner: req.user}}).then(link => {
+    if (link) {
+      res.status(200).send(link);
+    } else {
+      res.status(404).send({error: "No such link."});
     }
-
-    res.status(200).send(link);
   });
 }
 
@@ -29,15 +44,16 @@ export function get(Link, req, res) {
 // placeholder for an update later on.
 // This will support pagination.
 export function create(Link, req, res) {
-  let link = new Link({enabled: false, owner: req.user, to: null, from: null});
-  link.save(err => {
-    if (err) {
-      process.env.NODE_ENV !== 'test' && console.trace(err);
-      return res.status(500).send({error: 'Database error.'});
-    }
+  let link = {
+    enabled: false,
+    owner: req.user,
+    upstream: null,
+    fork: null,
+  };
 
-    res.status(201).send(link.toObject());
-  });
+  Link.create(link).then(link => {
+    res.status(201).send(link);
+  }).catch(internalServerErrorOnError(res));
 }
 
 

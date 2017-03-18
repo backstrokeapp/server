@@ -4,16 +4,15 @@ export default function Link(schema) {
   const Link = schema.define('Link', {
     name: String,
     enabled: Boolean,
-    hook_id: String,
+    hookId: String,
     owner: schema.models.User,
 
-    /* upstream */
-    /* fork */
+    upstream: schema.models.Repository,
+    fork: schema.models.Repository,
     allForks: Boolean,
   });
 
-  Link.belongsTo(schema.models.Repository, {as: 'upstream'});
-  Link.belongsTo(schema.models.Repository, {as: 'fork'});
-
+  // Link.belongsTo(schema.models.Repository, {as: 'upstream'});
+  // Link.belongsTo(schema.models.Repository, {as: 'fork'});
   return Link;
 }

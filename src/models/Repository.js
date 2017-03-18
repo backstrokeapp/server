@@ -1,6 +1,6 @@
 export default function Repository(schema) {
   const Repository = schema.define('Repository', {
-    type: String,
+    type: {type: String, enum: ['repo', 'all-forks']},
     owner: String,
     repo: String,
     fork: Boolean,

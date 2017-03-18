@@ -82,6 +82,31 @@ function assertLoggedIn(req, res, next) {
 }
 
 
+
+let link = {
+  enabled: true,
+  name: 'foo',
+  owner: {
+    username: '1egoman',
+    providerId: '1704236',
+  },
+  upstream: {
+    type: 'repo',
+    owner: '1egoman',
+    repo: 'bluebird',
+    fork: true,
+    html_url: 'http://github.com/1egoman/bluebird',
+    branches: [],
+    branch: 'master',
+  },
+  fork: {
+    type: 'all-forks',
+  },
+}
+
+
+
+
 // identify the currently logged in user
 app.get('/api/v1/whoami', whoami);
 
@@ -104,7 +129,7 @@ app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), checkRepo);
 app.post('/api/v1/links/:linkId',
   bodyParser.json(),
   assertLoggedIn,
-  links.update.bind(null, Link, User, addWebhooksForLink, removeOldWebhooksForLink)
+  links.update.bind(null, Link, Repository, addWebhooksForLink, removeOldWebhooksForLink)
 );
 
 // enable or disable a repository

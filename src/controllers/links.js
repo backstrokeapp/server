@@ -55,20 +55,48 @@ export function create(Link, req, res) {
 }
 
 
-
 // Update a Link. This method requires a body with a link property.
 // Responds with {"status": "ok"} on success.
-export function update(Link, User, addWebhooksForLink, removeOldWebhooksForLink, req, res) {
+export function update(Link, Repository, addWebhooksForLink, removeOldWebhooksForLink, req, res) {
   if (!req.body || !req.body.link) {
     return res.status(400).send({error: 'No link field in json body.'});
   }
 
-  let link = req.body.link;
+  let {upstream, fork, ...rest} = req.body.link;
 
   // make sure `to` is a fork
-  if (link.upstream === 'fork') {
-    return res.status(400).send({error: `The 'to' repo must be a fork.`});
+  // if (upstream && upstream.type === 'fork-all') {
+  //   return res.status(400).send({error: `The 'to' repo must be a fork.`});
+  // }
+
+  if (!(upstream && fork)) {
+    return res.status(400).send({error: 'Please specify and upstream and fork.'});
   }
+
+  Link.findOne({where: {id: req.params.linkId}}).then(referenceLink => {
+    if (!referenceLink) {
+      return res.status(404).send({error: 'No such link with that id.'});
+    }
+
+    return referenceLink.updateAttributes(rest);
+
+    // // First, save the upstream and fork.
+    // return Promise.all([
+    //   Repository.updateOrCreate(upstream),
+    //   Repository.updateOrCreate(fork),
+    // ]).then(([upstream, fork]) => {
+    //   // Link up the foreign keys and then save the link.
+    //   rest.upstreamId = upstream.id;
+    //   rest.forkId = fork.id;
+    // });
+  }).then(data => {
+    res.status(200).send(data);
+  }).catch(internalServerErrorOnError(res));
+
+
+
+  return;
+
 
   // remove a link's id when updating, if it exists
   link.id = req.params.linkId;

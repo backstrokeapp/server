@@ -4,7 +4,7 @@ import {push} from 'react-router-redux';
 export default function enableDisableLink(link, enabled) {
   return dispatch => {
     dispatch(enableDisableLinkPending(link));
-    return fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/link/${link._id}/enable`, {
+    return fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/link/${link.id}/enable`, {
       method: 'POST',
       headers: {'content-type': 'application/json'},
       body: JSON.stringify({enabled}),
@@ -28,7 +28,7 @@ export default function enableDisableLink(link, enabled) {
 export function enableDisableLinkAction(link, enabled) {
   return {
     type: 'ENABLE_DISABLE_LINK',
-    link: link._id,
+    link: link.id,
     enabled,
   };
 }
@@ -36,6 +36,6 @@ export function enableDisableLinkAction(link, enabled) {
 export function enableDisableLinkPending(link) {
   return {
     type: 'ENABLE_DISABLE_LINK_PENDING',
-    link: link._id,
+    link: link.id,
   };
 }

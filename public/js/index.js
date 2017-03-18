@@ -55,8 +55,8 @@ history.listen(event => {
     // only fetch the link if it has changed
     // this is because links that are being created (but not saved) need to persist in memory.
     // See https://github.com/1egoman/backstroke/issues/22
-    if (!(state.activeLink && match[1] === state.activeLink._id)) {
-      dispatch(fetchLink({_id: match[1]}));
+    if (!(state.activeLink && match[1] === state.activeLink.id)) {
+      dispatch(fetchLink({id: match[1]}));
     }
   }
 

@@ -114,7 +114,7 @@ export default connect((state, props) => {
     onMoveToRepo(link, event) {
       // only move if the user didn't click on the switch
       if (event.target.className.indexOf('move-to-repo') !== -1) {
-        dispatch(moveToLink(link._id));
+        dispatch(moveToLink(link.id));
       }
     },
     onLinkEnable(link, enabled) {

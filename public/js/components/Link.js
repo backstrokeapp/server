@@ -77,7 +77,7 @@ export function Link({
           link._deleting ?
           <button
             className="btn btn-danger"
-            onClick={onDeleteLink.bind(null, link._id)}
+            onClick={onDeleteLink.bind(null, link.id)}
           >Are you sure?</button> :
           <button className="btn btn-danger" onClick={onIsDeletingLink}>Delete Link</button>
         }
@@ -144,7 +144,7 @@ export function Link({
               type="text"
               onFocus={event => event.target.select()}
               readOnly={true}
-              value={`${process.env.BACKSTROKE_SERVER}/_${link._id}`}
+              value={`${process.env.BACKSTROKE_SERVER}/_${link.id}`}
             />
           </InputGroup>
 
@@ -155,7 +155,7 @@ export function Link({
             pushed to your fork in a while), you can query this endpoint either manually or in a
             script.
           </p>
-          <code>curl -X POST {process.env.BACKSTROKE_SERVER}/_{link._id}</code>
+          <code>curl -X POST {process.env.BACKSTROKE_SERVER}/_{link.id}</code>
         </Panel>
       </Collapse>
 

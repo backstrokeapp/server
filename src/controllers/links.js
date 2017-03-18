@@ -9,7 +9,7 @@ function paginate(req) {
 function internalServerErrorOnError(res) {
   return error => {
     res.status(500);
-    res.headers['Content-Type'] = 'text/plain';
+    // res.headers['Content-Type'] = 'text/plain';
     res.send(error.toString());
   };
 }
@@ -47,8 +47,6 @@ export function create(Link, req, res) {
   let link = {
     enabled: false,
     owner: req.user,
-    upstream: null,
-    fork: null,
   };
 
   Link.create(link).then(link => {
@@ -68,21 +66,23 @@ export function update(Link, User, addWebhooksForLink, removeOldWebhooksForLink,
   let link = req.body.link;
 
   // make sure `to` is a fork
-  if (req.body && req.body.link && req.body.link.to && req.body.link.to.fork === false) {
+  if (link.upstream === 'fork') {
     return res.status(400).send({error: `The 'to' repo must be a fork.`});
   }
 
   // remove a link's id when updating, if it exists
-  link._id = req.params.linkId;
+  link.id = req.params.linkId;
 
   // Remove any existing webhooks on the old repository
-  return Link.findOne({_id: req.params.linkId, owner: req.user}).exec()
-  .then(oldLink => {
-    return removeOldWebhooksForLink(req.user, oldLink);
+  return Link.findOne({
+    where: {id: req.params.linkId, owner: req.user},
+  }).then(oldLink => {
+    // return removeOldWebhooksForLink(req.user, oldLink);
 
   // Add webhooks to the link in the provider
   }).then(() => {
-    return addWebhooksForLink(req.user, link)
+    // return addWebhooksForLink(req.user, link)
+    return false;
   }).then(hooks => {
     if (hooks) {
       if (hooks.error) {
@@ -94,7 +94,8 @@ export function update(Link, User, addWebhooksForLink, removeOldWebhooksForLink,
     }
 
     // update the link
-    return Link.update({_id: req.params.linkId, owner: user}, link).exec();
+    console.log('LINK', link);
+    return Link.update(link);
   }).then(() => {
     res.status(200).send({status: 'ok'});
   }).catch(err => {

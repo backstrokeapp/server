@@ -5,7 +5,7 @@ import linkSaveError from 'actions/linkSaveError';
 export default function linkSave(link) {
   return dispatch => {
     dispatch(linkSaveInProgress(link));
-    fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/links/${link._id}`, {
+    fetch(`${process.env.BACKSTROKE_SERVER}/api/v1/links/${link.id}`, {
       method: 'POST',
       headers: {'content-type': 'application/json'},
       body: JSON.stringify({link}),

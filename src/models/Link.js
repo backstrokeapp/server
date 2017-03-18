@@ -5,7 +5,7 @@ export default function Link(schema) {
     name: String,
     enabled: Boolean,
     hook_id: String,
-    owner: String,
+    owner: schema.models.User,
 
     /* upstream */
     /* fork */

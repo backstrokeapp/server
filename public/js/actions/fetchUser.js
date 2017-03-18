@@ -19,8 +19,8 @@ export default function fetchUser() {
 }
 
 export function userInfo(user) {
-  if (process.env.USE_MIXPANEL && user._id) {
-    mixpanel.identify(user._id);
+  if (process.env.USE_MIXPANEL && user.id) {
+    mixpanel.identify(user.id);
     mixpanel.people.set({
       "$email": user.email,
       "$first_name": user.user,

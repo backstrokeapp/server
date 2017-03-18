@@ -6,7 +6,7 @@ export default function linkList(state=null, action) {
     case 'ENABLE_DISABLE_LINK':
       return Object.assign({}, state, {
         data: state.data.map(item => {
-          if (item._id === action.link) {
+          if (item.id === action.link) {
             return Object.assign({}, item, {enabled: action.enabled, _pending: false});
           } else {
             return item;
@@ -17,7 +17,7 @@ export default function linkList(state=null, action) {
     case 'ENABLE_DISABLE_LINK_PENDING':
       return Object.assign({}, state, {
         data: state.data.map(item => {
-          if (item._id === action.link) {
+          if (item.id === action.link) {
             return Object.assign({}, item, {_pending: true});
           } else {
             return item;
@@ -28,7 +28,7 @@ export default function linkList(state=null, action) {
     case 'DELETE_LINK':
       return Object.assign({}, state, {
         data: state.data.filter(item => {
-          return item._id !== action.link;
+          return item.id !== action.link;
         }),
       });
 

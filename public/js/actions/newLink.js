@@ -11,7 +11,7 @@ export default function newLink() {
       credentials: 'include',
     }).then(response => response.json()).then(data => {
       dispatch({type: 'NEW_LINK', data});
-      dispatch(push(`/links/${data._id}`));
+      dispatch(push(`/links/${data.id}`));
     });
   };
 }

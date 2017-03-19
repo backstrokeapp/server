@@ -1,9 +1,13 @@
 // if `data` is one of the repos represented, update it
 function updateRepo(state, data, cb) {
-  if (state.to && state.to.provider === data.provider && state.to.name === data.name) {
-    return Object.assign({}, state, {to: cb(state.to)});
-  } else if (state.from && state.from.provider === data.provider && state.from.name === data.name) {
-    return Object.assign({}, state, {from: cb(state.from)});
+  if (state.fork && state.fork.provider === data.provider && state.fork.name === data.name) {
+    return Object.assign({}, state, {fork: cb(state.fork)});
+  } else if (
+    state.upstream && 
+    state.upstream.provider === data.provider &&
+    state.upstream.name === data.name
+  ) {
+    return Object.assign({}, state, {upstream: cb(state.upstream)});
   } else {
     return state;
   }
@@ -16,8 +20,8 @@ export default function activeLink(state=null, action) {
 
     case 'LINK_INFO':
       // Validate each name when it comes from the server
-      action.data.to._nameValid = true;
-      action.data.from._nameValid = true;
+      action.data.fork._nameValid = true;
+      action.data.upstream._nameValid = true;
       return action.data;
 
     // When moving to a new link, clear the old one.
@@ -120,7 +124,7 @@ export default function activeLink(state=null, action) {
       });
 
     case 'ADD_ALL_FORKS':
-      if (action.slot === 'to') {
+      if (action.slot === 'fork') {
         return Object.assign({}, state, {
           [action.slot]: {
             type: 'fork-all',

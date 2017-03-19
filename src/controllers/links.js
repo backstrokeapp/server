@@ -47,6 +47,8 @@ export function create(Link, req, res) {
   let link = {
     enabled: false,
     owner: req.user,
+    upstream: {branches: []},
+    fork: {branches: []},
   };
 
   Link.create(link).then(link => {
@@ -64,11 +66,11 @@ export function update(Link, Repository, addWebhooksForLink, removeOldWebhooksFo
 
   let {id, ...link} = req.body.link;
 
-  if (!(upstream && fork)) {
+  if (!(link.upstream && link.fork)) {
     return res.status(400).send({error: 'Please specify and upstream and fork.'});
   }
 
-  if (upstream && upstream.type === 'fork-all') {
+  if (link.upstream && link.upstream.type === 'fork-all') {
     return res.status(400).send({error: `The 'upstream' repo must be a repo, not a bunch of forks.`});
   }
 

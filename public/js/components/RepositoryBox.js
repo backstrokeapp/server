@@ -55,7 +55,7 @@ export function validIcon(repo, type) {
   if (!repo._nameValid) {
     // not a repo
     return <i className="fa fa-times" />;
-  } else if (type === 'to' && !repo.fork) {
+  } else if (type === 'fork' && !repo.fork) {
     // not a fork
     return <i className="fa fa-times" />;
   } else if (repo.private) {
@@ -71,7 +71,7 @@ export function validTooltip(repo, type) {
   if (!repo._nameValid) {
     // not a repo
     return "This repo doesn't exist.";
-  } else if (type === 'to' && !repo.fork) {
+  } else if (type === 'fork' && !repo.fork) {
     // not a fork
     return "The child repo must be a fork of the parent.";
   } else if (repo.private) {

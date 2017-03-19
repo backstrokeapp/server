@@ -10,6 +10,7 @@ import RepositoryBox from 'components/RepositoryBox';
 import ForkAllBox from 'components/ForkAllBox';
 import BoxProperties from 'components/BoxProperties';
 import AddNewBox from 'components/AddNewBox';
+import UserNotAuthenticated from 'components/UserNotAuthenticated';
 import enableDisableLink from 'actions/enableDisableLink';
 import changeLinkName from 'actions/changeLinkName';
 import isDeletingLink from 'actions/isDeletingLink';
@@ -27,7 +28,7 @@ export function isRepoValid(repo, type) {
     repo.name.indexOf('/') !== -1 &&
     repo.branch && repo.branch.length > 0 &&
     repo.branches.length > 0 && // must have al teast 1 branch
-    (type === 'to' ? repo.fork : true) // to must be a fork
+    (type === 'fork' ? repo.fork : true) // the fork slot must have a fork in it.
   ) || (
     repo.type === 'fork-all' &&
     repo.provider && repo.provider.length > 0
@@ -37,9 +38,9 @@ export function isRepoValid(repo, type) {
 export function isLinkValid(link) {
   return (
     link.name && link.name.length > 0 &&
-    link.to && link.to.type && link.to.provider &&
-    link.from && link.from.type && link.from.provider &&
-    isRepoValid(link.to, 'to') && isRepoValid(link.from, 'from')
+    link.fork && link.fork.type && link.fork.provider &&
+    link.upstream && link.upstream.type && link.upstream.provider &&
+    isRepoValid(link.fork, 'fork') && isRepoValid(link.upstream, 'upstream')
   )
 }
 
@@ -58,13 +59,13 @@ export function Link({
 }) {
   if (link) {
     // fetch branches, if required
-    if (link.from && link.from.branches) {
-      let fromBranchOptions = link.from.branches.map(branch => {
+    if (link.upstream && link.upstream.branches) {
+      let fromBranchOptions = link.upstream.branches.map(branch => {
         return {value: branch, label: branch};
       });
     }
-    if (link.to && link.to.branches) {
-      let toBranchOptions = link.to.branches.map(branch => {
+    if (link.fork && link.fork.branches) {
+      let toBranchOptions = link.fork.branches.map(branch => {
         return {value: branch, label: branch};
       });
     }
@@ -117,20 +118,20 @@ export function Link({
         <div className="slot from-slot">
           <h1>Upstream</h1>
           <RepoWrapper
-            slot="from"
-            repository={link.from}
-            branch={link.from && link.from.branch}
+            slot="upstream"
+            repository={link.upstream}
+            branch={link.upstream && link.upstream.branch}
           />
         </div>
         <div className="slot to-slot">
           <h1>Fork</h1>
           <RepoWrapper
-            slot="to"
-            repository={link.to}
-            branch={link.to && link.to.branch}
-            from={link.from}
+            slot="fork"
+            repository={link.fork}
+            branch={link.fork && link.fork.branch}
+            upstream={link.upstream}
 
-            dim={!(link.from && link.from.branch)}
+            dim={!(link.upstream && link.upstream.branch)}
           />
         </div>
       </div>
@@ -183,7 +184,7 @@ export function Link({
   }
 }
 
-export function RepoWrapper({repository, branch, from, slot, dim}) {
+export function RepoWrapper({repository, branch, upstream, slot, dim}) {
   if (repository && repository.type === 'repo') {
     // A bare repository / branch combo
     return <BoxProperties repository={repository}>
@@ -192,7 +193,7 @@ export function RepoWrapper({repository, branch, from, slot, dim}) {
   } else if (repository && repository.type === 'fork-all') {
     // All forks for the upstream
     return <BoxProperties repository={repository}>
-      <ForkAllBox repository={repository} from={from} />
+      <ForkAllBox repository={repository} upstream={upstream} />
     </BoxProperties>;
   } else {
     // add a new item

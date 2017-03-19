@@ -6,7 +6,7 @@ import classname from 'classname'
 import addAllForks from 'actions/addAllForks';
 import addNewRepository from 'actions/addNewRepository';
 
-// Add a new repository. A repo is the only thing that can go in a from slot.
+// Add a new repository. A repo is the only thing that can go in a upstream slot.
 export function AddNewBox({type, onAddNewRepository, onAddAllForks, dim}) {
   return <div className="add-new-box">
     <div className={classname(
@@ -18,14 +18,14 @@ export function AddNewBox({type, onAddNewRepository, onAddAllForks, dim}) {
       <button className="btn" onClick={onAddNewRepository.bind(null, type)}>
         <i className="fa fa-plus-square-o" />
         {
-          type === 'to' ?
+          type === 'fork' ?
           'Sync changes to a repository':
           'First, add a source to sync changes from.'
         }
       </button>
     </div>
     {
-      type === 'to' ?
+      type === 'fork' ?
       <div className={classname(
         "add-new-option",
         "add-new-option-to", {
@@ -52,8 +52,8 @@ export default connect((state, props) => {
       dispatch(addNewRepository(slot));
     },
     onAddAllForks(slot) {
-      if (slot === 'to') {
-        dispatch(addAllForks('to'));
+      if (slot === 'fork') {
+        dispatch(addAllForks('fork'));
       }
     },
   };

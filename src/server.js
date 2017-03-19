@@ -83,30 +83,6 @@ function assertLoggedIn(req, res, next) {
 
 
 
-let link = {
-  enabled: true,
-  name: 'foo',
-  owner: {
-    username: '1egoman',
-    providerId: '1704236',
-  },
-  upstream: {
-    type: 'repo',
-    owner: '1egoman',
-    repo: 'bluebird',
-    fork: true,
-    html_url: 'http://github.com/1egoman/bluebird',
-    branches: [],
-    branch: 'master',
-  },
-  fork: {
-    type: 'all-forks',
-  },
-}
-
-
-
-
 // identify the currently logged in user
 app.get('/api/v1/whoami', whoami);
 
@@ -120,7 +96,7 @@ app.get('/api/v1/links/:id', bodyParser.json(), assertLoggedIn, links.get.bind(n
 app.post('/api/v1/links', bodyParser.json(), assertLoggedIn, links.create.bind(null, Link));
 
 // delete a link
-app.delete('/api/v1/links/:id', links.del.bind(null, Link, User));
+app.delete('/api/v1/links/:id', assertLoggedIn, links.del.bind(null, Link));
 
 // return the branches for a given repo
 app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), checkRepo);
@@ -133,7 +109,7 @@ app.post('/api/v1/links/:linkId',
 );
 
 // enable or disable a repository
-app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(null, Link, User));
+app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(null, Link));
 
 // the old webhook route
 // This parses the body of the request to get most of its data.

@@ -5,7 +5,7 @@ export default function Repository(schema) {
     repo: String,
     fork: Boolean,
     html_url: String,
-    branches: Array(String),
+    branches: [String],
     branch: String,
   });
 

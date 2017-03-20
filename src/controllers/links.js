@@ -1,4 +1,6 @@
+import uuid from 'uuid';
 import {PAGE_SIZE, paginate, internalServerErrorOnError} from '../helpers/controllerHelpers';
+import {removeOldWebhooksForLink} from '../helpers/addWebhooksForLink';
 
 // Return all links in a condensed format. Included is {_id, name, paid, enabled}.
 // This will support pagination.
@@ -8,7 +10,7 @@ export function index(Link, req, res) {
     ...paginate(req),
   }).then(data => {
     res.status(200).send({
-      data,
+      data,//: data.map(i => ({...i, hookId: i.hookId.split(',')})),
       lastItem: paginate(req).skip + data.length,
     });
   }).catch(internalServerErrorOnError(res));
@@ -35,6 +37,7 @@ export function create(Link, req, res) {
     owner: req.user,
     upstream: {branches: []},
     fork: {branches: []},
+    hookKey: uuid.v4().replace(/-/g, ''), // A random secret to use in the webhook
   };
 
   Link.create(link).then(link => {
@@ -64,7 +67,14 @@ export function update(Link, Repository, addWebhooksForLink, removeOldWebhooksFo
     where: {id: req.params.linkId, owner: req.user},
   }).then(linkModel => {
     if (linkModel) {
-      return linkModel.updateAttributes(link);
+      return removeOldWebhooksForLink(req.user, linkModel).then(() => {
+        return linkModel.updateAttributes(link);
+      }).then(() => {
+        return addWebhooksForLink(req.user, link);
+      }).then(hookId => {
+        console.log('HOOK ID', hookId);
+        return linkModel.updateAttribute('hookId', hookId.join(','));
+      });
     } else {
       return res.status(404).send({error: 'No such link with that id.'});
     }
@@ -97,7 +107,9 @@ export function enable(Link, req, res) {
 export function del(Link, req, res) {
   return Link.findOne({where: {id: req.params.id, owner: req.user}}).then(link => {
     if (link) {
-      return link.destroy();
+      return removeOldWebhooksForLink(req.user, link).then(() => {
+        return link.destroy();
+      });
     } else {
       return res.status(404).send({error: "No such item."});
     }

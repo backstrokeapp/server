@@ -20,7 +20,10 @@ import {Schema} from 'jugglingdb';
 import userBuilder from 'models/User';
 import linkBuilder from 'models/Link';
 import repositoryBuilder from 'models/Repository';
-const schema = new Schema('memory');
+// const schema = new Schema('sqlite3', {database: 'db.sqlite3'});
+const schema = new Schema('mongodb', {
+  url: 'mongodb://backstroke:backstroke@ds017256.mlab.com:17256/backstroke-dev',
+});
 const User = userBuilder(schema);
 const Repository = repositoryBuilder(schema);
 const Link = linkBuilder(schema);
@@ -129,4 +132,4 @@ app.get('/.well-known/acme-challenge/:id', (req, res) =>
 
 let port = process.env.PORT || 8001;
 app.listen(port);
-console.log("Listening on port", port, "...");
+console.log('Listening on port', port);

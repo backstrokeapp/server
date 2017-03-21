@@ -10,8 +10,9 @@ export default function strategy(User) {
 
 		// Is the user already in the system?
 		User.findOne({
-			where: {providerId: profile.id},
+			where: {providerId: profile.id.toString()},
 		}).then(model => {
+			console.log('USER FOUND', model);
 
 			// Add the data fetched from this last request to the existing data, if it exists.
 			user = Object.assign({}, model, {
@@ -23,7 +24,13 @@ export default function strategy(User) {
 				refreshToken,
 			});
 
-			return User.updateOrCreate(user);
+			if (model) {
+				console.log('UPDATING USER MODEL', model, user);
+				return model.updateAttributes(user);
+			} else {
+				console.log('CREATE USER', user);
+				return User.create(user);
+			}
 		}).then(model => {
 			cb(null, model);
 		}).catch(cb);

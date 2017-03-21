@@ -4,7 +4,7 @@ import Promise from 'bluebird';
 
 export function getBackstrokeUrlFor(link) {
   let hostname = process.env.BACKSTROKE_SERVER || 'http://backstroke.us';
-  return `${hostname}/_${link.hookKey}`;
+  return `${hostname}/_${link.id}`;
 }
 
 function addWebhookToRepo(gh, config, user, owner, repo) {
@@ -73,11 +73,9 @@ export function removeOldWebhooksForLink(user, link) {
   if (link.upstream.type === 'repo' && link.hookId) {
     let [fromUser, fromRepo] = getRepoName(link.upstream);
 
-    if (typeof link.hookId === 'number') {
-      link.hookId = link.hookId.toString();
-    }
+    console.log('LINK', link);
 
-    let all = link.hookId.split(',').map(id => {
+    let all = link.hookId.map(id => {
       console.log('DELETING HOOK', id);
       return gh.reposDeleteHook({owner: fromUser, repo: fromRepo, id}).catch(err => {
         if (err.status === 'Not Found') {

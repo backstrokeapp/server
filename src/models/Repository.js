@@ -1,3 +1,5 @@
+import {Schema} from 'jugglingdb';
+
 export default function Repository(schema) {
   const Repository = schema.define('Repository', {
     type: {type: String, enum: ['repo', 'all-forks']},
@@ -5,7 +7,8 @@ export default function Repository(schema) {
     repo: String,
     fork: Boolean,
     html_url: String,
-    branches: [String],
+    // branches: {type: String, default: new Array()}, // Array of strings
+    branches: Schema.JSON,
     branch: String,
   });
 

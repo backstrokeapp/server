@@ -6,12 +6,17 @@ import {removeOldWebhooksForLink} from '../helpers/addWebhooksForLink';
 // This will support pagination.
 export function index(Link, req, res) {
   return Link.all({
-    where: {owner: req.user},
+    where: {ownerId: req.user.id},
     ...paginate(req),
   }).then(data => {
-    res.status(200).send({
-      data,//: data.map(i => ({...i, hookId: i.hookId.split(',')})),
-      lastItem: paginate(req).skip + data.length,
+    // Add all owners to each link
+    return Promise.all(data.map(i => i.owner())).then(owners => {
+      return res.status(200).send({
+        data: data.map((i, ct) => {
+          return {...i.toObject(), owner: owners[ct]};
+        }),
+        lastItem: paginate(req).skip + data.length,
+      });
     });
   }).catch(internalServerErrorOnError(res));
 }
@@ -19,9 +24,11 @@ export function index(Link, req, res) {
 // Return one single link in full, expanded format.
 // This will support pagination.
 export function get(Link, req, res) {
-  return Link.findOne({where: {id: req.params.id, owner: req.user}}).then(link => {
+  return Link.findOne({where: {id: req.params.id, ownerId: req.user.id}}).then(link => {
     if (link) {
-      res.status(200).send(link);
+      return link.owner().then(owner => {
+        res.status(200).send({...link.toObject(), owner});
+      });
     } else {
       res.status(404).send({error: "No such link."});
     }
@@ -34,10 +41,9 @@ export function get(Link, req, res) {
 export function create(Link, req, res) {
   let link = {
     enabled: false,
-    owner: req.user,
+    ownerId: req.user.id,
     upstream: {branches: []},
     fork: {branches: []},
-    hookKey: uuid.v4().replace(/-/g, ''), // A random secret to use in the webhook
   };
 
   Link.create(link).then(link => {
@@ -64,7 +70,7 @@ export function update(Link, Repository, addWebhooksForLink, removeOldWebhooksFo
   }
 
   return Link.findOne({
-    where: {id: req.params.linkId, owner: req.user},
+    where: {id: req.params.linkId, ownerId: req.user.id},
   }).then(linkModel => {
     if (linkModel) {
       return removeOldWebhooksForLink(req.user, linkModel).then(() => {
@@ -74,12 +80,12 @@ export function update(Link, Repository, addWebhooksForLink, removeOldWebhooksFo
       }).then(hookId => {
         console.log('HOOK ID', hookId);
         return linkModel.updateAttribute('hookId', hookId.join(','));
+      }).then(data => {
+        res.status(200).send(data);
       });
     } else {
       return res.status(404).send({error: 'No such link with that id.'});
     }
-  }).then(data => {
-    res.status(200).send(data);
   }).catch(internalServerErrorOnError(res));
 }
 
@@ -91,7 +97,7 @@ export function enable(Link, req, res) {
   } 
 
   Link.findOne({
-    where: {id: req.params.linkId, owner: req.user},
+    where: {id: req.params.linkId, ownerId: req.user.id},
   }).then(link => {
     if (link) {
       return link.updateAttribute('enabled', req.body.enabled);
@@ -105,7 +111,7 @@ export function enable(Link, req, res) {
 
 // Delete a link. Returns a 204 on success, or a 404 / 500 on error.
 export function del(Link, req, res) {
-  return Link.findOne({where: {id: req.params.id, owner: req.user}}).then(link => {
+  return Link.findOne({where: {id: req.params.id, ownerId: req.user.id}}).then(link => {
     if (link) {
       return removeOldWebhooksForLink(req.user, link).then(() => {
         return link.destroy();

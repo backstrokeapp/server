@@ -88,7 +88,7 @@ export function LinkList({
             </p>
           </li> : null}
 
-          <a className="logout" href="/logout">Logout {user.user}</a>
+          <a className="logout" href="/logout">Logout {user.username}</a>
         </ul>
       </div>
 

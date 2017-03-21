@@ -2,6 +2,7 @@ import Promise from 'bluebird';
 import getRepoName from './helpers/getRepoName';
 import createGithubInstance from './createGithubInstance';
 import {trackWebhook} from './analytics';
+import {paginateRequest} from './helpers/controllerHelpers';
 
 let backstrokeBotInstance = createGithubInstance({accessToken: process.env.GITHUB_TOKEN});
 
@@ -93,23 +94,6 @@ export default function webhook(
         repo, page,
         per_page: pageSize,
       }).then(forks => {
-        // Act on each fork, and add each's response to `forkGroup`.
-        let forkGroup = forks.map(fork => {
-          // Assemble a repo to sync changes to.
-          // This has to be assembled because the `to` repo is generated when iterating through
-          // forks.
-          let toRepo = {
-            type: 'repo',
-            provider: link.to.provider,
-            name: fork.full_name,
-            private: fork.private,
-            fork: true,
-            branch: link.from.branch, // same branch as the upstream. TODO: make this configurable.
-            branches: [],
-          };
-
-          return createPullRequest(gh, link, link.from, toRepo, backstrokeBotInstance);
-        });
 
         // add a conglomeration of the previous promises to the group of all forks
         allForks.push(Promise.all(forkGroup));
@@ -130,8 +114,34 @@ export default function webhook(
       });
     }
 
-    // Start by fetching the first page.
-    return getForks(0);
+    // Get all forks.
+    return paginateRequest(gh.reposGetForks, {owner: user, repo}).then(forks => {
+      let all = forks.map(fork => {
+        // Assemble a repo to sync changes to.
+        // This has to be assembled because the `to` repo is generated when iterating through
+        // forks.
+        let toRepo = {
+          type: 'repo',
+          provider: link.to.provider,
+          name: fork.full_name,
+          private: fork.private,
+          fork: true,
+          branch: link.from.branch, // same branch as the upstream. TODO: make this configurable.
+          branches: [],
+        };
+
+        return createPullRequest(gh, link, link.from, toRepo, backstrokeBotInstance);
+      });
+
+      return Promise.all(all);
+    }).then(data => {
+      return {
+        status: 'ok',
+        many: true,
+        forkCount: forks.length, // total amount of forks handled
+        isEnabled: true,
+      };
+    });
   } else {
     throw new Error(`No such 'to' type: ${link.to.type}`);
   }

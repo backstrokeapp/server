@@ -31,7 +31,7 @@ let gh = ghFactory.constructor(github);
 import webhook from './webhook';
 
 export default function webhookOld(req, res) {
-  // the repo is a fork, or the user has manually specified an upstream to merge into
+  // Analytics
   if (
     (req.body && req.body.repository && req.body.repository.fork) ||
     req.query.upstream

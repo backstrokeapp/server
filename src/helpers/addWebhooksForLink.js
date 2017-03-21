@@ -48,7 +48,7 @@ export function addWebhooksForLink(user, link) {
     operations.push(addWebhookToRepo(gh, config, user, fromUser, fromRepo));
   }
   if (link && link.fork && link.fork.type === 'repo') {
-    let [toUser, toRepo] = getRepoName(link.to);
+    let [toUser, toRepo] = getRepoName(link.fork);
     operations.push(addWebhookToRepo(gh, config, user, toUser, toRepo));
   }
   console.log('WEBHOOK OPS', operations);
@@ -66,6 +66,7 @@ export function addWebhooksForLink(user, link) {
   });
 }
 
+// Given a link, remove all webhooks stored in the `hookId` property.
 export function removeOldWebhooksForLink(user, link) {
   let gh = createGithubInstance(user);
 

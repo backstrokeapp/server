@@ -6,7 +6,7 @@ import Promise from 'bluebird';
 
 import whoami from 'controllers/whoami';
 import * as links from 'controllers/links';
-import {checkRepo} from 'controllers/checkRepo';
+import checkRepo from 'controllers/checkRepo';
 import webhook from 'controllers/webhook';
 import webhookOld from 'controllers/webhookOld';
 
@@ -99,7 +99,7 @@ app.post('/api/v1/links', bodyParser.json(), assertLoggedIn, links.create.bind(n
 app.delete('/api/v1/links/:id', assertLoggedIn, links.del.bind(null, Link));
 
 // return the branches for a given repo
-app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), checkRepo);
+app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, checkRepo);
 
 // POST link updates
 app.post('/api/v1/links/:linkId',

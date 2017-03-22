@@ -30,15 +30,12 @@ export function paginateRequest(method, args, pageSize=100, page=0, cumulativeDa
   args[0].page = page;
   args[0].per_page = pageSize;
 
-  console.log('ITERATING...');
   return method.apply(null, args).then(data => {
     if (data.length === pageSize) {
       // Data is still coming, go for another round.
-      console.log('DATA STILL COMING', data.length);
       cumulativeData = [...cumulativeData, ...data];
       return paginateRequest(method, args, pageSize, ++page, cumulativeData);
     } else if (data.length < pageSize) {
-      console.log('DATA COMPLETE', data.length);
       // Fewer resuts returned than expected, so we know this is the last page.
       cumulativeData = [...cumulativeData, ...data];
       return cumulativeData;

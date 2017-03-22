@@ -2,6 +2,9 @@ import uuid from 'uuid';
 import {PAGE_SIZE, paginate, internalServerErrorOnError} from '../helpers/controllerHelpers';
 import {removeOldWebhooksForLink} from '../helpers/addWebhooksForLink';
 
+import Debug from 'debug';
+const updateDebug = Debug('backstroke:links:update');
+
 // Return all links in a condensed format. Included is {_id, name, paid, enabled}.
 // This will support pagination.
 export function index(Link, req, res) {
@@ -72,14 +75,15 @@ export function update(Link, Repository, addWebhooksForLink, removeOldWebhooksFo
   return Link.findOne({
     where: {id: req.params.linkId, ownerId: req.user.id},
   }).then(linkModel => {
+    updateDebug('OLD LINK MODEL %o AND NEW LINK UPDATES %o', linkModel, link);
+
     if (linkModel) {
       return removeOldWebhooksForLink(req.user, linkModel).then(() => {
         return linkModel.updateAttributes(link);
-      }).then(() => {
-        return addWebhooksForLink(req.user, link);
+      }).then(linkModel => {
+        return addWebhooksForLink(req.user, linkModel);
       }).then(hookId => {
-        console.log('HOOK ID', hookId);
-        return linkModel.updateAttribute('hookId', hookId.join(','));
+        return linkModel.updateAttribute('hookId', hookId);
       }).then(data => {
         res.status(200).send(data);
       });

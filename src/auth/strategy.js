@@ -1,5 +1,8 @@
 import GithubStrategy from 'passport-github2';
 
+import Debug from 'debug';
+const debug = Debug('backstroke:auth');
+
 export default function strategy(User) {
   return new GithubStrategy({
 		clientID: process.env.GITHUB_CLIENT_ID,
@@ -12,7 +15,7 @@ export default function strategy(User) {
 		User.findOne({
 			where: {providerId: profile.id.toString()},
 		}).then(model => {
-			console.log('USER FOUND', model);
+			debug('USER FOUND %o', model);
 
 			// Add the data fetched from this last request to the existing data, if it exists.
 			user = Object.assign({}, model, {
@@ -25,10 +28,10 @@ export default function strategy(User) {
 			});
 
 			if (model) {
-				console.log('UPDATING USER MODEL', model, user);
+				debug('UPDATING USER MODEL %o WITH %o', model, user);
 				return model.updateAttributes(user);
 			} else {
-				console.log('CREATE USER', user);
+				debug('CREATE USER %o', user);
 				return User.create(user);
 			}
 		}).then(model => {

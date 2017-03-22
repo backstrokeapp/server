@@ -1,6 +1,8 @@
 import createGithubInstance from '../createGithubInstance';
 import getRepoName from 'helpers/getRepoName';
 import Promise from 'bluebird';
+import Debug from 'debug';
+const debug = Debug('backstroke:webhook');
 
 export function getBackstrokeUrlFor(link) {
   let hostname = process.env.BACKSTROKE_SERVER || 'http://backstroke.us';
@@ -8,7 +10,6 @@ export function getBackstrokeUrlFor(link) {
 }
 
 function addWebhookToRepo(gh, config, user, owner, repo) {
-  console.log(owner, repo);
   return gh.reposCreateHook({
     owner,
     repo,
@@ -39,7 +40,7 @@ export function addWebhooksForLink(user, link) {
     url: getBackstrokeUrlFor(link),
     content_type: 'json',
   };
-  console.log('WEBHOOK CONFIG', link, config);
+  debug('WEBHOOK CONFIG TO POST TO GITHUB %o FOR LINK %o', config, link);
 
   let operations = [];
 
@@ -51,11 +52,11 @@ export function addWebhooksForLink(user, link) {
     let [toUser, toRepo] = getRepoName(link.fork);
     operations.push(addWebhookToRepo(gh, config, user, toUser, toRepo));
   }
-  console.log('WEBHOOK OPS', operations);
+  debug('WEBHOOK ADD TO HOW MANY REPOS %d', operations.length);
 
   return Promise.all(operations).then(results => {
     let errors = results.filter(r => r && r.error);
-    console.log('ADD WEBHOOK', results);
+    debug('WEBHOOK ADD RESULTS %o', results);
 
     // If at least one webhook was successfully added, then succeed.
     if (errors.length === 0 || results.length - errors.length > 0) {
@@ -73,10 +74,8 @@ export function removeOldWebhooksForLink(user, link) {
   if (link.upstream.type === 'repo' && link.hookId) {
     let [fromUser, fromRepo] = getRepoName(link.upstream);
 
-    console.log('LINK', link);
-
     let all = link.hookId.map(id => {
-      console.log('DELETING HOOK', id);
+      debug('DELETING WEBHOOK %s on %s/%s', id, fromUser, fromRepo);
       return gh.reposDeleteHook({owner: fromUser, repo: fromRepo, id}).catch(err => {
         if (err.status === 'Not Found') {
           return true; // The given webhook was deleted by the user.

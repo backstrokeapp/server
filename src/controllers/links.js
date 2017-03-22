@@ -13,11 +13,9 @@ export function index(Link, req, res) {
     ...paginate(req),
   }).then(data => {
     // Add all owners to each link
-    return Promise.all(data.map(i => i.owner())).then(owners => {
+    return Promise.all(data.map(i => i.display())).then(display => {
       return res.status(200).send({
-        data: data.map((i, ct) => {
-          return {...i.toObject(), owner: owners[ct]};
-        }),
+        data: display,
         lastItem: paginate(req).skip + data.length,
       });
     });
@@ -29,8 +27,8 @@ export function index(Link, req, res) {
 export function get(Link, req, res) {
   return Link.findOne({where: {id: req.params.id, ownerId: req.user.id}}).then(link => {
     if (link) {
-      return link.owner().then(owner => {
-        res.status(200).send({...link.toObject(), owner});
+      return link.display().then(display => {
+        res.status(200).send(display);
       });
     } else {
       res.status(404).send({error: "No such link."});
@@ -72,18 +70,37 @@ export function update(Link, Repository, addWebhooksForLink, removeOldWebhooksFo
     return res.status(400).send({error: `The 'upstream' repo must be a repo, not a bunch of forks.`});
   }
 
+  function updateRepositoryOnLink(repoId, newRepoData) {
+    delete newRepoData.id; // Make sure the user doesn't try to forcefully update the id
+    return Repository.findOne({where: {id: repoId}}).then(repo => {
+      if (repo) {
+        return repo.updateAttributes(newRepoData);
+      } else {
+        return Repository.create(newRepoData);
+      }
+    });
+  }
+
   return Link.findOne({
     where: {id: req.params.linkId, ownerId: req.user.id},
   }).then(linkModel => {
     updateDebug('OLD LINK MODEL %o AND NEW LINK UPDATES %o', linkModel, link);
 
     if (linkModel) {
-      return removeOldWebhooksForLink(req.user, linkModel).then(() => {
-        return linkModel.updateAttributes(link);
-      }).then(linkModel => {
-        return addWebhooksForLink(req.user, linkModel);
-      }).then(hookId => {
-        return linkModel.updateAttribute('hookId', hookId);
+      return Promise.all([
+        updateRepositoryOnLink(linkModel.upstreamId, link.upstream),
+        updateRepositoryOnLink(linkModel.forkId, link.fork),
+      ]).then(repositoryUpdateResponse => {
+        link.upstreamId = repositoryUpdateResponse[0].id;
+        link.forkId = repositoryUpdateResponse[1].id;
+
+        return removeOldWebhooksForLink(req.user, linkModel).then(() => {
+          return linkModel.updateAttributes(link);
+        }).then(linkModel => {
+          return addWebhooksForLink(req.user, linkModel);
+        }).then(hookId => {
+          return linkModel.updateAttribute('hookId', hookId);
+        });
       }).then(data => {
         res.status(200).send(data);
       });

@@ -11,6 +11,8 @@ export default function strategy(User) {
 	}, function(accessToken, refreshToken, profile, cb) {
 		let user;
 
+		debug('PROVIDER ID %s', profile.id);
+
 		// Is the user already in the system?
 		User.findOne({
 			where: {providerId: profile.id.toString()},
@@ -35,6 +37,7 @@ export default function strategy(User) {
 				return User.create(user);
 			}
 		}).then(model => {
+			debug('LOGGED IN USER %o', model);
 			cb(null, model);
 		}).catch(cb);
 	});

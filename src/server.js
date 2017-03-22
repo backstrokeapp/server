@@ -28,7 +28,11 @@ const User = userBuilder(schema);
 const Repository = repositoryBuilder(schema);
 const Link = linkBuilder(schema);
 
-schema.automigrate();
+if (process.env.MIGRATE) {
+  console.log('Migrating schema...');
+  schema.automigrate();
+  console.log('Done.');
+}
 
 // ----------------------------------------------------------------------------
 // Passport stuff

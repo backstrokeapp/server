@@ -6,6 +6,24 @@ import {InputGroup, FormControl, OverlayTrigger, Tooltip} from 'react-bootstrap'
 import verifyRepositoryName from 'actions/verifyRepositoryName';
 import repoBranch from 'actions/repoBranch';
 
+function RepoName({owner, repo, onChange}) {
+  return <span className="repo-name-textbox-wrapper">
+    <FormControl
+      type="text"
+      value={owner || ""}
+      placeholder="Repository Owner"
+      onChange={e => onChange(e.target.value, repo)}
+    />
+    <span className="repo-name-slash">&#x2F;</span>
+    <FormControl
+      type="text"
+      value={repo || ""}
+      placeholder="Repository Name"
+      onChange={e => onChange(owner, e.target.value)}
+    />
+  </span>;
+}
+
 // A representation of a repository
 export function RepositoryBox({
   repository: repo,
@@ -21,14 +39,13 @@ export function RepositoryBox({
   return <div className="repository-box">
     <div className="icon-wrapper">
       <a target="_blank" href={generateRepoUrl(repo)}>
-        <i className={'fa fa-'+repo.provider} />
+        <i className="fa fa-github" />
       </a>
     </div>
     <InputGroup className="repo-name-box">
-      <FormControl
-        type="text"
-        placeholder="Start typing a username/repo"
-        value={repo.name}
+      <RepoName
+        owner={repo.owner}
+        repo={repo.repo}
         onChange={onVerifyRepositoryName.bind(null, repo)}
       />
       <InputGroup.Addon>
@@ -82,20 +99,16 @@ export function validTooltip(repo, type) {
   }
 }
 
-export function generateRepoUrl(repo) {
-  switch (repo.provider) {
-    case 'github': return `https://github.com/${repo.name}`;
-    case 'bitbucket': return `https://bitbucket.org/${repo.name}`;
-    default: return '';
-  }
+export function generateRepoUrl({provider, owner, repo}) {
+  return `https://github.com/${owner}/${repo}`;
 }
 
 export default connect((state, props) => {
   return {};
 }, dispatch => {
   return {
-    onVerifyRepositoryName(repo, event) {
-      dispatch(verifyRepositoryName(repo, event.target.value));
+    onVerifyRepositoryName(repo, owner, repoName) {
+      dispatch(verifyRepositoryName(repo, owner, repoName));
     },
     onRepoBranch(repo, event) {
       dispatch(repoBranch(repo, event.value));

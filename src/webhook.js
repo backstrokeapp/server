@@ -1,5 +1,4 @@
 import Promise from 'bluebird';
-import getRepoName from './helpers/getRepoName';
 import createGithubInstance from './createGithubInstance';
 import {trackWebhook} from './analytics';
 import {paginateRequest} from './helpers/controllerHelpers';
@@ -19,21 +18,18 @@ function createPullRequest(
       return {msg: "This repo opted out of backstroke pull requests"};
     } else {
       // Create a new pull request from the upstream to the child.
-      let [upstreamUser, upstreamRepo] = getRepoName(from);
-      let [childUser, childRepo] = getRepoName(to);
-
       return backstrokeBotInstance.pullRequestsCreate({
-        owner: childUser,
-        repo: childRepo,
-        title: generatePullRequestTitle(upstreamUser, upstreamRepo),
+        owner: to.owner,
+        repo: to.repo,
+        title: generatePullRequestTitle(from.owner, from.repo),
         head: `${upstreamUser}:${from.branch}`,
         base: to.branch,
-        body: generatePullRequestBody(upstreamUser, upstreamRepo),
+        body: generatePullRequestBody(from.owner, from.repo),
         maintainer_can_modify: false,
       }).catch(err => {
         if (err.code === 422) {
           // The pull request already existed
-          return {msg: `There's already a pull request on ${childUser}/${childRepo}.`};
+          return {msg: `There's already a pull request on ${to.owner}/${to.repo}.`};
         } else {
           // Still reject anything else
           return Promise.reject(err);
@@ -84,15 +80,13 @@ export default function webhook(
       };
     });
   } else if (link.to.type === 'fork-all') {
-    let [user, repo] = getRepoName(link.from);
-
     // Fetch each fork, then try to make a pull request.
     function getForks(page) {
       let allForks = [];
       return gh.reposGetForks({
-        owner: user,
-        repo, page,
-        per_page: pageSize,
+        owner: link.from.owner,
+        repo: link.from.repo,
+        page, per_page: pageSize,
       }).then(forks => {
 
         // add a conglomeration of the previous promises to the group of all forks
@@ -150,9 +144,8 @@ export default function webhook(
 // Given a repository `user/repo` and a provider that the repo is located on (ex: `github`),
 // determine if the repo opted out.
 export function didRepoOptOut(inst, repoData) {
-  let [user, repo] = getRepoName(repoData);
   return inst.searchIssues({
-    q: `repo:${user}/${repo} is:pr label:optout`,
+    q: `repo:${repoData.owner}/${repoData.repo} is:pr label:optout`,
   }).then(issues => {
     return issues.total_count > 0;
   });

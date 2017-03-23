@@ -10,7 +10,7 @@ import addNewRepository from 'actions/addNewRepository';
 export function AddNewBox({type, onAddNewRepository, onAddAllForks, dim}) {
   return <div className="add-new-box">
     <div className={classname(
-      "add-new-option",
+      'add-new-option',
       `add-new-option-${type}`, {
         'add-new-option-muted': dim
       })

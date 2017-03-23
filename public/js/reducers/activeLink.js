@@ -1,11 +1,15 @@
 // if `data` is one of the repos represented, update it
 function updateRepo(state, data, cb) {
-  if (state.fork && state.fork.provider === data.provider && state.fork.name === data.name) {
+  if (
+    state.fork &&
+    state.fork.owner === data.owner &&
+    state.fork.repo === data.repo
+  ) {
     return Object.assign({}, state, {fork: cb(state.fork)});
   } else if (
     state.upstream && 
-    state.upstream.provider === data.provider &&
-    state.upstream.name === data.name
+    state.upstream.owner === data.owner &&
+    state.upstream.repo === data.repo
   ) {
     return Object.assign({}, state, {upstream: cb(state.upstream)});
   } else {
@@ -19,6 +23,9 @@ export default function activeLink(state=null, action) {
       return action.data;
 
     case 'LINK_INFO':
+      action.data.upstream = action.data.upstream || {};
+      action.data.fork = action.data.fork || {};
+
       // Validate each name when it comes from the server
       action.data.fork._nameValid = true;
       action.data.upstream._nameValid = true;
@@ -42,7 +49,7 @@ export default function activeLink(state=null, action) {
 
     case 'REPO_NAME':
       return updateRepo(state, action.data, repo => {
-        return Object.assign({}, repo, {name: action.name});
+        return Object.assign({}, repo, {owner: action.owner, repo: action.repo});
       });
 
     case 'REPO_VALID':

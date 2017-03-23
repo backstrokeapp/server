@@ -10,7 +10,6 @@ import checkRepo from 'controllers/checkRepo';
 import webhook from 'controllers/webhook';
 import webhookOld from 'controllers/webhookOld';
 
-import isLinkPaid from 'helpers/isLinkPaid';
 import {addWebhooksForLink, removeOldWebhooksForLink} from 'helpers/addWebhooksForLink';
 
 // ----------------------------------------------------------------------------
@@ -20,10 +19,10 @@ import {Schema} from 'jugglingdb';
 import userBuilder from 'models/User';
 import linkBuilder from 'models/Link';
 import repositoryBuilder from 'models/Repository';
-const schema = new Schema('sqlite3', {database: 'db.sqlite3'});
-// const schema = new Schema('mongodb', {
-//   url: 'mongodb://backstroke:backstroke@ds017256.mlab.com:17256/backstroke-dev',
-// });
+// const schema = new Schema('sqlite3', {database: 'db.sqlite3'});
+const schema = new Schema('mongodb', {
+  url: 'mongodb://backstroke:backstroke@ds017256.mlab.com:17256/backstroke-dev',
+});
 const User = userBuilder(schema);
 const Repository = repositoryBuilder(schema);
 const Link = linkBuilder(schema);
@@ -84,7 +83,7 @@ function assertLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     next();
   } else {
-    res.status(403).send({error: 'Not authenticated.'});
+    res.status(401).send({error: 'Not authenticated.'});
   }
 }
 

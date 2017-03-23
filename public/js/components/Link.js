@@ -22,24 +22,21 @@ import linkSave from 'actions/linkSave';
 export function isRepoValid(repo, type) {
   return (
     repo.type === 'repo' &&
-    repo.provider && 
-    repo.name &&
-    repo.name.length > 0 &&
-    repo.name.indexOf('/') !== -1 &&
+    repo.owner && repo.owner.length > 0 &&
+    repo.repo && repo.repo.length > 0 &&
     repo.branch && repo.branch.length > 0 &&
     repo.branches.length > 0 && // must have al teast 1 branch
     (type === 'fork' ? repo.fork : true) // the fork slot must have a fork in it.
   ) || (
-    repo.type === 'fork-all' &&
-    repo.provider && repo.provider.length > 0
+    repo.type === 'fork-all'
   );
 }
 
 export function isLinkValid(link) {
   return (
     link.name && link.name.length > 0 &&
-    link.fork && link.fork.type && link.fork.provider &&
-    link.upstream && link.upstream.type && link.upstream.provider &&
+    link.fork &&
+    link.upstream &&
     isRepoValid(link.fork, 'fork') && isRepoValid(link.upstream, 'upstream')
   )
 }

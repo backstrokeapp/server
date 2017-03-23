@@ -43,8 +43,6 @@ export function create(Link, req, res) {
   let link = {
     enabled: false,
     ownerId: req.user.id,
-    upstream: {branches: []},
-    fork: {branches: []},
   };
 
   Link.create(link).then(link => {

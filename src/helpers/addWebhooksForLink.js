@@ -1,5 +1,4 @@
 import createGithubInstance from '../createGithubInstance';
-import getRepoName from 'helpers/getRepoName';
 import Promise from 'bluebird';
 import Debug from 'debug';
 const debug = Debug('backstroke:webhook');
@@ -45,12 +44,10 @@ export function addWebhooksForLink(user, link) {
   let operations = [];
 
   if (link && link.upstream && link.upstream.type === 'repo') {
-    let [fromUser, fromRepo] = getRepoName(link.upstream);
-    operations.push(addWebhookToRepo(gh, config, user, fromUser, fromRepo));
+    operations.push(addWebhookToRepo(gh, config, user, link.upstream.owner, link.upstream.repo));
   }
   if (link && link.fork && link.fork.type === 'repo') {
-    let [toUser, toRepo] = getRepoName(link.fork);
-    operations.push(addWebhookToRepo(gh, config, user, toUser, toRepo));
+    operations.push(addWebhookToRepo(gh, config, user, link.fork.owner, link.fork.repo));
   }
   debug('WEBHOOK ADD TO HOW MANY REPOS %d', operations.length);
 
@@ -72,10 +69,8 @@ export function removeOldWebhooksForLink(user, link) {
   let gh = createGithubInstance(user);
 
   if (link.upstream.type === 'repo' && link.hookId) {
-    let [fromUser, fromRepo] = getRepoName(link.upstream);
-
     let all = link.hookId.map(id => {
-      debug('DELETING WEBHOOK %s on %s/%s', id, fromUser, fromRepo);
+      debug('DELETING WEBHOOK %s on %s/%s', id, link.upstream.owner, link.upstream.fork);
       return gh.reposDeleteHook({owner: fromUser, repo: fromRepo, id}).catch(err => {
         if (err.status === 'Not Found') {
           return true; // The given webhook was deleted by the user.

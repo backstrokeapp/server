@@ -1,35 +1,38 @@
 import Promise from 'bluebird';
 import createGithubInstance from './createGithubInstance';
 import {trackWebhook} from './analytics';
-import {paginateRequest} from './helpers/controllerHelpers';
+import {paginateRequest, internalServerErrorOnError} from './helpers/controllerHelpers';
+import Debug from 'debug';
+const debug = Debug('backstroke:webhook');
 
 let backstrokeBotInstance = createGithubInstance({accessToken: process.env.GITHUB_TOKEN});
 
 function createPullRequest(
   gh,
   link,
-  from,
-  to,
+  upstream,
+  fork,
   backstrokeBotInstance // Pass in even though it's global so tests can change it.
 ) {
-  return didRepoOptOut(gh, to).then(didOptOut => {
+  debug('CREATING PULL REQUEST FROM UPSTREAM %o TO FORK %o', upstream, fork);
+  return didRepoOptOut(gh, fork).then(didOptOut => {
     // Do we have permission to make a pull request on the child?
     if (didOptOut) {
       return {msg: "This repo opted out of backstroke pull requests"};
     } else {
       // Create a new pull request from the upstream to the child.
       return backstrokeBotInstance.pullRequestsCreate({
-        owner: to.owner,
-        repo: to.repo,
-        title: generatePullRequestTitle(from.owner, from.repo),
-        head: `${upstreamUser}:${from.branch}`,
-        base: to.branch,
-        body: generatePullRequestBody(from.owner, from.repo),
+        owner: fork.owner,
+        repo: fork.repo,
+        title: generatePullRequestTitle(upstream.owner, upstream.repo),
+        head: `${upstream.owner}:${upstream.branch}`,
+        base: fork.branch,
+        body: generatePullRequestBody(upstream.owner, upstream.repo),
         maintainer_can_modify: false,
       }).catch(err => {
         if (err.code === 422) {
           // The pull request already existed
-          return {msg: `There's already a pull request on ${to.owner}/${to.repo}.`};
+          return {msg: `There's already a pull request on ${fork.owner}/${fork.repo}.`};
         } else {
           // Still reject anything else
           return Promise.reject(err);
@@ -46,99 +49,79 @@ export default function webhook(
   // The below param is only used for tests to override the global `backstrokeBotInstance`
   overrideBackstrokeBotInstance=backstrokeBotInstance
 ) {
+  debug('WEBHOOK CAME IN WITH LINK %o', link);
   trackWebhook(link);
 
   // Allow overriding the backstroke bot instance for running tests.
   const backstrokeBotInstance = overrideBackstrokeBotInstance;
 
-  // if disabled, or to/from is null, return so
+  // if disabled, or upstream/fork is null, return so
   if (!link.enabled) {
     return Promise.resolve({error: 'not-enabled', isEnabled: false});
-  } else if (!link.to || !link.from) {
+  } else if (!link.upstream || !link.fork) {
     return Promise.resolve({
-      error: 'to-or-from-false',
+      error: 'upstream-or-fork-false',
       isEnabled: true,
-      msg: 'Please set both a "to" and "from" on this link.',
+      msg: 'Please set both a "upstream" and "fork" on this link.',
     });
   }
 
-  // step 1: are we dealing with a repo to merge into or all the forks of a repo?
-  if (link.to.type === 'repo') {
-    return createPullRequest(
-      gh,
-      link,
-      link.from,
-      link.to,
-      backstrokeBotInstance
-    ).then(response => {
-      return {
-        status: 'ok',
-        pullRequest: response,
-        isEnabled: true,
-        many: false,
-        forkCount: 1, // just one repo
-      };
-    });
-  } else if (link.to.type === 'fork-all') {
-    // Fetch each fork, then try to make a pull request.
-    function getForks(page) {
-      let allForks = [];
-      return gh.reposGetForks({
-        owner: link.from.owner,
-        repo: link.from.repo,
-        page, per_page: pageSize,
-      }).then(forks => {
-
-        // add a conglomeration of the previous promises to the group of all forks
-        allForks.push(Promise.all(forkGroup));
-
-        // if required, go to the next page of forks
-        if (forks.length === pageSize) {
-          return getForks(++page);
-        } else {
-          return Promise.all(allForks).then(success => {
-            return {
-              status: 'ok',
-              many: true,
-              forkCount: (page * pageSize) + forks.length, // total amount of forks handled
-              isEnabled: true,
-            };
-          });
-        }
-      });
-    }
-
-    // Get all forks.
-    return paginateRequest(gh.reposGetForks, {owner: user, repo}).then(forks => {
-      let all = forks.map(fork => {
-        // Assemble a repo to sync changes to.
-        // This has to be assembled because the `to` repo is generated when iterating through
-        // forks.
-        let toRepo = {
-          type: 'repo',
-          provider: link.to.provider,
-          name: fork.full_name,
-          private: fork.private,
-          fork: true,
-          branch: link.from.branch, // same branch as the upstream. TODO: make this configurable.
-          branches: [],
+  return Promise.join(link.upstream(), link.fork(), (upstream, fork) => {
+    // step 1: are we dealing with a repo to merge into or all the forks of a repo?
+    if (fork.type === 'repo') {
+      debug('WEBHOOK IS ON THE FORK, SO UPSTREAM = %o AND FORK = %o', upstream, fork);
+      return createPullRequest(
+        gh,
+        link,
+        upstream,
+        fork,
+        backstrokeBotInstance
+      ).then(response => {
+        return {
+          status: 'ok',
+          pullRequest: response,
+          isEnabled: true,
+          many: false,
+          forkCount: 1, // just one repo
         };
-
-        return createPullRequest(gh, link, link.from, toRepo, backstrokeBotInstance);
       });
+    } else if (fork.type === 'fork-all') {
+      debug('WEBHOOK IS ON THE UPSTREAM, SO UPSTREAM = %o AND MERGING INTO ALL FORKS', upstream);
+      // Get all forks.
+      return paginateRequest(gh.reposGetForks, {
+        owner: upstream.owner,
+        repo: upstream.repo,
+      }).then(forks => {
+        debug('FOUND %d FORKS.', forks.length);
+        let all = forks.map(fork => {
+          // Assemble a repo to sync changes to.
+          // This has to be assembled because the `to` repo is generated when iterating through
+          // forks.
+          let toRepo = {
+            type: 'repo',
+            owner: fork.owner.login,
+            repo: fork.name,
+            fork: true,
+            branch: link.upstream.branch, // same branch as the upstream. TODO: make this configurable.
+            branches: [],
+          };
 
-      return Promise.all(all);
-    }).then(data => {
-      return {
-        status: 'ok',
-        many: true,
-        forkCount: forks.length, // total amount of forks handled
-        isEnabled: true,
-      };
-    });
-  } else {
-    throw new Error(`No such 'to' type: ${link.to.type}`);
-  }
+          return createPullRequest(gh, link, upstream, toRepo, backstrokeBotInstance);
+        });
+
+        return Promise.all(all);
+      }).then(data => {
+        return {
+          status: 'ok',
+          many: true,
+          forkCount: forks.length, // total amount of forks handled
+          isEnabled: true,
+        };
+      });
+    } else {
+      throw new Error(`No such 'fork' type: ${link.fork.type}`);
+    }
+  });
 }
 
 // Given a repository `user/repo` and a provider that the repo is located on (ex: `github`),

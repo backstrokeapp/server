@@ -1,14 +1,17 @@
 import webhook from '../webhook';
 import createGithubInstance from '../createGithubInstance';
 import {NoSuchLinkError} from 'helpers/errors';
+import {internalServerErrorOnError} from '../helpers/controllerHelpers';
 
 export default function webhookRoute(Link, req, res) {
   return Link.findOne({
     where: {id: req.params.linkId},
   }).then(link => {
     if (link) {
-      let gh = createGithubInstance(link.owner);
-      return webhook(gh, link);
+      return link.owner().then(owner => {
+        let gh = createGithubInstance(owner);
+        return webhook(gh, link);
+      });
     } else {
       res.status(404).send(`No such link with the id ${req.params.linkId}`);
     }

@@ -6,7 +6,6 @@ import webhook, {
   didRepoOptOut,
 } from '../../src/webhook';
 import {res, generateLink} from '../testHelpers';
-import getRepoName from 'helpers/getRepoName';
 
 let firstForkPage = [{
   type: 'repo',

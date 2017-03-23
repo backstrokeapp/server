@@ -1,7 +1,7 @@
 import createGithubInstance from '../createGithubInstance';
 import Promise from 'bluebird';
 import Debug from 'debug';
-const debug = Debug('backstroke:webhook');
+const debug = Debug('backstroke:webhook:add-or-remove');
 
 export function getBackstrokeUrlFor(link) {
   let hostname = process.env.BACKSTROKE_SERVER || 'http://backstroke.us';
@@ -57,7 +57,7 @@ export function addWebhooksForLink(user, link) {
 
     // If at least one webhook was successfully added, then succeed.
     if (errors.length === 0 || results.length - errors.length > 0) {
-      return results.filter(i => i).map(i => i.id.toString());
+      return results.filter(i => i.id).map(i => i.id.toString());
     } else {
       return Promise.reject(errors[0]);
     }

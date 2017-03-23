@@ -120,9 +120,6 @@ app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(nul
 // the old webhook route
 // This parses the body of the request to get most of its data.
 app.post("/", bodyParser.json(), webhookOld);
-app.route("/ping/github/:user/:repo").get((req, res) => {
-  res.redirect(`https://github.com/${req.params.user}/${req.params.repo}`);
-}).post(webhook);
 
 // the new webhook route
 // No body parsing, all oauth-based

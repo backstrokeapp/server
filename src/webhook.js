@@ -58,7 +58,7 @@ export default function webhook(
   // if disabled, or upstream/fork is null, return so
   if (!link.enabled) {
     return Promise.resolve({error: 'not-enabled', isEnabled: false});
-  } else if (!link.upstream || !link.fork) {
+  } else if (!link.upstreamId || !link.forkId) {
     return Promise.resolve({
       error: 'upstream-or-fork-false',
       isEnabled: true,
@@ -114,7 +114,7 @@ export default function webhook(
         return {
           status: 'ok',
           many: true,
-          forkCount: forks.length, // total amount of forks handled
+          forkCount: data.length, // total amount of forks handled
           isEnabled: true,
         };
       });

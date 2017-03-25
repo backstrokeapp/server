@@ -49,7 +49,6 @@ export default function webhookOld(req, res) {
     });
   }
 
-
   // NOTE: Unfortunately, since there isn't a user attached to a classic webhook, we have to fall
   // back to the backstroke bot user.
   let gh = createGithubInstance({accessToken: process.env.GITHUB_TOKEN});

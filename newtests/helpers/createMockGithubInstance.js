@@ -10,6 +10,15 @@ export function generateId() {
   return id;
 }
 
+export function generateSha() {
+  let sha = '';
+  for (let i = 0; i <= 40; i++) {
+    sha += String.fromCharCode(Math.floor(Math.random() * 25) + 97);
+  }
+  return sha;
+}
+
+
 export function generateOwner(owner, type="User") {
   let id = generateId();
   return {
@@ -26,16 +35,8 @@ const BASE_REPO = {
   name: 'bar',
   isFork: false,
   branches: [
-    {name: 'master', commit: {sha: '313e607d288fac80659d20b508fbed31e3ed66ff'}},
+    {name: 'master', commit: {sha: generateSha()}},
   ],
-  forks: [
-    generateRepo({
-      owner: 'baz',
-      name: 'bar',
-      isFork: true,
-    }),
-  ],
-  issues: [],
 };
 export function generateRepo(addons) {
   let {owner, name, isFork, branches, forks, issues, pullRequests, webhooks} = Object.assign({}, BASE_REPO, addons);
@@ -96,6 +97,11 @@ export default function createMockGithubInstance(repoDirectory) {
     pullRequestsCreate({owner, repo, title, head, base, body, maintainer_can_modify}) {
       let r = repoDirectory.find(i => i.owner.login === owner && i.name === repo);
       if (r) {
+        let doesPRAlreadyExist = r._pullRequests.find(i => i.head.label === head && i.base.label === base);
+        if (doesPRAlreadyExist) {
+          return Promise.reject({code: 422, error: 'Pull request already exists'});
+        }
+
         let pr = {
           id: generateId(),
           number: Math.floor(Math.random() * 1000),
@@ -109,10 +115,14 @@ export default function createMockGithubInstance(repoDirectory) {
           updated_at: (new Date()).toISOString(),
           labels: [],
           head: {
-            // NOTE: add me
+            label: head,
+            ref: head.split(':').reverse()[0],
+            sha: generateSha(),
           },
           base: {
-            // NOTE: add me
+            label: base,
+            ref: base.split(':').reverse()[0],
+            sha: generateSha(),
           },
           user: null,
         };
@@ -230,29 +240,3 @@ export default function createMockGithubInstance(repoDirectory) {
     }
   };
 }
-
-const test = createMockGithubInstance([
-  generateRepo({
-    owner: 'foo',
-    name: 'bar',
-    isFork: false,
-    branches: [
-      {name: 'master', commit: {sha: '313e607d288fac80659d20b508fbed31e3ed66ff'}},
-    ],
-    forks: [
-      generateRepo({
-        owner: 'baz',
-        name: 'bar',
-        isFork: true,
-      }),
-    ],
-    issues: [
-      {
-        title: "My sample PR",
-        labels: [
-          {id: generateId(), name: "optout"},
-        ],
-      }
-    ],
-  }),
-]);

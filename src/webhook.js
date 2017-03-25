@@ -18,6 +18,7 @@ function createPullRequest(
   return didRepoOptOut(gh, fork).then(didOptOut => {
     // Do we have permission to make a pull request on the child?
     if (didOptOut) {
+      debug('REPO OPTED OUT OF PULL REQUESTS %o', fork);
       return {msg: "This repo opted out of backstroke pull requests"};
     } else {
       // Create a new pull request from the upstream to the child.
@@ -102,7 +103,7 @@ export default function webhook(
             owner: fork.owner.login,
             repo: fork.name,
             fork: true,
-            branch: link.upstream.branch, // same branch as the upstream. TODO: make this configurable.
+            branch: upstream.branch, // same branch as the upstream. TODO: make this configurable.
             branches: [],
           };
 

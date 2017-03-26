@@ -1,8 +1,9 @@
 import express from 'express';
 let app = express();
+export default app;
+
 app.set('view engine', 'ejs');
 app.use(express.static('build'));
-import Promise from 'bluebird';
 
 import whoami from 'controllers/whoami';
 import * as links from 'controllers/links';
@@ -125,11 +126,8 @@ app.post("/", bodyParser.json(), webhookOld);
 // No body parsing, all oauth-based
 app.all('/_:linkId', webhook.bind(null, Link));
 
-// For letsencrypt
-app.get('/.well-known/acme-challenge/:id', (req, res) =>
-  res.status(200).send(process.env.LETSENCRYPT_ID)
-);
-
-let port = process.env.PORT || 8001;
-app.listen(port);
-console.log('Listening on port', port);
+if (require.main === module) {
+  let port = process.env.PORT || 8001;
+  app.listen(port);
+  console.log('Listening on port', port);
+}

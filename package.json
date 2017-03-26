@@ -64,6 +64,7 @@
     "react-toggle-switch": "^2.1.2",
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0",
+    "request": "^2.81.0",
     "sinon": "^1.17.5",
     "sinon-as-promised": "^4.0.0",
     "sinon-mongoose": "^1.2.1",
@@ -113,6 +114,8 @@
   "author": "Ryan Gaus <rgaus.net>",
   "license": "ISC",
   "devDependencies": {
-    "babel-plugin-transform-object-rest-spread": "^6.23.0"
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "superagent-extend": "^0.1.6",
+    "supertest": "^3.0.0"
   }
 }

@@ -1,5 +1,4 @@
 import {index, get, create, update, enable, del} from '../src/controllers/links';
-import request from 'request';
 import sinon from 'sinon';
 
 import {Schema} from 'jugglingdb';
@@ -8,48 +7,10 @@ import userBuilder from '../src/models/User';
 import repositoryBuilder from '../src/models/Repository';
 import assert from 'assert';
 
-import express from 'express';
-import bodyParser from 'body-parser';
-import fs from 'fs';
-import path from 'path';
-function issueRequest(fn, deps, mountAt='/', user=null, requestParameters={url: '/'}) {
-  return new Promise((resolve, reject) => {
-    // Create a unix socket to mount the server at
-    const socketPath = path.join(process.cwd(), `backstroke-test-socket-${process.pid}.sock`);
-    if (fs.existsSync(socketPath)) {
-      fs.unlinkSync(socketPath);
-    }
+// Helper for mounting routes in an express app and querying them.
+import issueRequest from './helpers/issueRequest';
 
-    // Create a server with the function mounted at `/`
-    let app = express();
-    app.use(bodyParser.json());
-    app.use((req, res, next) => {
-      req.user = user;
-      next();
-    });
-    app.all(mountAt, (req, res) => fn.apply(null, [...deps, req, res]));
-
-    // Listen on a local socket
-    app.listen(socketPath, () => {
-      requestParameters = Object.assign({}, requestParameters, {
-        url: `http://unix:${socketPath}:${requestParameters.url}`,
-      });
-      return request(requestParameters, (err, resp) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(resp);
-        }
-
-        // After making the request, delete the socket.
-        fs.unlinkSync(socketPath);
-      });
-    });
-  });
-}
-
-
-describe('index', () => {
+describe('routes', () => {
   let schema,
       Link, User, Repository,
       userData, linkData, upstreamData, forkData;
@@ -124,6 +85,7 @@ describe('index', () => {
       assert.equal(body.data[0].owner.id, userData.id);
     });
   });
+
   it('should get a link for a user', () => {
     return issueRequest(
       get, [Link],
@@ -160,6 +122,7 @@ describe('index', () => {
       assert.equal(link.enabled, false);
     });
   });
+
   it('should update a link for a user', () => {
     const addWebhooksForLink = sinon.stub().resolves(['98765']);
     const removeOldWebhooksForLink = sinon.stub().resolves();
@@ -191,6 +154,46 @@ describe('index', () => {
       assert.equal(link.name, 'Another name for my link!');
     });
   });
+  it('should update a link with a new upstream', () => {
+    const addWebhooksForLink = sinon.stub().resolves(['98765']);
+    const removeOldWebhooksForLink = sinon.stub().resolves();
+
+    // First, remove the upstream id from the link to test against.
+    return linkData.updateAttribute('upstreamId', null).then(() => {
+      return issueRequest(
+        update, [Link, Repository, addWebhooksForLink, removeOldWebhooksForLink],
+        '/:linkId', userData, {
+          method: 'PUT',
+          url: `/${linkData.id}`,
+          json: true,
+          body: {
+            link: {
+              name: 'Another name for my link!',
+              upstream: {
+                type: 'repo',
+                owner: 'foo',
+                repo: 'bar',
+                branches: ['master'],
+                branch: 'master',
+              },
+              fork: forkData.id,
+            },
+          },
+        }
+      );
+    }).then(res => {
+      let body = res.body;
+      assert.equal(body.id, linkData.id);
+      assert.equal(body.forkId, forkData.id);
+      assert.equal(body.name, 'Another name for my link!');
+
+      return Link.findOne({where: {id: linkData.id}});
+    }).then(link => {
+      assert.equal(link.name, 'Another name for my link!');
+      assert.notEqual(link.upstreamId, upstreamData.id); // Make sure a new upstream was created
+    });
+  });
+
   it('should enable a link for a user', () => {
     const enabledState = !linkData.enabled;
     return issueRequest(

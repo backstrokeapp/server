@@ -45,7 +45,7 @@ export function create(Link, req, res) {
     ownerId: req.user.id,
   };
 
-  Link.create(link).then(link => {
+  return Link.create(link).then(link => {
     res.status(201).send(link);
   }).catch(internalServerErrorOnError(res));
 }

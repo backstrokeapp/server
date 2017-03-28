@@ -1,5 +1,6 @@
-import {index, get, create, update, del} from '../src/controllers/links';
+import {index, get, create, update, enable, del} from '../src/controllers/links';
 import request from 'request';
+import sinon from 'sinon';
 
 import {Schema} from 'jugglingdb';
 import linkBuilder from '../src/models/Link';
@@ -9,8 +10,16 @@ import assert from 'assert';
 
 import express from 'express';
 import bodyParser from 'body-parser';
-function issueRequest(fn, deps, user=null, mountAt='/', requestParameters={url: '/'}) {
+import fs from 'fs';
+import path from 'path';
+function issueRequest(fn, deps, mountAt='/', user=null, requestParameters={url: '/'}) {
   return new Promise((resolve, reject) => {
+    // Create a unix socket to mount the server at
+    const socketPath = path.join(process.cwd(), `backstroke-test-socket-${process.pid}.sock`);
+    if (fs.existsSync(socketPath)) {
+      fs.unlinkSync(socketPath);
+    }
+
     // Create a server with the function mounted at `/`
     let app = express();
     app.use(bodyParser.json());
@@ -19,11 +28,11 @@ function issueRequest(fn, deps, user=null, mountAt='/', requestParameters={url: 
       next();
     });
     app.all(mountAt, (req, res) => fn.apply(null, [...deps, req, res]));
+
     // Listen on a local socket
-    app.listen('/Users/ryan/w/1egoman/backstroke/backstroke-tests.sock', () => {
-      console.log('listening');
+    app.listen(socketPath, () => {
       requestParameters = Object.assign({}, requestParameters, {
-        url: `http://unix:/Users/ryan/w/1egoman/backstroke/backstroke-tests.sock:${requestParameters.url}`,
+        url: `http://unix:${socketPath}:${requestParameters.url}`,
       });
       return request(requestParameters, (err, resp) => {
         if (err) {
@@ -31,6 +40,9 @@ function issueRequest(fn, deps, user=null, mountAt='/', requestParameters={url: 
         } else {
           resolve(resp);
         }
+
+        // After making the request, delete the socket.
+        fs.unlinkSync(socketPath);
       });
     });
   });
@@ -44,7 +56,6 @@ describe('index', () => {
 
   before(() => {
     schema = new Schema('memory');
-    // console.log(schema);
     Repository = repositoryBuilder(schema);
     User = userBuilder(schema);
     Link = linkBuilder(schema);

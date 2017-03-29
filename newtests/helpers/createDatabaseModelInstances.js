@@ -1,18 +1,31 @@
 import faker from 'faker';
 import {Schema} from 'jugglingdb';
+import Promise from 'bluebird';
 
 import linkBuilder from '../../src/models/Link';
 import userBuilder from '../../src/models/User';
 import repositoryBuilder from '../../src/models/Repository';
 
+const schema = new Schema('memory');
+const User = userBuilder(schema);
+const Repository = repositoryBuilder(schema);
+const Link = linkBuilder(schema);
+
 // A class to abstract away makind database models in tests. I'm abstrating this away because if the
 // database model ever changes (READ: fields added), I want all my tests to continue to work.
 export default class DatabaseTransation {
   constructor() {
-    this.schema = new Schema('memory');
-    this.User = userBuilder(this.schema);
-    this.Repository = repositoryBuilder(this.schema);
-    this.Link = linkBuilder(this.schema);
+    this.Link = Link;
+    this.Repository = Repository;
+    this.User = User;
+  }
+
+  reset() {
+    return Promise.all([
+      this.Link.destroyAll(),
+      this.User.destroyAll(),
+      this.Repository.destroyAll(),
+    ]);
   }
 
   makeUser({username, email}={}) {
@@ -50,29 +63,30 @@ export default class DatabaseTransation {
   }
 
   makeLink({name, enabled, hookId, owner, upstream, fork}={}) {
+    let operations = {upstream, fork};
+
     if (typeof upstream === 'object' && upstream.hasOwnProperty) {
-      operations.push(
-        makeRepository('repo', upstream).then(repo => {
-          upstream = repo;
-        })
-      );
+      operations.upstream = this.makeRepository('repo', upstream).then(repo => {
+        upstream = repo;
+      });
     }
 
     if (typeof fork === 'object' && fork.hasOwnProperty) {
-      operations.push(
-        makeRepository('repo', fork).then(repo => {
-          fork = repo;
-        })
-      );
+      operations.fork = makeRepository('repo', fork).then(repo => {
+        fork = repo;
+      });
     }
 
-    return this.Link.create({
-      name: name || faker.internet.userName(),
-      enabled: enabled || false,
-      hookId: hookId || Array(faker.random.number()).fill(0).map(i => faker.random.number()),
-      ownerId: owner,
-      upstreamId: upstream,
-      forkId: fork,
+    return Promise.props(operations).then(({fork, upstream}) => {
+      console.log('fork', fork, 'upstream', upstream);
+      return this.Link.create({
+        name: name || faker.internet.userName(),
+        enabled: enabled || false,
+        hookId: hookId || Array(faker.random.number()).fill(0).map(i => faker.random.number()),
+        ownerId: owner,
+        upstreamId: upstream,
+        forkId: fork,
+      });
     });
   }
 }

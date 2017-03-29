@@ -115,6 +115,7 @@
   "license": "ISC",
   "devDependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "faker": "^4.1.0",
     "superagent-extend": "^0.1.6",
     "supertest": "^3.0.0"
   }

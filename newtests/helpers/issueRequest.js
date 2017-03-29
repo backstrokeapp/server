@@ -43,6 +43,7 @@ export default function issueRequest(fn, deps, mountAt='/', user=null, requestPa
     app.use(bodyParser.json());
     app.use((req, res, next) => {
       req.user = user;
+      req.isAuthenticated = () => req.user ? true : false;
       next();
     });
     app.all(mountAt, (req, res) => fn.apply(null, [...deps, req, res]));

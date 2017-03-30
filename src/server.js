@@ -8,7 +8,9 @@ app.use(express.static('build'));
 import whoami from 'controllers/whoami';
 import * as links from 'controllers/links';
 import checkRepo from 'controllers/checkRepo';
-import webhook from 'controllers/webhook';
+
+import webhook from './webhook';
+import webhookRoute from 'controllers/webhook';
 import webhookOld from 'controllers/webhookOld';
 
 import {addWebhooksForLink, removeOldWebhooksForLink} from 'helpers/addWebhooksForLink';
@@ -120,7 +122,7 @@ app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(nul
 
 // the old webhook route
 // This parses the body of the request to get most of its data.
-app.post("/", bodyParser.json(), webhookOld);
+app.post("/", bodyParser.json(), webhookOld.bind(null, webhook));
 
 // the new webhook route
 // No body parsing, all oauth-based

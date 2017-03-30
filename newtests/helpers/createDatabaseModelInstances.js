@@ -78,7 +78,6 @@ export default class DatabaseTransation {
     }
 
     return Promise.props(operations).then(({fork, upstream}) => {
-      console.log('fork', fork, 'upstream', upstream);
       return this.Link.create({
         name: name || faker.internet.userName(),
         enabled: enabled || false,

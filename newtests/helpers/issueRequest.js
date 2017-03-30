@@ -54,14 +54,14 @@ export default function issueRequest(fn, deps, mountAt='/', user=null, requestPa
         url: `http://unix:${socketPath}:${requestParameters.url}`,
       });
       return request(requestParameters, (err, resp) => {
+        // After making the request, delete the socket.
+        fs.unlinkSync(socketPath);
+
         if (err) {
           reject(err);
         } else {
           resolve(resp);
         }
-
-        // After making the request, delete the socket.
-        fs.unlinkSync(socketPath);
       });
     });
   });

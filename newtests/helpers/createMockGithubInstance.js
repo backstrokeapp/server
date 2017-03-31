@@ -39,13 +39,14 @@ const BASE_REPO = {
   ],
 };
 export function generateRepo(addons) {
-  let {owner, name, isFork, branches, forks, issues, pullRequests, webhooks} = Object.assign({}, BASE_REPO, addons);
+  let {owner, name, isFork, branches, forks, issues, pullRequests, webhooks, parent} = Object.assign({}, BASE_REPO, addons);
   let id = generateId();
   return {
     id,
     name,
     full_name: `${owner}/${name}`,
     owner: generateOwner(owner),
+    parent,
     private: false,
     html_url: `https://github.com/${owner}/${name}`,
     description: "I am a mock repository created for testing purposes.",

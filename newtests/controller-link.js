@@ -9,15 +9,13 @@ import assert from 'assert';
 
 // Helper for mounting routes in an express app and querying them.
 import issueRequest from './helpers/issueRequest';
-import Database from './helpers/createDatabaseModelInstances';
+import db from './helpers/createDatabaseModelInstances';
 
 describe('link routes', () => {
-  let db = new Database(),
-      userData, linkData, upstreamData, forkData;
+  let userData, linkData, upstreamData, forkData;
 
   before(function() {
     this.timeout(5000);
-    db.reset();
     return Promise.all([
       db.makeUser(),
       db.makeRepository('repo'), // Upstream
@@ -37,10 +35,6 @@ describe('link routes', () => {
     }).then(link => {
       linkData = link;
     });
-  });
-
-  after(() => {
-    db = null;
   });
 
   it('should return all links for a user', () => {

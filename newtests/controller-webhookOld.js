@@ -3,24 +3,29 @@ import sinon from 'sinon';
 
 import assert from 'assert';
 
+import createMockGithubInstance, {
+  generateId,
+  generateOwner,
+  generateRepo,
+} from './helpers/createMockGithubInstance';
+
 // Helper for mounting routes in an express app and querying them.
 import issueRequest from './helpers/issueRequest';
 
 // Helper for managing database instances
-import Database from './helpers/createDatabaseModelInstances';
+import db from './helpers/createDatabaseModelInstances';
 
 describe('classic webhook route', () => {
-  let db, userData;
+  let userData;
 
   beforeEach(() => {
-    db = new Database();
     return db.makeLink().then(user => {
       userData = user;
     });
   });
 
   afterEach(() => {
-    db = null;
+    return db.reset();
   });
 
   it('should work as a classic webhook on upstream', () => {
@@ -30,18 +35,35 @@ describe('classic webhook route', () => {
       forkCount: 1,
     });
 
+    const repo = generateRepo({
+      owner: 'foo', name: 'my-app',
+      default_branch: 'master',
+      branches: ['master'],
+      issues: [],
+      forks: [fork],
+    });
+
+    const fork = generateRepo({
+      owner: 'fork', name: 'my-app',
+      default_branch: 'master',
+      branches: ['master'],
+      issues: [],
+    });
+
+    const gh = createMockGithubInstance([repo, fork]);
+
     return issueRequest(
-      webhookOld, [webhook],
+      webhookOld, [webhook, gh],
       '/', userData, {
         method: 'GET',
         url: '/',
         json: true,
         body: {
           repository: {
-            name: 'foo',
-            owner: { name: 'bar' },
+            name: 'my-app',
+            owner: { login: 'foo' },
             fork: false,
-            html_url: `http://github.com/foo/bar`,
+            html_url: `http://github.com/foo/my-app`,
             default_branch: 'master',
           },
         },
@@ -57,25 +79,69 @@ describe('classic webhook route', () => {
       });
 
       // Make sure the webhook was sent the correct information
-      assert.deepEqual(webhook.getCall(0).args[1], {
-        name: 'Classic Backstroke Webhook',
-        enabled: true,
-        hookId: null,
-        owner: null,
-        allForks: true,
-        upstream: {
-          type: 'repo',
-          owner: 'foo',
-          repo: 'bar',
-          fork: false,
-          html_url: 'http://github.com/foo/bar',
-          branches: ['master'],
-          branch: 'master',
+      const repo = webhook.getCall(0).args[1];
+      assert.equal(repo.name, "Classic Backstroke Webhook");
+      assert.equal(repo.upstream().type, 'repo');
+      assert.equal(repo.fork().type, 'fork-all');
+    });
+  });
+  it('should work as a classic webhook on fork', () => {
+    const webhook = sinon.stub().resolves({
+      isEnabled: true,
+      many: false,
+      forkCount: 1,
+    });
+
+    const repo = generateRepo({
+      owner: 'foo', name: 'my-app',
+      default_branch: 'master',
+      branches: ['master'],
+      issues: [],
+      forks: [fork],
+    });
+
+    const fork = generateRepo({
+      owner: 'fork', name: 'my-app',
+      default_branch: 'master',
+      branches: ['master'],
+      issues: [],
+      parent: repo,
+      isFork: true,
+    });
+
+    const gh = createMockGithubInstance([repo, fork]);
+
+    return issueRequest(
+      webhookOld, [webhook, gh],
+      '/', userData, {
+        method: 'GET',
+        url: '/',
+        json: true,
+        body: {
+          repository: {
+            name: 'my-app',
+            owner: { login: 'fork' },
+            fork: false,
+            html_url: `http://github.com/foo/my-app`,
+            default_branch: 'master',
+          },
         },
-        fork: {
-          type: 'fork-all',
+      }
+    ).then(res => {
+      assert.deepEqual(res.body, {
+        status: 'ok',
+        output: {
+          isEnabled: true,
+          many: false,
+          forkCount: 1,
         },
       });
+
+      // Make sure the webhook was sent the correct information
+      const repo = webhook.getCall(0).args[1];
+      assert.equal(repo.name, "Classic Backstroke Webhook");
+      assert.equal(repo.upstream().type, 'repo');
+      assert.equal(repo.fork().type, 'repo');
     });
   });
 });

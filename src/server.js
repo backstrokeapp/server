@@ -122,11 +122,11 @@ app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(nul
 
 // the old webhook route
 // This parses the body of the request to get most of its data.
-app.post("/", bodyParser.json(), webhookOld.bind(null, webhook));
+app.post("/", bodyParser.json(), webhookOld.bind(null, webhook, true));
 
 // the new webhook route
 // No body parsing, all oauth-based
-app.all('/_:linkId', webhook.bind(null, Link));
+app.all('/_:linkId', webhookRoute.bind(null, Link, webhook));
 
 if (require.main === module) {
   let port = process.env.PORT || 8001;

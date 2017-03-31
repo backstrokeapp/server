@@ -7,20 +7,19 @@ import assert from 'assert';
 import issueRequest from './helpers/issueRequest';
 
 // Helper for managing database instances
-import Database from './helpers/createDatabaseModelInstances';
+import db from './helpers/createDatabaseModelInstances';
 
 describe('whoami route', () => {
-  let db, userData;
+  let userData;
 
   beforeEach(() => {
-    db = new Database();
     return db.makeUser().then(user => {
       userData = user;
     });
   });
 
   afterEach(() => {
-    db = null;
+    return db.reset();
   });
 
   it('should make sure a user is not logged in', () => {

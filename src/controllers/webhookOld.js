@@ -21,15 +21,15 @@ if (process.env.USE_MIXPANEL) {
 }
 
 
-// import the libraries that are required for communication
-const ghFactory = require('../github');
-let gh = ghFactory.constructor(github);
+// NOTE: Unfortunately, since there isn't a user attached to a classic webhook, we have to fall
+// back to the backstroke bot user.
+const gh = createGithubInstance({accessToken: process.env.GITHUB_TOKEN});
 
 // ----------------------------------------------------------------------------
 // Routes
 // ----------------------------------------------------------------------------
 
-export default function webhookOld(webhook, req, res) {
+export default function webhookOld(webhook, backstrokeBotInstance, req, res) {
   // Analytics
   if (
     (req.body && req.body.repository && req.body.repository.fork) ||
@@ -48,59 +48,64 @@ export default function webhookOld(webhook, req, res) {
     });
   }
 
-  if (req.body && req.body.repository && req.body.repository.owner) {
-    // NOTE: Unfortunately, since there isn't a user attached to a classic webhook, we have to fall
-    // back to the backstroke bot user.
-    const gh = createGithubInstance({accessToken: process.env.GITHUB_TOKEN});
+  backstrokeBotInstance = backstrokeBotInstance || gh;
 
-    // Assemble a repository from the request body.
-    let upstream, fork;
-    const repository = {
-      type: 'repo',
-      owner: req.body.repository.name,
-      repo: req.body.repository.owner.name,
-      fork: req.body.repository.fork,
-      html_url: req.body.repository.html_url,
-      branches: [req.body.repository.default_branch],
-      branch: req.body.repository.default_branch,
-    };
+  if (req.body && 
+      req.body.repository && req.body.repository.name &&
+      req.body.repository.owner && req.body.repository.owner.login) {
 
-    if (repository.fork) {
-      // Webhook is on a fork, so upstream == `repository.parent` and fork == `repository`
-      upstream = {
-        type: 'repo',
-        owner: req.body.repository.parent.name,
-        repo: req.body.repository.parent.owner.name,
-        fork: req.body.repository.parent.fork,
-        html_url: req.body.repository.parent.html_url,
-        branches: [req.body.repository.parent.default_branch],
-        branch: req.body.repository.parent.default_branch,
-      };
-      fork = repository;
-    } else {
-      // Webhook is on upstream, so upstream == `repository` and update all forks
-      upstream = repository;
-      fork = {type: 'fork-all'};
-    }
+    // Fetch the repository that we're querying.
+    backstrokeBotInstance.reposGet({
+      owner: req.body.repository.owner.login,
+      repo: req.body.repository.name,
+    }).then(repository => {
+      // Assemble a repository from the request body.
+      let upstream, fork;
 
-    return webhook(gh, {
-      name: 'Classic Backstroke Webhook',
-      enabled: true,
-      hookId: null,
-      owner: null,
-      upstream,
-      fork,
-      allForks: true,
-    }).then(output => {
-      if (output.isEnabled === false) {
-        res.status(200).send({
-          enabled: false,
-          status: 'not-enabled',
-          msg: `The webhook isn't enabled.`,
-        });
-      } else {
-        res.status(201).send({status: 'ok', output});
+      function assembleRepo(repo) {
+        return {
+          type: 'repo',
+          owner: repo.owner.login,
+          repo: repo.name,
+          fork: repo.fork,
+          html_url: repo.html_url,
+          branches: [repo.default_branch],
+          branch: repo.default_branch,
+        };
       }
+
+      if (repository.fork) {
+        // Webhook is on a fork, so upstream == `repository.parent` and fork == `repository`
+        upstream = assembleRepo(repository.parent);
+        fork = assembleRepo(repository);
+      } else {
+        // Webhook is on upstream, so upstream == `repository` and update all forks
+        upstream = assembleRepo(repository);
+        fork = {type: 'fork-all'};
+      }
+
+      return webhook(backstrokeBotInstance, {
+        name: 'Classic Backstroke Webhook',
+        enabled: true,
+        hookId: null,
+        owner: null,
+        upstreamId: "DUMMY",
+        forkId: "DUMMY",
+        upstream: () => upstream,
+        fork: () => fork,
+      }).then(output => {
+        if (output.isEnabled === false) {
+          res.status(200).send({
+            enabled: false,
+            status: 'not-enabled',
+            msg: `The webhook isn't enabled.`,
+          });
+        } else {
+          res.status(201).send({status: 'ok', output});
+        }
+      });
+    }).catch(err => {
+      res.status(err.code || 500).send(err);
     });
   } else {
     res.status(400).send({error: 'Please send a github webhook response!'});

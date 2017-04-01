@@ -266,29 +266,4 @@ describe('webhook v2', function() {
     });
   });
 
-  describe('didRepoOptOut', function() {
-    it('should opt out when a backstroke issue is tagged "optout"', function() {
-      let searchIssues = sinon.stub().withArgs({q: `repo:user/repo is:pr label:optout`}).resolves({
-        total_count: 1,
-      });
-      return didRepoOptOut({searchIssues}, {name: 'user/repo', provider: 'github'})
-      .then(didOptOut => {
-        assert.equal(didOptOut, true);
-      });
-    });
-    it('should by default not opt out', function() {
-      let searchIssues = sinon.stub().withArgs({q: `repo:user/repo is:pr label:optout`}).resolves({
-        total_count: 0,
-      });
-      return didRepoOptOut({searchIssues}, {name: 'user/repo', provider: 'github'})
-      .then(didOptOut => {
-        assert.equal(didOptOut, false);
-      });
-    });
-    it('should not work outside of github (for now)', function() {
-      assert.throws(() => {
-        didRepoOptOut({}, 'bogus', {name: 'user/repo', provider: 'bogus'});
-      }, 'No such provider bogus');
-    });
-  });
 });

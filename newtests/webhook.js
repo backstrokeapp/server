@@ -308,4 +308,17 @@ describe('webhook', () => {
       });
     });
   });
+  it('should not run a disabled webhook', () => {
+    const link = {
+      enabled: false,
+    };
+    const gh = createMockGithubInstance([]);
+
+    return webhook(gh, link, undefined, gh).then(output => {
+      assert.deepEqual(output, {
+        error: 'not-enabled',
+        isEnabled: false,
+      });
+    });
+  });
 });

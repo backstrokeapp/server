@@ -38,7 +38,7 @@ describe('webhook route', () => {
     return db.reset();
   });
 
-  it('should work', () => {
+  it('should call the webhook logic from the webhook route', () => {
     const webhook = sinon.stub().resolves({
       isEnabled: true,
       many: false,

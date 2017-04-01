@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "7"
+  # - "7" # Coming soon once https://github.com/jugglingdb/sqlite3-adapter/pull/39 is merged.
   - "6"
 
 env:

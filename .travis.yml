@@ -9,6 +9,11 @@ env:
 script:
   - time npm test
 
+sudo: required
+
+services:
+  - docker
+
 # After tests ran successfully, build docker container.
 after_success:
   - echo

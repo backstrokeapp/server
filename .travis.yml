@@ -6,5 +6,9 @@ node_js:
 env:
   - NODE_ENV=test GITHUB_TOKEN=phony
 
+script:
+  - time npm test
+
+# After tests ran successfully, build docker container.
 after_success:
   - echo

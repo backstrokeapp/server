@@ -69,6 +69,7 @@
     "sinon-as-promised": "^4.0.0",
     "sinon-mongoose": "^1.2.1",
     "stripe": "^4.11.0",
+    "uuid": "^3.0.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0",

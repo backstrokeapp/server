@@ -4,5 +4,7 @@ node_js:
   - "6"
 
 env:
-  - NODE_ENV=test
-  - GITHUB_TOKEN=phony
+  - NODE_ENV=test GITHUB_TOKEN=phony
+
+after_success:
+  - echo

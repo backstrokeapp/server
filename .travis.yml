@@ -1,0 +1,25 @@
+language: node_js
+node_js:
+  # - "7" # Coming soon once https://github.com/jugglingdb/sqlite3-adapter/pull/39 is merged.
+  - "6"
+
+env:
+  - NODE_ENV=test GITHUB_TOKEN=phony
+
+script:
+  - time npm run coverage
+
+sudo: required
+
+services:
+  - docker
+
+# After tests ran successfully, build docker container.
+after_success:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=rgausnet/backstroke
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO

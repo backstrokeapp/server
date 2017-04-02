@@ -16,4 +16,7 @@ services:
 
 # After tests ran successfully, build docker container.
 after_success:
-  - echo
+  - echo $TRAVIS_COMMIT
+  - docker build -t backstroke --build-arg $TRAVIS_COMMIT.
+  - docker tag backstroke rgausnet/backstroke
+  - docker push rgausnet/backstroke

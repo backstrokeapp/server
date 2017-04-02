@@ -1,0 +1,18 @@
+machine:
+  node:
+    version: 6
+  environment:
+    - NODE_ENV=test
+    - GITHUB_TOKEN=phony
+
+test:
+  pre:
+    - time npm run coverage
+
+deployment:
+  post:
+    # After tests ran successfully, build docker container.
+    - echo $TRAVIS_COMMIT
+    - docker build -t backstroke --build-arg ref=$TRAVIS_COMMIT .
+    - docker tag backstroke rgausnet/backstroke
+    - docker push rgausnet/backstroke

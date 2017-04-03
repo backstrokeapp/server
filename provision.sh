@@ -1,4 +1,5 @@
 #!/bin/bash
+# Last run: https://travis-ci.org/1egoman/backstroke/builds/218030084
 set -e
 
 DROPLET_ONE_NAME="${1:-one}"

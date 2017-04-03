@@ -42,8 +42,6 @@
     "jugglingdb-sqlite3": "^0.1.0",
     "mixpanel": "^0.5.0",
     "mocha": "^2.5.3",
-    "mock-res": "^0.3.0",
-    "mongoose": "^4.5.10",
     "morgan": "^1.7.0",
     "node-sass": "^3.8.0",
     "nyc": "^8.1.0",

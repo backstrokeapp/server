@@ -7,7 +7,7 @@ env:
   - NODE_ENV=test GITHUB_TOKEN=phony
 
 script:
-  - time npm run coverage
+  - docker build -t rgausnet/backstroke:latest .
 
 sudo: required
 
@@ -16,7 +16,6 @@ services:
 
 # After tests ran successfully, build docker container.
 after_success:
-  - docker build -t rgausnet/backstroke:latest .
   - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
   - docker push rgausnet/backstroke:latest
   - ./provision.sh "one"

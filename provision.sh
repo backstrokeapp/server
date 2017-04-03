@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-DROPLET_ONE_NAME="${$1:-one}"
+DROPLET_ONE_NAME="${1:-one}"
 
 if [ -z "$DIGITALOCEAN_ACCESS_TOKEN" ]; then
   echo "Error: Please set \$DIGITALOCEAN_ACCESS_TOKEN to continue" >&2

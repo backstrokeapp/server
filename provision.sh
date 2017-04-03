@@ -16,13 +16,13 @@ fi
 if ! which docker-machine > /dev/null; then
   curl -L https://github.com/docker/machine/releases/download/v0.10.0/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine
   chmod +x /tmp/docker-machine
-  sudo cp /tmp/docker-machine /usr/local/bin/docker-machine
+  sudo mv /tmp/docker-machine /usr/local/bin/docker-machine
   echo "* Installed docker-machine"
 fi
 
 if ! which doctl > /dev/null; then
   wget -qO- https://github.com/digitalocean/doctl/releases/download/v1.6.0/doctl-1.6.0-linux-amd64.tar.gz  | tar xz
-  mv ./doctl /usr/local/bin
+  sudo mv ./doctl /usr/local/bin
   echo "* Installed doctl"
 fi
 

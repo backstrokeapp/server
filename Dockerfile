@@ -16,7 +16,7 @@ USER app
 
 # pull down source and set it up
 Add . /app
-RUN cd /app && npm install > /dev/null
+RUN cd /app && npm install --quiet
 
 # add node to the path
 ENV NODE_ENV production

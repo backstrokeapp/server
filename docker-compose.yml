@@ -1,0 +1,18 @@
+version: '2'
+services:
+  backstroke:
+    image: rgausnet/backstroke:latest
+    environment:
+      GITHUB_TOKEN: "${GITHUB_TOKEN}"
+      GITHUB_CLIENT_ID: "${GITHUB_CLIENT_ID}"
+      GITHUB_CLIENT_SECRET: "${GITHUB_CLIENT_SECRET}"
+      GITHUB_CALLBACK_URL: "${GITHUB_CALLBACK_URL}"
+      SESSION_SECRET: "${SESSION_SECRET}"
+    ports:
+      - "80:8000"
+  mongodb:
+    image: mongo:3.0
+    stdin_open: true
+    tty: true
+    #volumes:
+      #- "/var/lib/mongo:/"

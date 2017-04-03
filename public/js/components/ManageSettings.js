@@ -1,6 +1,5 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import StripeCheckout from 'react-stripe-checkout';
 
 import UserNotAuthenticated from 'components/UserNotAuthenticated';
 import fetchSettings from 'actions/fetchSettings';

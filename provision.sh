@@ -53,11 +53,7 @@ echo "* Bringing up containers with docker-compose..."
 docker-compose up -d
 
 echo "* Waiting a few seconds for everything to set up..."
-sleep 5
-while docker-compose ps | grep Down; do
-  printf '.'
-  sleep 1
-done
+sleep 30
 
 echo "* Doing a health check on the system..."
 if docker-machine ssh $DROPLET_ONE_NAME -- "curl http://localhost"; then
@@ -79,3 +75,13 @@ else
   echo "* Health check failed, http://$FLOATING_IP:80 isn't accepting http requests!" >&2
   exit 4
 fi
+
+# Remove all out-of-date droplets, leaving the one deployed as the 
+echo "* Removing previously deployed versions of app..."
+PREVIOUSLY_DEPLOYED="$(doctl compute droplet list --tag-name deployed --format ID | tail -n +2)"
+for i in $PREVIOUSLY_DEPLOYED; do
+  doctl compute droplet delete $i
+done
+
+echo "* Tagging deployed droplet..."
+doctl compute droplet tag $DROPLET_ONE --tag-name deployed

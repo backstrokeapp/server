@@ -41,8 +41,8 @@ eval $(docker-machine env $DROPLET_ONE_NAME)
 sleep 10
 
 # echo "* Mounting shared volume for database in new droplet..."
-# DROPLET_ONE="$(doctl compute droplet list $DROPLET_ONE_NAME --format ID | tail -1)"
-# DB_VOLUME="$(doctl compute volume list backstroke-data --format ID | tail -1)"
+DROPLET_ONE="$(doctl compute droplet list $DROPLET_ONE_NAME --format ID | tail -1)"
+DB_VOLUME="$(doctl compute volume list backstroke-data --format ID | tail -1)"
 # if ! doctl compute volume-action detach $DB_VOLUME; then
 #   echo "* Looks like the volume was detached already."
 # fi

@@ -43,6 +43,7 @@ sleep 10
 echo "* Mounting shared volume for database in new droplet..."
 DROPLET_ONE="$(doctl compute droplet list $DROPLET_ONE_NAME --format ID | tail -1)"
 DB_VOLUME="$(doctl compute volume list backstroke-data --format ID | tail -1)"
+doctl compute volume-action detach $DB_VOLUME
 doctl compute volume-action attach $DB_VOLUME $DROPLET_ONE
 docker-machine ssh $DROPLET_ONE_NAME -- \
   "mkdir -p /data && mount -o discard,defaults /dev/disk/by-id/scsi-0DO_Volume_backstroke-data /data"

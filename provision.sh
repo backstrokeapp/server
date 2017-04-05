@@ -27,11 +27,13 @@ if ! which doctl > /dev/null; then
 fi
 
 echo "* Deleting old ssh keys..."
-doctl compute ssh-key list \
+if ! doctl compute ssh-key list \
   | grep $DROPLET_ONE_NAME \
   | awk '{ print $1 }' \
   | tr '\n' ' ' \
-  | xargs -n 1 doctl compute ssh-key delete
+  | xargs -n 1 doctl compute ssh-key delete; then
+  echo "* No ssh key found. Continuing..."
+fi
 
 echo "* Creating droplet to deploy containers..."
 docker-machine create \

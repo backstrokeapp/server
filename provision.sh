@@ -26,6 +26,13 @@ if ! which doctl > /dev/null; then
   echo "* Installed doctl"
 fi
 
+echo "* Deleting old ssh keys..."
+doctl compute ssh-key list \
+  | grep $DROPLET_ONE_NAME \
+  | awk '{ print $1 }' \
+  | tr '\n' ' ' \
+  | xargs -n 1 doctl compute ssh-key delete
+
 echo "* Creating droplet to deploy containers..."
 docker-machine create \
   --driver digitalocean \
@@ -43,9 +50,10 @@ sleep 10
 # echo "* Mounting shared volume for database in new droplet..."
 DROPLET_ONE="$(doctl compute droplet list $DROPLET_ONE_NAME --format ID | tail -1)"
 DB_VOLUME="$(doctl compute volume list backstroke-data --format ID | tail -1)"
-# if ! doctl compute volume-action detach $DB_VOLUME; then
-#   echo "* Looks like the volume was detached already."
-# fi
+DROPLET_ATTACHED_TO_VOLUME=$(doctl compute volume list --no-header | awk '{ print $6  }' | sed -e 's/\[//g' -e 's/\]//g')
+if ! doctl compute volume-action detach-by-droplet-id $DB_VOLUME $DROPLET_ATTACHED_TO_VOLUME; then
+  echo "* Looks like the volume was detached already."
+fi
 doctl compute volume-action attach $DB_VOLUME $DROPLET_ONE
 docker-machine ssh $DROPLET_ONE_NAME -- \
   "mkdir -p /data && mount -o discard,defaults /dev/disk/by-id/scsi-0DO_Volume_backstroke-data /data"
@@ -79,7 +87,7 @@ else
   exit 4
 fi
 
-# Remove all out-of-date droplets, leaving the one deployed as the 
+# Remove all out-of-date droplets, leaving the one that was just deployed.
 echo "* Removing previously deployed versions of app..."
 PREVIOUSLY_DEPLOYED="$(doctl compute droplet list --tag-name deployed --format ID | tail -n +2)"
 for i in $PREVIOUSLY_DEPLOYED; do
@@ -88,3 +96,5 @@ done
 
 echo "* Tagging deployed droplet..."
 doctl compute droplet tag $DROPLET_ONE --tag-name deployed
+
+echo "* Complete!"

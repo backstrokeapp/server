@@ -83,7 +83,7 @@ fi
 echo "* Removing previously deployed versions of app..."
 PREVIOUSLY_DEPLOYED="$(doctl compute droplet list --tag-name deployed --format ID | tail -n +2)"
 for i in $PREVIOUSLY_DEPLOYED; do
-  doctl compute droplet delete $i
+  doctl compute droplet delete -f $i
 done
 
 echo "* Tagging deployed droplet..."

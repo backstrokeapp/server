@@ -57,6 +57,9 @@ if ! doctl compute volume-action detach-by-droplet-id $DB_VOLUME $DROPLET_ATTACH
   echo "* Looks like the volume was detached already."
 fi
 doctl compute volume-action attach $DB_VOLUME $DROPLET_ONE
+
+echo "* Waiting a while for volume to attach..."
+sleep 10
 docker-machine ssh $DROPLET_ONE_NAME -- \
   "mkdir -p /data && mount -o discard,defaults /dev/disk/by-id/scsi-0DO_Volume_backstroke-data /data"
 docker-machine ssh $DROPLET_ONE_NAME -- \

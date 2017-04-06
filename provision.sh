@@ -26,14 +26,11 @@ if ! which doctl > /dev/null; then
   echo "* Installed doctl"
 fi
 
-echo "* Deleting old ssh keys..."
-if ! doctl compute ssh-key list \
+echo "* Fetching old ssh keys..."
+OLD_SSH_KEYS="$(doctl compute ssh-key list \
   | grep $DROPLET_ONE_NAME \
   | awk '{ print $1 }' \
-  | tr '\n' ' ' \
-  | xargs -n 1 doctl compute ssh-key delete; then
-  echo "* No ssh key found. Continuing..."
-fi
+  | tr '\n' ' ')"
 
 echo "* Creating droplet to deploy containers..."
 docker-machine create \
@@ -101,6 +98,9 @@ PREVIOUSLY_DEPLOYED="$(doctl compute droplet list --tag-name deployed --format I
 for i in $PREVIOUSLY_DEPLOYED; do
   doctl compute droplet delete -f $i
 done
+
+echo "* Removing stored ssh keys..."
+echo $OLD_SSH_KEYS | xargs -n 1 doctl compute ssh-key delete
 
 echo "* Tagging deployed droplet..."
 doctl compute droplet tag $DROPLET_ONE --tag-name deployed

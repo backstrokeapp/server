@@ -6,6 +6,9 @@ node_js:
 env:
   - NODE_ENV=test GITHUB_TOKEN=phony
 
+install:
+  - echo "Install happening in docker build..."
+
 script:
   - docker build -t rgausnet/backstroke:latest .
 

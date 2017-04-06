@@ -55,6 +55,9 @@ DB_VOLUME="$(doctl compute volume list backstroke-data --format ID | tail -1)"
 DROPLET_ATTACHED_TO_VOLUME=$(doctl compute volume list --no-header | awk '{ print $6  }' | sed -e 's/\[//g' -e 's/\]//g')
 if ! doctl compute volume-action detach-by-droplet-id $DB_VOLUME $DROPLET_ATTACHED_TO_VOLUME; then
   echo "* Looks like the volume was detached already."
+else
+  echo "* Waiting a while for volume to detach..."
+  sleep 10
 fi
 doctl compute volume-action attach $DB_VOLUME $DROPLET_ONE
 

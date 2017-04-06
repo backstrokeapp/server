@@ -14,5 +14,5 @@ services:
     image: mongo:3.0
     stdin_open: true
     tty: true
-    #volumes:
-      #- "/var/lib/mongo:/"
+    volumes:
+      - "/var/lib/mongo:/data"

@@ -15,4 +15,4 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - "/data:/var/lib/mongo"
+      - "/data:/data/db"

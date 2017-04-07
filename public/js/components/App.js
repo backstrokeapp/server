@@ -81,9 +81,7 @@ export function Index() {
         <div className="col-md-6 col-xs-12">
           <h2>Open source is 1000% free.</h2>
           <p>
-            Backstroke is free for public Github repositories. If you want to use Backstroke with
-            private repositories, there's a nominal charge of $1 per month.&nbsp;
-            <a href="#/pricing">Read more about pricing.</a>
+            Backstroke is free for public Github repositories.
           </p>
         </div>
         <div className="col-md-6 col-xs-12">

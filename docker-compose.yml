@@ -1,7 +1,8 @@
 version: '2'
 services:
-  backstroke:
-    image: rgausnet/backstroke:latest
+
+  backstroke-server:
+    build: ./backend
     environment:
       GITHUB_TOKEN: "${GITHUB_TOKEN}"
       GITHUB_CLIENT_ID: "${GITHUB_CLIENT_ID}"
@@ -9,10 +10,25 @@ services:
       GITHUB_CALLBACK_URL: "${GITHUB_CALLBACK_URL}"
       SESSION_SECRET: "${SESSION_SECRET}"
     ports:
-      - "80:8000"
+      - "8001:8000"
+
+  backstroke-client:
+    build: ./frontend
+
+    ports:
+      - "8002:80"
+
   mongodb:
     image: mongo:3.0
-    stdin_open: true
-    tty: true
+    #volumes:
+      #- "/data:/data/db"
+
+  haproxy:
+    image: haproxy:1.4-alpine
     volumes:
-      - "/data:/data/db"
+      - "./haproxy:/usr/local/etc/haproxy"
+    links:
+      - backstroke-server
+      - backstroke-client
+    ports:
+      - "8000:80"

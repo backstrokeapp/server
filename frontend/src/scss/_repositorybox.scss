@@ -1,0 +1,51 @@
+.repository-box {
+  @include repo-box;
+  background-color: $brand-success;
+  color: #FFF;
+  position: relative;
+
+  &:before {
+    content: "Repository";
+
+    position: absolute;
+    top: 1em;
+  }
+
+  .repo-name-box {
+    margin-bottom: 0.5em;
+
+    // The repo name, with a slash in it
+    .repo-name-textbox-wrapper {
+      display: flex;
+      .repo-name-slash {
+        flex: 1;
+        text-align: center;
+        font-size: 28px;
+        margin-top: -5px;
+        user-select: none;
+      }
+      input {
+        flex: 5;
+      }
+    }
+
+    i.fa-check { color: $brand-success; } // unpaid repos
+    i.fa-dollar { color: $brand-warning; } // paid repos
+    i.fa-times { color: $brand-danger; } // no repo
+  }
+}
+
+.fork-box {
+  @include repo-box;
+  background-color: $brand-info;
+  color: #FFF;
+
+  &:before {
+    content: "All Forks";
+  }
+
+  .big-text {
+    text-align: center;
+    font-size: 1.5em;
+  }
+}

@@ -1,0 +1,45 @@
+.add-new-box {
+  @extend .row;
+
+  .add-new-option {
+    @include make-xs-column(12);
+    @include make-md-column(6);
+    margin-bottom: 1em;
+
+    // only 1 option
+    &:only-child {
+      @include make-md-column(12);
+    }
+
+    // When the option shouldn't be selected yet
+    &.add-new-option-muted {
+      opacity: 0.5;
+      button { cursor: default; }
+    }
+
+    &.add-new-option-from {
+      button {
+        background: $brand-success;
+        color: #FFF;
+      }
+    }
+
+    button {
+      @include repo-box;
+      width: 100%;
+      background-color: #FFF;
+      font-size: 1.5em;
+      font-weight: 300;
+      white-space: normal;
+
+      // override styles
+      margin-top: 0.2em;
+
+      i {
+        display: block;
+        font-size: 2em;
+        margin-bottom: 0.2em;
+      }
+    }
+  }
+}

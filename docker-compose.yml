@@ -14,7 +14,6 @@ services:
 
   backstroke-client:
     build: ./frontend
-
     ports:
       - "8002:80"
 

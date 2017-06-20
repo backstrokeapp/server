@@ -1,15 +1,12 @@
-import createGithubInstance from '../createGithubInstance';
-import {paginateRequest} from '../helpers/controllerHelpers';
+import {paginateRequest} from './helpers';
 
 export default function checkRepo(req, res) {
-  let gh = createGithubInstance(req.user);
-
   // Get repo details, and associated branches
-  return gh.reposGet({
+  return req.github.user.reposGet({
     owner: req.params.user,
     repo: req.params.repo,
   }).then(repoData => {
-    return paginateRequest(gh.reposGetBranches, {
+    return paginateRequest(req.github.user.reposGetBranches, {
       owner: req.params.user,
       repo: req.params.repo,
       per_page: 100,

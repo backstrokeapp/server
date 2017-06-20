@@ -1,4 +1,6 @@
 import webhookHandler from './handler';
+import GitHubApi from 'github';
+import {constructor} from '../../github';
 
 export default function webhook(req, res, Link) {
   return Link.findOne({
@@ -12,6 +14,7 @@ export default function webhook(req, res, Link) {
           type: 'oauth',
           token: owner.accessToken,
         });
+        req.github = req.github || {};
         req.github.user = constructor(github);
 
         return webhookHandler(req, link);

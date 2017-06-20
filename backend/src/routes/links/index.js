@@ -1,37 +1,36 @@
 import uuid from 'uuid';
-import {PAGE_SIZE, paginate, internalServerErrorOnError} from '../helpers/controllerHelpers';
-import {removeOldWebhooksForLink} from '../helpers/addWebhooksForLink';
+import {PAGE_SIZE, paginate} from '../helpers';
+import {removeOldWebhooksForLink} from './addWebhooksForLink';
 
 import Debug from 'debug';
 const updateDebug = Debug('backstroke:links:update');
 
 // Return all links in a condensed format. Included is {_id, name, paid, enabled}.
 // This will support pagination.
-export function index(Link, req, res) {
+export function index(req, res, Link) {
   return Link.all({
     where: {ownerId: req.user.id},
     ...paginate(req),
   }).then(data => {
     // Add all owners to each link
     return Promise.all(data.map(i => i.display())).then(display => {
-      return res.status(200).send({
+      return {
+        page: req.query.page || 0,
         data: display,
         lastItem: paginate(req).skip + data.length,
-      });
+      };
     });
-  }).catch(internalServerErrorOnError(res));
+  });
 }
 
 // Return one single link in full, expanded format.
 // This will support pagination.
-export function get(Link, req, res) {
+export function get(req, res, Link) {
   return Link.findOne({where: {id: req.params.id, ownerId: req.user.id}}).then(link => {
     if (link) {
-      return link.display().then(display => {
-        res.status(200).send(display);
-      });
+      return link.display();
     } else {
-      res.status(404).send({error: "No such link."});
+      throw new Error('No such link.');
     }
   });
 }
@@ -39,33 +38,29 @@ export function get(Link, req, res) {
 // Create a new Link. This new link is disabled and is really just a
 // placeholder for an update later on.
 // This will support pagination.
-export function create(Link, req, res) {
-  let link = {
+export function create(req, res, Link) {
+  return Link.create({
     enabled: false,
     ownerId: req.user.id,
-  };
-
-  return Link.create(link).then(link => {
-    res.status(201).send(link);
-  }).catch(internalServerErrorOnError(res));
+  });
 }
 
 
 // Update a Link. This method requires a body with a link property.
 // Responds with {"status": "ok"} on success.
-export function update(Link, Repository, addWebhooksForLink, removeOldWebhooksForLink, req, res) {
+export function update(req, res, Link, Repository, addWebhooksForLink, removeOldWebhooksForLink) {
   if (!(req.body && req.body.link)) {
-    return res.status(400).send({error: 'No link field in json body.'});
+    throw new Error('No link field in json body.');
   }
 
   let {id, ...link} = req.body.link;
 
   if (!(link.upstream && link.fork)) {
-    return res.status(400).send({error: 'Please specify and upstream and fork.'});
+    throw new Error('Please specify an upstream and fork.');
   }
 
   if (link.upstream && link.upstream.type === 'fork-all') {
-    return res.status(400).send({error: `The 'upstream' repo must be a repo, not a bunch of forks.`});
+    throw new Error(`The 'upstream' repo must be a repo, not a bunch of forks.`);
   }
 
   function updateRepositoryOnLink(repoId, newRepoData) {
@@ -95,50 +90,46 @@ export function update(Link, Repository, addWebhooksForLink, removeOldWebhooksFo
         return removeOldWebhooksForLink(req.user, linkModel).then(() => {
           return linkModel.updateAttributes(link);
         }).then(linkModel => {
-          return addWebhooksForLink(req.user, linkModel);
+          return addWebhooksForLink(req, linkModel);
         }).then(hookId => {
           return linkModel.updateAttribute('hookId', hookId);
         });
-      }).then(data => {
-        res.status(200).send(data);
       });
     } else {
-      return res.status(404).send({error: 'No such link with that id.'});
+      throw new Error('No such link with that id.');
     }
-  }).catch(internalServerErrorOnError(res));
+  });
 }
 
 // Enable or disable a link. Requires a body like {"enabled": true/false}, and
 // responds with {"status": "ok"}
-export function enable(Link, req, res) {
+export function enable(req, res, Link) {
   if (typeof req.body.enabled !== 'boolean') {
-    return res.status(400).send({error: 'Enabled property not specified in the body.'});
+    throw new Error('Enabled property not specified in the body.');
   } 
 
-  Link.findOne({
+  return Link.findOne({
     where: {id: req.params.linkId, ownerId: req.user.id},
   }).then(link => {
     if (link) {
       return link.updateAttribute('enabled', req.body.enabled);
     } else {
-      res.status(400).send({status: 'not-complete'});
+      throw new Error('No link found with the given id that is owned by you.');
     }
   }).then(() => {
     res.status(200).send({status: 'ok'});
-  }).catch(internalServerErrorOnError(res));
+  });
 }
 
 // Delete a link. Returns a 204 on success, or a 404 / 500 on error.
-export function del(Link, req, res) {
+export function del(req, res, Link) {
   return Link.findOne({where: {id: req.params.id, ownerId: req.user.id}}).then(link => {
     if (link) {
       return removeOldWebhooksForLink(req.user, link).then(() => {
         return link.destroy();
-      });
+      }).then(() => link.display());
     } else {
-      return res.status(404).send({error: "No such item."});
+      throw new Error('No such link.');
     }
-  }).then(() => {
-    res.status(204).end();
-  }).catch(internalServerErrorOnError(res));
+  });
 }

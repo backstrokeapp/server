@@ -14,7 +14,7 @@ import checkRepo from './routes/checkRepo';
 import webhook from './routes/webhook';
 import webhookOld from './routes/webhookOld';
 
-import {addWebhooksForLink, removeOldWebhooksForLink} from './helpers/addWebhooksForLink';
+import {addWebhooksForLink, removeOldWebhooksForLink} from './routes/links/addWebhooksForLink';
 import route from './helpers/route';
 
 // ----------------------------------------------------------------------------
@@ -92,22 +92,24 @@ function assertLoggedIn(req, res, next) {
   }
 }
 
-
+// Add a bit of middleware that Injects github clients at `req.github.user` and `req.github.bot`.
+import githubInstanceMiddleware from './githubInstanceMiddleware';
+app.use(githubInstanceMiddleware);
 
 // identify the currently logged in user
 app.get('/api/v1/whoami', whoami);
 
 // get all links
-app.get('/api/v1/links', bodyParser.json(), assertLoggedIn, links.index.bind(null, Link));
+app.get('/api/v1/links', bodyParser.json(), assertLoggedIn, route(links.index, [Link]));
 
 // GET a given link
-app.get('/api/v1/links/:id', bodyParser.json(), assertLoggedIn, links.get.bind(null, Link));
+app.get('/api/v1/links/:id', bodyParser.json(), assertLoggedIn, route(links.get, [Link]));
 
 // create a new link
-app.post('/api/v1/links', bodyParser.json(), assertLoggedIn, links.create.bind(null, Link));
+app.post('/api/v1/links', bodyParser.json(), assertLoggedIn, route(links.get, [Link]));
 
 // delete a link
-app.delete('/api/v1/links/:id', assertLoggedIn, links.del.bind(null, Link));
+app.delete('/api/v1/links/:id', assertLoggedIn, route(links.del, [Link]));
 
 // return the branches for a given repo
 app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, checkRepo);
@@ -116,11 +118,11 @@ app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn
 app.post('/api/v1/links/:linkId',
   bodyParser.json(),
   assertLoggedIn,
-  links.update.bind(null, Link, Repository, addWebhooksForLink, removeOldWebhooksForLink)
+  route(links.update, [Link, Repository, addWebhooksForLink, removeOldWebhooksForLink])
 );
 
 // enable or disable a repository
-app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(null, Link));
+app.post('/api/v1/link/:linkId/enable', bodyParser.json(), route(links.enable, [Link]));
 
 // the old webhook route
 // This parses the body of the request to get most of its data.
@@ -128,7 +130,8 @@ app.post("/", bodyParser.json(), route(webhookOld, [webhook]));
 
 // the new webhook route
 // No body parsing, all oauth-based
-app.all('/_:linkId', route(webhookRoute, [Link, webhook]));
+import webhookHandler from './routes/webhook/handler';
+app.all('/_:linkId', route(webhook, [Link, webhookHandler]));
 
 if (require.main === module) {
   let port = process.env.PORT || 8001;

@@ -14,7 +14,7 @@ export default function authedGithubInstance(req, res, next) {
   req.github = {};
 
   // Add the bot api instance to the request.
-  req.github.bot = bot;
+  req.github.bot = constructor(bot);
 
   // If a user is logged in, create an add a user instance.
   if (req.user) {

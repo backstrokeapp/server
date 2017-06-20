@@ -1,19 +1,21 @@
 import express from 'express';
 let app = express();
-export default app;
 
-app.set('view engine', 'ejs');
-app.use(express.static('build'));
+// Polyfill promise with bluebird.
+import Promise from 'bluebird';
+global.Promise = Promise;
 
-import whoami from 'controllers/whoami';
-import * as links from 'controllers/links';
-import checkRepo from 'controllers/checkRepo';
+app.use(express.static('../frontend/build'));
 
-import webhook from './webhook';
-import webhookRoute from 'controllers/webhook';
-import webhookOld from 'controllers/webhookOld';
+import whoami from './routes/whoami';
+import * as links from './routes/links';
+import checkRepo from './routes/checkRepo';
 
-import {addWebhooksForLink, removeOldWebhooksForLink} from 'helpers/addWebhooksForLink';
+import webhook from './routes/webhook';
+import webhookOld from './routes/webhookOld';
+
+import {addWebhooksForLink, removeOldWebhooksForLink} from './helpers/addWebhooksForLink';
+import route from './helpers/route';
 
 // ----------------------------------------------------------------------------
 // Database stuff
@@ -122,11 +124,11 @@ app.post('/api/v1/link/:linkId/enable', bodyParser.json(), links.enable.bind(nul
 
 // the old webhook route
 // This parses the body of the request to get most of its data.
-app.post("/", bodyParser.json(), webhookOld.bind(null, webhook, true));
+app.post("/", bodyParser.json(), route(webhookOld, [webhook]));
 
 // the new webhook route
 // No body parsing, all oauth-based
-app.all('/_:linkId', webhookRoute.bind(null, Link, webhook));
+app.all('/_:linkId', route(webhookRoute, [Link, webhook]));
 
 if (require.main === module) {
   let port = process.env.PORT || 8001;

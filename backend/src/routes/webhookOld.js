@@ -1,18 +1,3 @@
-import Promise from 'bluebird';
-import GitHubApi from 'github';
-import createGithubInstance from '../createGithubInstance';
-
-// configure github api client
-let github = new GitHubApi({});
-if (process.env.GITHUB_TOKEN) {
-  github.authenticate({
-    type: "oauth",
-    token: process.env.GITHUB_TOKEN,
-  });
-} else {
-  console.warn("Warning: No github token specified.");
-}
-
 // Setup mixpanel
 import Mixpanel from 'mixpanel';
 let mixpanel;
@@ -21,15 +6,11 @@ if (process.env.USE_MIXPANEL) {
 }
 
 
-// NOTE: Unfortunately, since there isn't a user attached to a classic webhook, we have to fall
-// back to the backstroke bot user.
-const gh = createGithubInstance({accessToken: process.env.GITHUB_TOKEN});
-
 // ----------------------------------------------------------------------------
 // Routes
 // ----------------------------------------------------------------------------
 
-export default function webhookOld(webhook, backstrokeBotInstance, req, res) {
+export default function webhookOld(req, res, webhook) {
   // Analytics
   if (
     (req.body && req.body.repository && req.body.repository.fork) ||
@@ -48,14 +29,12 @@ export default function webhookOld(webhook, backstrokeBotInstance, req, res) {
     });
   }
 
-  backstrokeBotInstance = backstrokeBotInstance || gh;
-
   if (req.body && 
       req.body.repository && req.body.repository.name &&
       req.body.repository.owner && req.body.repository.owner.login) {
 
     // Fetch the repository that we're querying.
-    backstrokeBotInstance.reposGet({
+    req.github.bot.reposGet({
       owner: req.body.repository.owner.login,
       repo: req.body.repository.name,
     }).then(repository => {
@@ -84,7 +63,7 @@ export default function webhookOld(webhook, backstrokeBotInstance, req, res) {
         fork = {type: 'fork-all'};
       }
 
-      return webhook(backstrokeBotInstance, {
+      return webhook(req.github.bot, {
         name: 'Classic Backstroke Webhook',
         enabled: true,
         hookId: null,

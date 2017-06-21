@@ -2,7 +2,7 @@ import Debug from 'debug';
 const debug = Debug('backstroke:webhook:add-or-remove');
 
 export function getBackstrokeUrlFor(link) {
-  const hostname = process.env.BACKSTROKE_SERVER || 'http://backstroke.us';
+  const hostname = process.env.BACKSTROKE_SERVER || 'https://backstroke.us';
   return `${hostname}/_${link.id}`;
 }
 

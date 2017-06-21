@@ -1,21 +1,33 @@
 import express from 'express';
-let app = express();
+const app = express();
 
 // Polyfill promise with bluebird.
 import Promise from 'bluebird';
 global.Promise = Promise;
 
-app.use(express.static('../frontend/build'));
+if (process.env.NODE_ENV !== 'production') {
+  app.use(express.static('../frontend/build'));
+}
+
+// ----------------------------------------------------------------------------
+// Routes and helpers for the routes
+// ----------------------------------------------------------------------------
+import route from './helpers/route';
 
 import whoami from './routes/whoami';
-import * as links from './routes/links';
 import checkRepo from './routes/checkRepo';
 
 import webhook from './routes/webhook';
 import webhookOld from './routes/webhookOld';
 
+import linksList from './routes/links/list';
+import linksGet from './routes/links/get';
+import linksCreate from './routes/links/create';
+import linksDelete from './routes/links/delete';
+import linksUpdate from './routes/links/update';
+import linksEnable from './routes/links/enable';
+
 import {addWebhooksForLink, removeOldWebhooksForLink} from './routes/links/addWebhooksForLink';
-import route from './helpers/route';
 
 // ----------------------------------------------------------------------------
 // Database stuff
@@ -100,16 +112,16 @@ app.use(githubInstanceMiddleware);
 app.get('/api/v1/whoami', whoami);
 
 // get all links
-app.get('/api/v1/links', bodyParser.json(), assertLoggedIn, route(links.index, [Link]));
+app.get('/api/v1/links', bodyParser.json(), assertLoggedIn, route(linksList, [Link]));
 
 // GET a given link
-app.get('/api/v1/links/:id', bodyParser.json(), assertLoggedIn, route(links.get, [Link]));
+app.get('/api/v1/links/:id', bodyParser.json(), assertLoggedIn, route(linksGet, [Link]));
 
 // create a new link
-app.post('/api/v1/links', bodyParser.json(), assertLoggedIn, route(links.get, [Link]));
+app.post('/api/v1/links', bodyParser.json(), assertLoggedIn, route(linksCreate, [Link]));
 
 // delete a link
-app.delete('/api/v1/links/:id', assertLoggedIn, route(links.del, [Link]));
+app.delete('/api/v1/links/:id', assertLoggedIn, route(linksDelete, [Link, removeOldWebhooksForLink]));
 
 // return the branches for a given repo
 app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, checkRepo);
@@ -118,11 +130,11 @@ app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn
 app.post('/api/v1/links/:linkId',
   bodyParser.json(),
   assertLoggedIn,
-  route(links.update, [Link, Repository, addWebhooksForLink, removeOldWebhooksForLink])
+  route(linksUpdate, [Link, Repository, addWebhooksForLink, removeOldWebhooksForLink])
 );
 
 // enable or disable a repository
-app.post('/api/v1/link/:linkId/enable', bodyParser.json(), route(links.enable, [Link]));
+app.post('/api/v1/link/:linkId/enable', bodyParser.json(), route(linksEnable, [Link]));
 
 // the old webhook route
 // This parses the body of the request to get most of its data.
@@ -134,7 +146,7 @@ import webhookHandler from './routes/webhook/handler';
 app.all('/_:linkId', route(webhook, [Link, webhookHandler]));
 
 if (require.main === module) {
-  let port = process.env.PORT || 8001;
+  const port = process.env.PORT || 8001;
   app.listen(port);
   console.log('Listening on port', port);
 }

@@ -1,0 +1,28 @@
+{
+  "name": "dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@density/conduit": "^0.2.1",
+    "color-hash": "^1.0.3",
+    "lightness": "^1.0.0",
+    "normalize.css": "^7.0.0",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-redux": "^5.0.5",
+    "redux": "^3.7.0",
+    "redux-thunk": "^2.2.0"
+  },
+  "devDependencies": {
+    "react-scripts": "1.0.7"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "make-component": "./utilities/make-component",
+    "make-reducer": "./utilities/make-reducer",
+    "make-helper": "./utilities/make-helper"
+  }
+}

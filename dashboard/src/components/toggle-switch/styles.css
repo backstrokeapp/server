@@ -1,0 +1,70 @@
+/*
+ * toggle-switch
+ *
+ * These styles convert a checkbox into a toggle switch using a label and the label:before /
+ * label:after.
+ */
+
+/* Hide the actual checkbox */
+.toggle-switch input {
+  display: none;
+}
+
+/* The "track" for the switch */
+.toggle-switch label {
+  position: relative;
+  background-color: #777;
+  display: block;
+  width: 96px;
+  height: 48px;
+  border-radius: 24px;
+  cursor: pointer;
+}
+
+/* The "handle" for the switch */
+.toggle-switch label:before {
+  content: " ";
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #fff;
+
+  /* The handle is on the left when the switch is disabled. */
+  position: absolute;
+  top: 8px;
+  margin-left: 8px;
+  margin-right: 8px;
+
+  /* On movement, transition the position of the handle. */
+  transition: all 150ms ease-out;
+}
+
+/* When checked... */
+.toggle-switch input:checked + label {
+  background-color: #5bc0de;
+}
+.toggle-switch input:checked + label:before {
+  margin-left: calc(100% - 32px - 9px);
+}
+
+/* Labels for the switch states */
+
+.toggle-switch input + label:after {
+  position: absolute;
+  right: 18px;
+  top: 14px;
+  content: "Off";
+  color: #fff;
+}
+.toggle-switch input:checked + label:after {
+  content: "On";
+  right: initial;
+  left: 18px;
+}
+
+/* If the checkbox is disabled, disable the switch */
+.toggle-switch input:disabled + label {
+  opacity: 0.5;
+  cursor: default;
+}

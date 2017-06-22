@@ -1,0 +1,7 @@
+@import "https://fonts.googleapis.com/css?family=Lato:300,400,700";
+@import "../node_modules/normalize.css/normalize.css";
+
+
+body {
+  background-color: #f8f8f8;
+}

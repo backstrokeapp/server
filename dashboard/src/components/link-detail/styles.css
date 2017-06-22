@@ -1,0 +1,66 @@
+.link-detail {
+  max-width: 1000px;
+  margin: 50px auto;
+
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+
+  border-radius: 4px;
+}
+
+.link-detail-header {
+  height: 100px;
+  padding: 16px 24px;
+  color: #fff;
+  display: flex;
+}
+.link-detail-header h1 {
+  font-size: 48px;
+  flex: 1;
+}
+.link-detail-delete {
+  width: 200px;
+}
+
+
+.link-detail-repository {
+  background-color: #222;
+  color: #fff;
+  font-size: 32px;
+  line-height: 96px;
+  padding-right: 24px;
+  padding-left: 24px;
+  display: flex;
+}
+.link-detail-owner {
+  font-weight: 300;
+}
+.link-detail-name:before {
+  content: " / ";
+  margin-left: 0.15em;
+}
+.link-detail-branch:before {
+  content: " @ ";
+  margin-left: 0.15em;
+}
+.link-detail-edit {
+  margin-left: auto;
+}
+
+.link-detail-repository.to {
+  margin-bottom: 20px;
+}
+
+.link-detail-footer {
+  display: flex;
+  padding-right: 24px;
+  padding-left: 24px;
+}
+.link-detail-submit {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  margin-left: auto;
+  color: #fff;
+  font-size: 32px;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}

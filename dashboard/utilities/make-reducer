@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# if the user inputted a positional arg, use that as the component dash name.
+# otherwise, prompt.
+if [ -n "$1" ]; then
+  NAMEDASH="$1"
+  echo "Cool, we're making a $NAMEDASH reducer."
+else
+  echo "Let's make a new reducer."
+  printf "Enter the name of your reducer, in dash-case: "; read NAMEDASH
+fi
+
+NAMEUPPERCAMEL="$(echo "$NAMEDASH" | perl -pe 's/(^|-)./uc($&)/ge;s/_//g' | sed 's/-//g')"
+
+first="$(echo $NAMEUPPERCAMEL | cut -c1 | tr [A-Z] [a-z])"
+second="$(echo $NAMEUPPERCAMEL | cut -c2-)"
+NAMECAMEL="$first$second"
+
+mkdir -p src/reducers/$NAMEDASH
+cat <<EOF > src/reducers/$NAMEDASH/index.js
+const initialState = null;
+export default function $NAMECAMEL(state=initialState, action) {
+  switch (action.type) {
+  default:
+    return state;
+  }
+}
+EOF
+
+cat <<EOF > src/reducers/$NAMEDASH/test.js
+
+import assert from 'assert';
+import $NAMECAMEL from './index';
+
+describe('$NAMEDASH', function() {
+});
+
+EOF
+
+echo "Created reducer:"
+echo "Script is located here: src/reducers/$NAMEDASH/index.js"
+echo "Tests are located here: src/reducers/$NAMEDASH/test.js"

@@ -1,0 +1,119 @@
+.link-list-container {
+  max-width: 1000px;
+  margin: 50px auto;
+}
+
+.link-list-logo {
+  max-width: 300px;
+  display: block;
+
+  margin: 0px auto;
+}
+
+
+
+
+.link-list {
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  list-style-type: none;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.link-list li {
+  padding-right: 24px;
+  padding-left: 24px;
+}
+
+
+/* LINK LIST HEADER */
+.link-list-header {
+  display: flex;
+  background-color: #5bc0de;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.link-list-header-content {
+  flex: 1;
+  display: block;
+  margin-bottom: 20px;
+  color: #FFF;
+  padding-right: 32px;
+}
+.link-list-header-content h1 {
+  font-weight: 400;
+}
+.link-list-header-content h2 {
+  font-weight: 300;
+  font-size: 21px;
+}
+
+/* LINK LIST LABELS */
+.link-list-labels {
+  display: flex;
+  background-color: #777;
+  line-height: 36px;
+  color: white;
+  font-size: 18px;
+}
+
+.link-list-labels span:first-child {
+  flex: 1;
+}
+
+/* LINK LIST ITEMS */
+.link-list-item {
+  display: flex;
+  background-color: #fff;
+  font-size: 18px;
+
+  border-left: 1px solid #777;
+  border-right: 1px solid #777;
+  border-bottom: 1px solid #777;
+
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+.link-list-item:last-child {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.link-list-item-empty {
+  border-left: 1px solid #777;
+  border-right: 1px solid #777;
+  border-bottom: 1px solid #777;
+
+  padding-top: 32px;
+  padding-bottom: 32px;
+
+  background-color: #777;
+  color: #fff;
+  font-size: 24px;
+}
+.link-list-item-header {
+  flex: 1;
+  font-size: 24px;
+  line-height: 48px;
+  cursor: pointer;
+}
+.link-list-item-header:hover {
+  text-decoration: underline;
+}
+
+/* LINK LIST FOOTER */
+.link-list-footer {
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  margin-top: 32px;
+  width: 100%;
+  text-align: center;
+}
+.link-list-footer a {
+  color: #68dde8;
+  text-decoration: none;
+}

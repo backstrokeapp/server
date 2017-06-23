@@ -15,14 +15,20 @@ const ch = new ColorHash();
 export class LinkDetail extends React.Component {
   constructor(props) {
     super(props);
-    const linkName = this.props.link ? this.props.link.name : null;
+    const linkName = this.props.link ? this.props.link.name : '';
     this.state = {
       linkName,
       themeColor: ch.hex(linkName),
 
+      upstreamOwner: this.props.link && this.props.link.upstream ? this.props.link.upstream.owner : '',
+      upstreamRepo: this.props.link && this.props.link.upstream ? this.props.link.upstream.repo : '',
+
+      forkOwner: this.props.link && this.props.link.fork ? this.props.link.fork.owner : '',
+      forkRepo: this.props.link && this.props.link.fork ? this.props.link.fork.repo : '',
+
       forkType: this.props.link && this.props.link.fork ? this.props.link.fork.type : 'fork-all',
-      forkBranch: this.props.link && this.props.link.fork ? this.props.link.fork.branch : null,
-      forkBranchList: [],
+      forkBranch: this.props.link && this.props.link.fork ? this.props.link.fork.branch : '',
+      forkBranchList: this.props.link && this.props.link.fork && this.props.link.fork.branches || [],
     };
 
     // A debounced function to change the theme color. This is done so that changing the theme color
@@ -45,83 +51,100 @@ export class LinkDetail extends React.Component {
     }
 
     const darkThemeColor = lightness(this.state.themeColor, -10);
-    return <div className="link-detail" style={{backgroundColor: link.enabled ? this.state.themeColor : null}}>
-      <textarea
-        onChange={e => {
-          this.setState({linkName: e.target.value});
-          this.updateThemeColor();
-        }}
-        className="link-detail-title"
-        placeholder="Link name"
-      >{this.state.linkName}</textarea>
-      <div className="link-detail-switch">
-        <Switch
-          checked={link.enabled}
-          onChange={() => this.props.onEnableLink(link)}
+    return <div>
+      <div className="link-detail" style={{backgroundColor: link.enabled ? this.state.themeColor : null}}>
+        <textarea
+          onChange={e => {
+            this.setState({linkName: e.target.value});
+            this.updateThemeColor();
+          }}
+          className="link-detail-title"
+          placeholder="Link name"
+          value={this.state.linkName}
         />
-      </div>
+        <div className="link-detail-switch">
+          <Switch
+            checked={link.enabled}
+            onChange={() => this.props.onEnableLink(link)}
+          />
+        </div>
 
-      <div className="link-detail-repository to">
-        <div className="link-detail-repository-header">
-          <span className="link-detail-repository-header-title">Upstream</span>
-          <span className="link-detail-repository-header-edit">Edit</span>
-        </div>
-        <div className="link-detail-repository-edit">
-          <div className="link-detail-repository-edit-row-two">
-            <input className="link-detail-box owner" placeholder="username" value={link.upstream.owner} />
-            <span className="link-detail-decorator">/</span>
-            <input className="link-detail-box repo" placeholder="repository" value={link.upstream.repo} />
+        <div className="link-detail-repository to">
+          <div className="link-detail-repository-header">
+            <span className="link-detail-repository-header-title">Upstream</span>
+            <span className="link-detail-repository-header-edit">Edit</span>
           </div>
-          <div className="link-detail-repository-edit-row-three">
-            <span className="link-detail-decorator second-row">@</span>
-            <select className="link-detail-box branch second-row" value={link.upstream.branch}>
-              {link.upstream.branches.map(branch => <option key={branch}>{branch}</option>)}
-            </select>
-          </div>
-        </div>
-      </div>
-      <div className="link-detail-repository from">
-        <div className="link-detail-repository-header">
-          <span className="link-detail-repository-header-title">Fork</span>
-          <span className="link-detail-repository-header-edit">Edit</span>
-        </div>
-        <div className="link-detail-repository-edit">
-          <div className="link-detail-repository-edit-row-one">
-            <input
-              type="radio"
-              id="fork-all"
-              className="link-detail-repository-radio"
-              checked={this.state.forkType === 'fork-all'}
-              onChange={() => this.setState({forkType: 'fork-all'})}
-            />
-            <label htmlFor="fork-all">All forks</label>
-            <input
-              type="radio"
-              id="one-fork"
-              className="link-detail-repository-radio"
-              checked={this.state.forkType === 'repo'}
-              onChange={() => this.setState({forkType: 'repo'})}
-            />
-            <label htmlFor="one-fork">One fork</label>
-          </div>
-          {this.state.forkType === 'repo' ? <div>
+          <div className="link-detail-repository-edit">
             <div className="link-detail-repository-edit-row-two">
-              <input className="link-detail-box owner" placeholder="username" value={link.fork.owner} />
+              <input
+                className="link-detail-box owner"
+                placeholder="username"
+                value={this.state.upstreamOwner}
+                onChange={e => this.setState({upstreamOwner: e.target.value})}
+              />
               <span className="link-detail-decorator">/</span>
-              <input className="link-detail-box repo" placeholder="repository" value={link.fork.repo} />
+              <input
+                className="link-detail-box repo"
+                placeholder="repository"
+                value={this.state.upstreamRepo}
+                onChange={e => this.setState({upstreamRepo: e.target.value})}
+              />
             </div>
             <div className="link-detail-repository-edit-row-three">
               <span className="link-detail-decorator second-row">@</span>
-              <select
-                className="link-detail-box branch second-row"
-                value={this.state.forkBranch}
-                onChange={e => this.setState({forkBranch: e.target.value})}
-              >
-                {this.state.forkBranchList.map(branch => <option key={branch}>{branch}</option>)}
+              <select className="link-detail-box branch second-row" value={link.upstream.branch}>
+                {link.upstream.branches.map(branch => <option key={branch}>{branch}</option>)}
               </select>
             </div>
-          </div> : null}
+          </div>
         </div>
+        <div className="link-detail-repository from">
+          <div className="link-detail-repository-header">
+            <span className="link-detail-repository-header-title">Fork</span>
+            <span className="link-detail-repository-header-edit">Edit</span>
+          </div>
+          <div className="link-detail-repository-edit">
+            <div className="link-detail-repository-edit-row-one">
+              <input
+                type="radio"
+                id="fork-all"
+                className="link-detail-repository-radio"
+                checked={this.state.forkType === 'fork-all'}
+                onChange={() => this.setState({forkType: 'fork-all'})}
+              />
+              <label htmlFor="fork-all">All forks</label>
+              <input
+                type="radio"
+                id="one-fork"
+                className="link-detail-repository-radio"
+                checked={this.state.forkType === 'repo'}
+                onChange={() => this.setState({forkType: 'repo'})}
+              />
+              <label htmlFor="one-fork">One fork</label>
+            </div>
+            {this.state.forkType === 'repo' ? <div>
+              <div className="link-detail-repository-edit-row-two">
+                <input className="link-detail-box owner" placeholder="username" value={link.fork.owner} />
+                <span className="link-detail-decorator">/</span>
+                <input className="link-detail-box repo" placeholder="repository" value={link.fork.repo} />
+              </div>
+              <div className="link-detail-repository-edit-row-three">
+                <span className="link-detail-decorator second-row">@</span>
+                <select
+                  className="link-detail-box branch second-row"
+                  value={this.state.forkBranch}
+                  onChange={e => this.setState({forkBranch: e.target.value})}
+                >
+                  {this.state.forkBranchList.map(branch => <option key={branch}>{branch}</option>)}
+                </select>
+              </div>
+            </div> : null}
+          </div>
+        </div>
+      </div>
+
+      <div className="link-detail-footer">
+        <span className="save-button">Save</span>
       </div>
     </div>;
   }
@@ -137,4 +160,12 @@ export default connect(state => {
       dispatch(collectionLinksEnable(link));
     },
   };
-})(LinkDetail);
+})(function(props) {
+  if (props.link) {
+    return <LinkDetail {...props} />;
+  } else {
+    return <div className="link-detail-loading">
+      Loading...
+    </div>;
+  }
+});

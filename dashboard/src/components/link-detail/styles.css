@@ -163,3 +163,22 @@
 .second-row {
   margin-top: 16px;
 }
+
+
+.link-detail-footer {
+  max-width: 500px;
+  margin: 64px auto;
+  display: flex;
+  justify-content: center;
+}
+.save-button {
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-size: 24px;
+  display: inline-block;
+  cursor: pointer;
+  color: #212121;
+  user-select: none;
+}
+.save-button:active {
+  opacity: 0.8;
+}

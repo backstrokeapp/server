@@ -22,7 +22,19 @@ export default function links(state=initialState, action) {
   case COLLECTION_LINKS_ERROR:
     return {...state, error: action.error};
   case COLLECTION_LINKS_SET:
-    return {...state, data: action.data, loading: false, page: action.page || 0};
+    return {...state,
+      data: action.data.map(item => {
+        if (!item.upstream) {
+          item.upstream = { type: 'repo', branches: [] };
+        }
+        if (!item.fork) {
+          item.fork = { type: 'fork-all' };
+        }
+        return item;
+      }),
+      loading: false,
+      page: action.page || 0,
+    };
   case COLLECTION_LINKS_SELECT:
     return {...state, selected: action.id};
   case COLLECTION_LINKS_PUSH:

@@ -21,19 +21,25 @@ export function LinkList({
   let body;
 
   if (links.error) {
-    body = <li className="link-list-item error">
-      {links.error}
-    </li>;
+    body = <ul className="link-list">
+      <li className="link-list-item error">
+        {links.error}
+      </li>
+    </ul>;
   } else if (links.loading) {
-    body = <li className="link-list-item loading">
-      Loading...
-    </li>;
+    body = <ul className="link-list">
+      <li className="link-list-item loading">
+        Loading...
+      </li>
+    </ul>;
   } else if (links.data.length === 0) {
-    body = <li className="link-list-item-empty">
-      You have no links, create one above.
-    </li>;
+    body = <ul className="link-list">
+      <li className="link-list-item-empty">
+        You have no links, create one above.
+      </li>
+    </ul>
   } else {
-    body = <div>
+    body = <ul className="link-list">
       {links.data.map(link => {
         const themeColor = ch.hex(link.name);
         const darkThemeColor = lightness(themeColor, -10);
@@ -43,16 +49,19 @@ export function LinkList({
           key={link.id}
           style={{backgroundColor: link.enabled ? themeColor : null}}
         >
-          <div className="link-list-item-header" onClick={() => onSelectLink(link.id)}>
-            {link.name}
+          <div className="link-list-item-header">
+            {link.name || "Untitled"}
           </div>
           <div className="link-list-item-switch">
             <Switch checked={link.enabled} onChange={() => onEnableLink(link)} />
-            <div className="link-list-item-edit">Edit</div>
+            <div
+              className="link-list-item-edit"
+              onClick={() => onSelectLink(link.id)}
+            >Edit</div>
           </div>
         </li>;
       })}
-    </div>;
+    </ul>;
   }
 
   return <div className="link-list-container">
@@ -63,9 +72,7 @@ export function LinkList({
     />
 
     {/* The list "card" of links */}
-    <ul className="link-list">
-      {body}
-    </ul>
+    {body}
 
     <div className="link-list-footer">
       <a className="logout" href="/logout">Logout 1egoman</a>

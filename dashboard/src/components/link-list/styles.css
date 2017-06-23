@@ -1,5 +1,5 @@
 .link-list-container {
-  max-width: 1000px;
+  max-width: 864px; /* 3 items wide, at max */
   margin: 50px auto;
 }
 
@@ -13,26 +13,30 @@
 
 
 
-.link-list div {
+.link-list {
   font-family: "Lato", Helvetica, Arial, sans-serif;
   list-style-type: none;
+  width: 100%;
+  padding-left: 0px;
 
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 
 
-/* LINK LIST ITEMS */
+/* The item cards themselves */
 .link-list-item {
   width: 272px;
   font-size: 18px;
+  cursor: default;
 
   border-radius: 8px;
 
   padding-top: 32px;
   margin-top: 32px;
-  margin-bottom: 32px;
   margin-left: 8px;
   margin-right: 8px;
 
@@ -49,6 +53,7 @@
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
+
 .link-list-item-header {
   color: #fff;
   font-size: 32px;
@@ -57,12 +62,12 @@
   padding-left: 24px;
 }
 .link-list-item-switch {
-  display: block;
+  display: flex;
+  flex-direction: row;
   padding-right: 24px;
   padding-left: 24px;
 }
 .link-list-item-edit {
-  display: inline-block;
   margin-top: 8px;
   font-size: 24px;
   margin-left: 36px;

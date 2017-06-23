@@ -1,35 +1,79 @@
 .link-detail {
-  max-width: 1000px;
+  max-width: 500px;
   margin: 50px auto;
 
   font-family: "Lato", Helvetica, Arial, sans-serif;
 
-  border-radius: 4px;
+  font-size: 18px;
+  cursor: default;
+
+  border-radius: 8px;
+
+  padding-top: 32px;
+  margin-top: 32px;
+
+  background-color: #999;
+  transition: all 250ms ease-out;
 }
 
-.link-detail-header {
+.link-detail-title {
+  font-family: "Lato", Helvetica, Arial, sans-serif;
   height: 100px;
   padding: 16px 24px;
   color: #fff;
   display: flex;
+  font-size: 24px;
+  background-color: transparent;
+  border: 6px solid rgba(255, 255, 255, 0.2);
+  outline: none;
+  resize: none;
+  margin-right: 24px;
+  margin-left: 24px;
+  width: calc(100% - 24px * 4.5);
 }
-.link-detail-header h1 {
-  font-size: 48px;
-  flex: 1;
+.link-detail-title::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
-.link-detail-delete {
-  width: 200px;
+.link-detail-title:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.link-detail-switch {
+  margin-left: 24px;
+  margin-right: 24px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 
 .link-detail-repository {
-  background-color: #222;
+  background-color: rgba(0, 0, 0, 0.2);
   color: #fff;
   font-size: 32px;
-  line-height: 96px;
   padding-right: 24px;
   padding-left: 24px;
   display: flex;
+  flex-direction: column
+}
+
+
+.link-detail-repository-header {
+  display: flex;
+  flex-direction: row;
+  font-size: 24px;
+  margin-top: 16px;
+}
+.link-detail-repository-header-title {
+  margin-right: auto;
+}
+
+
+.link-detail-repository-display {
+  display: flex;
+  flex-direction: row;
+  font-size: 24px;
+  margin-top: 8px;
+  margin-bottom: 16px;
 }
 .link-detail-owner {
   font-weight: 300;
@@ -42,25 +86,80 @@
   content: " @ ";
   margin-left: 0.15em;
 }
-.link-detail-edit {
-  margin-left: auto;
+
+
+
+
+.link-detail-repository-edit {
+  font-size: 24px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
-.link-detail-repository.to {
-  margin-bottom: 20px;
+.link-detail-repository-edit-row-one {
+  margin-bottom: 16px;
 }
 
-.link-detail-footer {
+.link-detail-repository-radio {
+  display: none;
+}
+.link-detail-repository-radio + label:before {
+  content: " ";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 8px;
+  background-color: transparent;
+  border: 4px solid rgba(255, 255, 255, 0.8);
+  margin-right: 8px;
+}
+.link-detail-repository-radio:checked + label:before {
+  background-color: #ddd;
+}
+.link-detail-repository-radio + label {
+  margin-right: 16px;
+}
+
+
+.link-detail-repository-edit-row-two {
   display: flex;
-  padding-right: 24px;
-  padding-left: 24px;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
-.link-detail-submit {
-  margin-top: 24px;
-  margin-bottom: 24px;
-  margin-left: auto;
+.link-detail-repository-edit-row-three {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.link-detail-box {
+  padding: 20px;
+  border-radius: 8px;
+  flex: 1;
+
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+  padding: 16px 24px;
   color: #fff;
+  font-size: 24px;
+  background-color: transparent;
+  border: 6px solid rgba(255, 255, 255, 0.2);
+  outline: none;
+}
+.link-detail-box::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+.link-detail-box:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.link-detail-box.owner { width: 0%; }
+.link-detail-box.repo { width: 0%; }
+
+.link-detail-decorator {
   font-size: 32px;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
+  padding: 16px 12px;
+}
+.second-row {
+  margin-top: 16px;
 }

@@ -13,6 +13,7 @@
     "bluebird": "^3.4.3",
     "body-parser": "^1.15.2",
     "bootstrap": "^3.3.6",
+    "cors": "^2.8.3",
     "debug": "^2.6.3",
     "del": "^2.2.2",
     "express": "^4.14.0",

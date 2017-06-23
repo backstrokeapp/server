@@ -7,6 +7,6 @@ export default function ToggleSwitch(props) {
   switchId += 1;
   return <div className="toggle-switch">
     <input type="checkbox" {...props} id={switchId} />
-    <label htmlFor={switchId}></label>
+    <label data-handle-color={"red"} htmlFor={switchId}></label>
   </div>;
 }

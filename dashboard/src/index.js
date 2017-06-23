@@ -31,7 +31,7 @@ const store = createStore(reducer, {}, compose(
 // Add a router. This handles the transition between the list page and the detail page.
 const router = createRouter(store);
 router.addRoute('links', () => routeTransitionLinkList());
-router.addRoute('links/:id', ({id}) => routeTransitionLinkDetail(id));
+router.addRoute('links/:id', id => routeTransitionLinkDetail(id));
 router.handle();
 
 // ReactDOM.render(<LinkList />, document.getElementById('root'));

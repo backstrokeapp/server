@@ -15,7 +15,7 @@
   position: relative;
   background-color: #777;
   display: block;
-  width: 96px;
+  width: 128px;
   height: 48px;
   border-radius: 24px;
   cursor: pointer;
@@ -28,7 +28,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #fff;
+  background-color: #999;
 
   /* The handle is on the left when the switch is disabled. */
   position: absolute;
@@ -37,12 +37,12 @@
   margin-right: 8px;
 
   /* On movement, transition the position of the handle. */
-  transition: all 150ms ease-out;
+  transition: all 150ms ease-in-out;
 }
 
 /* When checked... */
 .toggle-switch input:checked + label {
-  background-color: #5bc0de;
+  background-color: #fff;
 }
 .toggle-switch input:checked + label:before {
   margin-left: calc(100% - 32px - 9px);
@@ -52,15 +52,17 @@
 
 .toggle-switch input + label:after {
   position: absolute;
-  right: 18px;
+  right: 36px;
   top: 14px;
   content: "Off";
-  color: #fff;
+  color: #FFF;
+  font-weight: 500;
 }
 .toggle-switch input:checked + label:after {
   content: "On";
   right: initial;
-  left: 18px;
+  left: 36px;
+  color: #212121;
 }
 
 /* If the checkbox is disabled, disable the switch */

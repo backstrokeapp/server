@@ -2,10 +2,15 @@ import * as React from 'react';
 import './styles.css';
 import { connect } from 'react-redux';
 
+import ColorHash from 'color-hash';
+import lightness from 'lightness';
+
 import collectionLinksSelect from '../../actions/collection/links/select';
 import collectionLinksEnable from '../../actions/collection/links/enable';
 
 import Switch from '../toggle-switch/index';
+
+const ch = new ColorHash();
 
 export function LinkList({
   links,
@@ -30,12 +35,20 @@ export function LinkList({
   } else {
     body = <div>
       {links.data.map(link => {
-        return <li className="link-list-item" key={link.id}>
+        const themeColor = ch.hex(link.name);
+        const darkThemeColor = lightness(themeColor, -10);
+
+        return <li
+          className="link-list-item"
+          key={link.id}
+          style={{backgroundColor: link.enabled ? themeColor : null}}
+        >
           <div className="link-list-item-header" onClick={() => onSelectLink(link.id)}>
             {link.name}
           </div>
           <div className="link-list-item-switch">
             <Switch checked={link.enabled} onChange={() => onEnableLink(link)} />
+            <div className="link-list-item-edit">Edit</div>
           </div>
         </li>;
       })}
@@ -51,21 +64,6 @@ export function LinkList({
 
     {/* The list "card" of links */}
     <ul className="link-list">
-      {/* The header with the add link button */}
-      <li className="link-list-header">
-        <span className="link-list-header-content">
-          <h1>My Links</h1>
-          <h2>A link represents a flow of changes from one repository to another.</h2>
-        </span>
-        <button className="link-list-create-button">Add link</button>
-      </li>
-
-      {/* The label bar that labels the items below */}
-      {links.data.length !== 0 ? <li className="link-list-labels">
-        <span className="header header-name">Link Name</span>
-        <span className="header header-enabled">Enabled</span>
-      </li> : null}
-
       {body}
     </ul>
 

@@ -1,6 +1,16 @@
 import express from 'express';
 const app = express();
 
+import cors from 'cors';
+const corsHandler = cors({
+  origin(origin, callback) {
+    callback(null, true);
+  },
+  credentials: true,
+});
+app.use(corsHandler);
+app.options('*', corsHandler);
+
 // Polyfill promise with bluebird.
 import Promise from 'bluebird';
 global.Promise = Promise;
@@ -33,9 +43,9 @@ import {addWebhooksForLink, removeOldWebhooksForLink} from './routes/links/addWe
 // Database stuff
 // ----------------------------------------------------------------------------
 import {Schema} from 'jugglingdb';
-import userBuilder from 'models/User';
-import linkBuilder from 'models/Link';
-import repositoryBuilder from 'models/Repository';
+import userBuilder from './models/User';
+import linkBuilder from './models/Link';
+import repositoryBuilder from './models/Repository';
 // const schema = new Schema('sqlite3', {database: 'db.sqlite3'});
 const schema = new Schema('mongodb', {
   url: 'mongodb://backstroke:backstroke@ds017256.mlab.com:17256/backstroke-dev',
@@ -55,8 +65,8 @@ if (process.env.MIGRATE) {
 // ----------------------------------------------------------------------------
 import passport from 'passport';
 import session from 'express-session';
-import strategy from 'auth/strategy';
-import serialize from 'auth/serialize';
+import strategy from './auth/strategy';
+import serialize from './auth/serialize';
 app.use(session({
   secret: process.env.SESSION_SECRET,
   // store: mongoStore,
@@ -108,33 +118,36 @@ function assertLoggedIn(req, res, next) {
 import githubInstanceMiddleware from './githubInstanceMiddleware';
 app.use(githubInstanceMiddleware);
 
+// Redirect calls to `/api/v1` => `/v1`
+app.all(/^\/api\/v1\/.*$/, (req, res) => res.redirect(req.url.replace(/^\/api/, '')));
+
 // identify the currently logged in user
-app.get('/api/v1/whoami', whoami);
+app.get('/v1/whoami', whoami);
 
 // get all links
-app.get('/api/v1/links', bodyParser.json(), assertLoggedIn, route(linksList, [Link]));
+app.get('/v1/links', bodyParser.json(), assertLoggedIn, route(linksList, [Link]));
 
 // GET a given link
-app.get('/api/v1/links/:id', bodyParser.json(), assertLoggedIn, route(linksGet, [Link]));
+app.get('/v1/links/:id', bodyParser.json(), assertLoggedIn, route(linksGet, [Link]));
 
 // create a new link
-app.post('/api/v1/links', bodyParser.json(), assertLoggedIn, route(linksCreate, [Link]));
+app.post('/v1/links', bodyParser.json(), assertLoggedIn, route(linksCreate, [Link]));
 
 // delete a link
-app.delete('/api/v1/links/:id', assertLoggedIn, route(linksDelete, [Link, removeOldWebhooksForLink]));
+app.delete('/v1/links/:id', assertLoggedIn, route(linksDelete, [Link, removeOldWebhooksForLink]));
 
 // return the branches for a given repo
-app.get('/api/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, checkRepo);
+app.get('/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, checkRepo);
 
 // POST link updates
-app.post('/api/v1/links/:linkId',
+app.post('/v1/links/:linkId',
   bodyParser.json(),
   assertLoggedIn,
   route(linksUpdate, [Link, Repository, addWebhooksForLink, removeOldWebhooksForLink])
 );
 
 // enable or disable a repository
-app.post('/api/v1/link/:linkId/enable', bodyParser.json(), route(linksEnable, [Link]));
+app.post('/v1/links/:linkId/enable', bodyParser.json(), route(linksEnable, [Link]));
 
 // the old webhook route
 // This parses the body of the request to get most of its data.

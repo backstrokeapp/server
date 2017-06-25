@@ -19,17 +19,18 @@
 .link-detail-title {
   font-family: "Lato", Helvetica, Arial, sans-serif;
   height: 100px;
-  padding: 16px 24px;
+  padding: 16px 8px;
   color: #fff;
   display: flex;
   font-size: 24px;
   background-color: transparent;
   border: 6px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
   outline: none;
   resize: none;
   margin-right: 24px;
   margin-left: 24px;
-  width: calc(100% - 24px * 4.5);
+  width: calc(100% - 72px);
 }
 .link-detail-title::placeholder {
   color: rgba(255, 255, 255, 0.4);
@@ -119,6 +120,7 @@
 }
 .link-detail-repository-radio + label {
   margin-right: 16px;
+  user-select: none;
 }
 
 
@@ -131,6 +133,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  margin-top: 16px;
 }
 
 .link-detail-box {
@@ -139,7 +142,7 @@
   flex: 1;
 
   font-family: "Lato", Helvetica, Arial, sans-serif;
-  padding: 16px 24px;
+  padding: 16px 8px;
   color: #fff;
   font-size: 24px;
   background-color: transparent;
@@ -155,19 +158,19 @@
 
 .link-detail-box.owner { width: 0%; }
 .link-detail-box.repo { width: 0%; }
+.link-detail-box.branch {
+  height: 72px;
+}
 
 .link-detail-decorator {
   font-size: 32px;
   padding: 16px 12px;
 }
-.second-row {
-  margin-top: 16px;
-}
 
 
 .link-detail-footer {
   max-width: 500px;
-  margin: 64px auto;
+  margin: 32px auto;
   display: flex;
   justify-content: center;
 }
@@ -181,4 +184,15 @@
 }
 .save-button:active {
   opacity: 0.8;
+}
+.save-button.disabled, .save-button.disabled:active {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.link-detail-error {
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  display: inline-block;
+  color: #de3535;
 }

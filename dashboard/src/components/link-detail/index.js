@@ -1,34 +1,41 @@
 import * as React from 'react';
 import './styles.css';
 import ColorHash from 'color-hash';
-import lightness from 'lightness';
 import debounce from 'lodash.debounce';
+import classnames from 'classnames';
 
 import { connect } from 'react-redux';
 
 import Switch from '../toggle-switch/index';
 
 import collectionLinksEnable from '../../actions/collection/links/enable';
+import collectionLinksSave from '../../actions/collection/links/save';
 
 const ch = new ColorHash();
 
 export class LinkDetail extends React.Component {
   constructor(props) {
     super(props);
-    const linkName = this.props.link ? this.props.link.name : '';
+    const link = this.props.initialLinkState;
+    const linkName = link ? link.name : '';
+
+    // Construct initial state given the initial link as a template.
     this.state = {
       linkName,
       themeColor: ch.hex(linkName),
+      upstreamError: null,
+      forkError: null,
 
-      upstreamOwner: this.props.link && this.props.link.upstream ? this.props.link.upstream.owner : '',
-      upstreamRepo: this.props.link && this.props.link.upstream ? this.props.link.upstream.repo : '',
+      upstreamOwner: link && link.upstream ? link.upstream.owner : '',
+      upstreamRepo: link && link.upstream ? link.upstream.repo : '',
+      upstreamBranch: link && link.upstream ? link.upstream.branch : '',
+      upstreamBranchList: link && link.upstream && link.upstream.branches || [],
 
-      forkOwner: this.props.link && this.props.link.fork ? this.props.link.fork.owner : '',
-      forkRepo: this.props.link && this.props.link.fork ? this.props.link.fork.repo : '',
-
-      forkType: this.props.link && this.props.link.fork ? this.props.link.fork.type : 'fork-all',
-      forkBranch: this.props.link && this.props.link.fork ? this.props.link.fork.branch : '',
-      forkBranchList: this.props.link && this.props.link.fork && this.props.link.fork.branches || [],
+      forkOwner: link && link.fork && link.fork.owner || '',
+      forkRepo: link && link.fork && link.fork.repo || '',
+      forkBranch: link && link.fork && link.fork.branch || '',
+      forkBranchList: link && link.fork && link.fork.branches || [],
+      forkType: link && link.fork ? link.fork.type : 'fork-all',
     };
 
     // A debounced function to change the theme color. This is done so that changing the theme color
@@ -38,11 +45,70 @@ export class LinkDetail extends React.Component {
         themeColor: ch.hex(this.state.linkName),
       });
     }.bind(this), 1000);
+
+    // Also debounce fetchBranches, so branches are only fetched when the user stops typing and not
+    // after every keypress.
+    this.fetchBranches = debounce(this.fetchBranches.bind(this), 250);
   }
+
+  // Given a direction (ie, `fork` or `owner`), validate the owner/repo combo and update the
+  // respective branches.
+  fetchBranches(direction) {
+    const owner = this.state[`${direction}Owner`],
+          repo = this.state[`${direction}Repo`];
+
+    // Only run query when both an aowner and repo are defined.
+    if (!owner || !repo) {
+      return;
+    }
+
+    return fetch(`https://api.backstroke.us/v1/repos/github/${owner}/${repo}`, {
+      credentials: 'include',
+    }).then(resp => {
+      if (owner.length && repo.length) {
+        return resp.json();
+      } else {
+        return {valid: false};
+      }
+    }).then(body => {
+      // Ensure that the fork is a fork
+      if (direction === 'fork' && body.fork === false) {
+        this.setState({
+          [`${direction}Error`]: `Repo ${owner}/${repo} isn't a fork.`,
+        });
+        return;
+      }
+
+      // Update the branch list if there are branches.
+      if (body.valid) {
+        this.setState({
+          [`${direction}BranchList`]: body.branches,
+          [`${direction}Error`]: null,
+        });
+      } else {
+        this.setState({
+          [`${direction}BranchList`]: [],
+          [`${direction}Error`]: `${owner}/${repo} not found.`,
+        });
+      }
+    });
+  }
+
+  isLinkValid() {
+    return this.state.linkName && this.state.linkName.length > 0 && (
+      this.state.upstreamError === null && this.state.forkError === null
+    ) && (
+      // Upstream is valid?
+      this.state.upstreamOwner && this.state.upstreamRepo && this.state.upstreamBranch
+    ) && (
+      // Fork is valid?
+      (this.state.forkType === 'repo' || this.state.forkType === 'fork-all') &&
+      this.state.forkOwner && this.state.forkRepo && this.state.forkBranch
+    )
+  }
+
   render() {
-    const {
-      link,
-    } = this.props;
+    const link = this.props.initialLinkState;
 
     if (!link) {
       return <div className="link-detail-empty">
@@ -50,7 +116,6 @@ export class LinkDetail extends React.Component {
       </div>;
     }
 
-    const darkThemeColor = lightness(this.state.themeColor, -10);
     return <div>
       <div className="link-detail" style={{backgroundColor: link.enabled ? this.state.themeColor : null}}>
         <textarea
@@ -72,7 +137,7 @@ export class LinkDetail extends React.Component {
         <div className="link-detail-repository to">
           <div className="link-detail-repository-header">
             <span className="link-detail-repository-header-title">Upstream</span>
-            <span className="link-detail-repository-header-edit">Edit</span>
+            <span className="link-detail-repository-header-error">{this.state.upstreamError}</span>
           </div>
           <div className="link-detail-repository-edit">
             <div className="link-detail-repository-edit-row-two">
@@ -80,20 +145,29 @@ export class LinkDetail extends React.Component {
                 className="link-detail-box owner"
                 placeholder="username"
                 value={this.state.upstreamOwner}
-                onChange={e => this.setState({upstreamOwner: e.target.value})}
+                onChange={e => {
+                  this.setState({upstreamOwner: e.target.value})
+                  this.fetchBranches('upstream');
+                }}
               />
               <span className="link-detail-decorator">/</span>
               <input
                 className="link-detail-box repo"
                 placeholder="repository"
                 value={this.state.upstreamRepo}
-                onChange={e => this.setState({upstreamRepo: e.target.value})}
+                onChange={e => {
+                  this.setState({upstreamRepo: e.target.value})
+                  this.fetchBranches('upstream');
+                }}
               />
             </div>
             <div className="link-detail-repository-edit-row-three">
-              <span className="link-detail-decorator second-row">@</span>
-              <select className="link-detail-box branch second-row" value={link.upstream.branch}>
-                {link.upstream.branches.map(branch => <option key={branch}>{branch}</option>)}
+              <select
+                className="link-detail-box branch"
+                onChange={e => this.setState({upstreamBranch: e.target.value})}
+                value={this.state.upstreamBranch}
+              >
+                {this.state.upstreamBranchList.map(branch => <option key={branch}>{branch}</option>)}
               </select>
             </div>
           </div>
@@ -101,7 +175,7 @@ export class LinkDetail extends React.Component {
         <div className="link-detail-repository from">
           <div className="link-detail-repository-header">
             <span className="link-detail-repository-header-title">Fork</span>
-            <span className="link-detail-repository-header-edit">Edit</span>
+            <span className="link-detail-repository-header-error">{this.state.forkError}</span>
           </div>
           <div className="link-detail-repository-edit">
             <div className="link-detail-repository-edit-row-one">
@@ -124,14 +198,29 @@ export class LinkDetail extends React.Component {
             </div>
             {this.state.forkType === 'repo' ? <div>
               <div className="link-detail-repository-edit-row-two">
-                <input className="link-detail-box owner" placeholder="username" value={link.fork.owner} />
+                <input
+                  className="link-detail-box owner"
+                  placeholder="username"
+                  value={this.state.forkOwner}
+                  onChange={e => {
+                    this.setState({forkOwner: e.target.value})
+                    this.fetchBranches('fork');
+                  }}
+                />
                 <span className="link-detail-decorator">/</span>
-                <input className="link-detail-box repo" placeholder="repository" value={link.fork.repo} />
+                <input
+                  className="link-detail-box repo"
+                  placeholder="repository"
+                  value={this.state.forkRepo}
+                  onChange={e => {
+                    this.setState({forkRepo: e.target.value})
+                    this.fetchBranches('fork');
+                  }}
+                />
               </div>
               <div className="link-detail-repository-edit-row-three">
-                <span className="link-detail-decorator second-row">@</span>
                 <select
-                  className="link-detail-box branch second-row"
+                  className="link-detail-box branch"
                   value={this.state.forkBranch}
                   onChange={e => this.setState({forkBranch: e.target.value})}
                 >
@@ -143,8 +232,41 @@ export class LinkDetail extends React.Component {
         </div>
       </div>
 
+      {/* Report any errors */}
       <div className="link-detail-footer">
-        <span className="save-button">Save</span>
+        <div className="link-detail-error">
+          {this.props.linkError}
+        </div>
+      </div>
+
+      <div className="link-detail-footer">
+        <span
+          className={classnames(`save-button`, {
+            disabled: !this.isLinkValid(),
+          })}
+          onClick={() => this.isLinkValid() && this.props.onSaveLink({
+            ...this.props.initialLinkState,
+            name: this.state.linkName,
+
+            upstream: {
+              ...this.props.initialLinkState.upstream,
+              type: 'repo',
+              owner: this.state.upstreamOwner,
+              repo: this.state.upstreamRepo,
+              branch: this.state.upstreamBranch,
+              branches: this.state.upstreamBranchList,
+            },
+
+            fork: {
+              ...this.props.initialLinkState.fork,
+              type: this.state.forkType,
+              owner: this.state.forkOwner,
+              repo: this.state.forkRepo,
+              branch: this.state.forkBranch,
+              branches: this.state.forkBranchList,
+            },
+          })}
+        >Save</span>
       </div>
     </div>;
   }
@@ -153,16 +275,20 @@ export class LinkDetail extends React.Component {
 export default connect(state => {
   return {
     link: state.links.data.find(link => link.id === state.links.selected),
+    links: state.links,
   };
 }, dispatch => {
   return {
     onEnableLink(link) {
       dispatch(collectionLinksEnable(link));
     },
+    onSaveLink(link) {
+      dispatch(collectionLinksSave(link));
+    },
   };
 })(function(props) {
-  if (props.link) {
-    return <LinkDetail {...props} />;
+  if (!props.links.loading) {
+    return <LinkDetail {...props} initialLinkState={props.link} linkError={props.links.error} />;
   } else {
     return <div className="link-detail-loading">
       Loading...

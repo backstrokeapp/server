@@ -7,11 +7,23 @@ import classnames from 'classnames';
 import { connect } from 'react-redux';
 
 import Switch from '../toggle-switch/index';
+import LinkError from '../link-error/index';
+import LinkLoading from '../link-loading/index';
 
 import collectionLinksEnable from '../../actions/collection/links/enable';
 import collectionLinksSave from '../../actions/collection/links/save';
 
 const ch = new ColorHash();
+
+function getDefaultBranch(branchList) {
+  if (branchList.indexOf('master') !== -1) {
+    return 'master';
+  } else if (branchList.indexOf('trunk') !== -1) {
+    return 'trunk';
+  } else {
+    return branchList[0];
+  }
+}
 
 export class LinkDetail extends React.Component {
   constructor(props) {
@@ -55,7 +67,8 @@ export class LinkDetail extends React.Component {
   // respective branches.
   fetchBranches(direction) {
     const owner = this.state[`${direction}Owner`],
-          repo = this.state[`${direction}Repo`];
+          repo = this.state[`${direction}Repo`],
+          branch = this.state[`${direction}Branch`];
 
     // Only run query when both an aowner and repo are defined.
     if (!owner || !repo) {
@@ -84,6 +97,7 @@ export class LinkDetail extends React.Component {
         this.setState({
           [`${direction}BranchList`]: body.branches,
           [`${direction}Error`]: null,
+          [`${direction}Branch`]: branch ? branch : getDefaultBranch(body.branches),
         });
       } else {
         this.setState({
@@ -102,8 +116,8 @@ export class LinkDetail extends React.Component {
       this.state.upstreamOwner && this.state.upstreamRepo && this.state.upstreamBranch
     ) && (
       // Fork is valid?
-      (this.state.forkType === 'repo' || this.state.forkType === 'fork-all') &&
-      this.state.forkOwner && this.state.forkRepo && this.state.forkBranch
+      (this.state.forkType === 'repo' && this.state.forkOwner && this.state.forkRepo && this.state.forkBranch)
+      || this.state.forkType === 'fork-all'
     )
   }
 
@@ -232,12 +246,8 @@ export class LinkDetail extends React.Component {
         </div>
       </div>
 
-      {/* Report any errors */}
-      <div className="link-detail-footer">
-        <div className="link-detail-error">
-          {this.props.linkError}
-        </div>
-      </div>
+      {/* report any errors */}
+      <LinkError error={this.props.linkError} />
 
       <div className="link-detail-footer">
         <span
@@ -283,15 +293,15 @@ export default connect(state => {
       dispatch(collectionLinksEnable(link));
     },
     onSaveLink(link) {
-      dispatch(collectionLinksSave(link));
+      dispatch(collectionLinksSave(link)).then(() => {
+        window.location.hash = '#/links';
+      });
     },
   };
 })(function(props) {
   if (!props.links.loading) {
     return <LinkDetail {...props} initialLinkState={props.link} linkError={props.links.error} />;
   } else {
-    return <div className="link-detail-loading">
-      Loading...
-    </div>;
+    return <LinkLoading />;
   }
 });

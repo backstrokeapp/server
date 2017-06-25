@@ -9,6 +9,8 @@ import collectionLinksSelect from '../../actions/collection/links/select';
 import collectionLinksEnable from '../../actions/collection/links/enable';
 
 import Switch from '../toggle-switch/index';
+import LinkError from '../link-error/index';
+import LinkLoading from '../link-loading/index';
 
 const ch = new ColorHash();
 
@@ -21,17 +23,9 @@ export function LinkList({
   let body;
 
   if (links.error) {
-    body = <ul className="link-list">
-      <li className="link-list-item error">
-        {links.error}
-      </li>
-    </ul>;
+    body = <LinkError error={links.error} />;
   } else if (links.loading) {
-    body = <ul className="link-list">
-      <li className="link-list-item loading">
-        Loading...
-      </li>
-    </ul>;
+    body = <LinkLoading />;
   } else if (links.data.length === 0) {
     body = <ul className="link-list">
       <li className="link-list-item-empty">

@@ -11,6 +11,16 @@
 }
 
 
+.link-list-create-button-container {
+  width: 100%;
+}
+.link-list-create-button {
+  margin-top: 24px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
 
 
 .link-list {

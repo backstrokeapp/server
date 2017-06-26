@@ -7,10 +7,12 @@ import lightness from 'lightness';
 
 import collectionLinksSelect from '../../actions/collection/links/select';
 import collectionLinksEnable from '../../actions/collection/links/enable';
+import collectionLinksCreate from '../../actions/collection/links/create';
 
 import Switch from '../toggle-switch/index';
 import LinkError from '../link-error/index';
 import LinkLoading from '../link-loading/index';
+import Button from '../button/index';
 
 const ch = new ColorHash();
 
@@ -19,6 +21,7 @@ export function LinkList({
 
   onEnableLink,
   onSelectLink,
+  onCreateLink,
 }) {
   let body;
 
@@ -65,6 +68,14 @@ export function LinkList({
       src="/assets/img/logo.png"
     />
 
+  <div className="link-list-create-button-container">
+    <Button
+      className="link-list-create-button"
+      color="dark"
+      onClick={onCreateLink}
+    >New Link</Button>
+  </div>
+
     {/* The list "card" of links */}
     {body}
 
@@ -82,6 +93,13 @@ export default connect(state => {
   return {
     onSelectLink(id) {
       window.location.hash = '/links/' + id;
+    },
+    onCreateLink() {
+      dispatch(collectionLinksCreate()).then(link => {
+        if (link) {
+          window.location.hash = '/links/' + link.id;
+        }
+      });
     },
     onEnableLink(link) {
       dispatch(collectionLinksEnable(link));

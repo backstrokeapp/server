@@ -39,15 +39,20 @@ export default function links(state=initialState, action) {
   case COLLECTION_LINKS_SELECT:
     return {...state, selected: action.id};
   case COLLECTION_LINKS_PUSH:
+    const dataInState = state.data.find(item => action.item.id === item.id);
     return {
       ...state,
       data: state.data.map(item => {
+        // Update any old items.
         if (action.item.id === item.id) {
           return action.item;
         } else {
           return item;
         }
-      }),
+      }).concat(
+        // Add the item if it's new.
+        dataInState ? [] : [action.item]
+      ),
     };
   case COLLECTION_LINKS_DELETE:
     return {

@@ -128,6 +128,7 @@ export class LinkDetail extends React.Component {
     return {
       ...this.props.initialLinkState,
       name: this.state.linkName,
+      enabled: true,
 
       upstream: {
         ...this.props.initialLinkState.upstream,

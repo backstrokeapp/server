@@ -162,6 +162,18 @@
 .link-detail-box.branch { height: 72px; }
 
 
+.link-detail-save-button-container {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.save-button {
+  margin: 0px auto;
+  display: block;
+  user-select: none;
+}
+
+
 /* The footer. This contains the action buttons (save, delete) as well as displays any errors. */
 .link-detail-footer {
   max-width: 500px;
@@ -169,20 +181,16 @@
   display: flex;
   justify-content: center;
 }
-.save-button {
+.delete-button {
   font-family: "Lato", Helvetica, Arial, sans-serif;
   font-size: 24px;
   display: inline-block;
   cursor: pointer;
-  color: #212121;
+  color: #de3535;
   user-select: none;
 }
-.save-button:active {
+.delete-button:active {
   opacity: 0.8;
-}
-.save-button.disabled, .save-button.disabled:active {
-  opacity: 0.5;
-  cursor: default;
 }
 .link-detail-error {
   font-family: "Lato", Helvetica, Arial, sans-serif;

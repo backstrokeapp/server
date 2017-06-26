@@ -3,6 +3,7 @@ import { COLLECTION_LINKS_SELECT } from '../../actions/collection/links/select';
 import { COLLECTION_LINKS_ERROR } from '../../actions/collection/links/error';
 import { COLLECTION_LINKS_START_LOADING } from '../../actions/collection/links/start-loading';
 import { COLLECTION_LINKS_PUSH } from '../../actions/collection/links/push';
+import { COLLECTION_LINKS_DELETE } from '../../actions/collection/links/delete';
 import { ROUTE_TRANSITION_LINK_DETAIL } from '../../actions/route-transition/link-detail';
 
 const initialState = {
@@ -46,6 +47,13 @@ export default function links(state=initialState, action) {
         } else {
           return item;
         }
+      }),
+    };
+  case COLLECTION_LINKS_DELETE:
+    return {
+      ...state,
+      data: state.data.filter(item => {
+        return action.item.id !== item.id;
       }),
     };
   default:

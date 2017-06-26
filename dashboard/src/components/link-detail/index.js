@@ -9,9 +9,11 @@ import { connect } from 'react-redux';
 import Switch from '../toggle-switch/index';
 import LinkError from '../link-error/index';
 import LinkLoading from '../link-loading/index';
+import Button from '../button/index';
 
 import collectionLinksEnable from '../../actions/collection/links/enable';
 import collectionLinksSave from '../../actions/collection/links/save';
+import collectionLinksDelete from '../../actions/collection/links/delete';
 
 const ch = new ColorHash();
 
@@ -121,6 +123,32 @@ export class LinkDetail extends React.Component {
     )
   }
 
+  // Assemble a complete link using the updated elements in this component's state.
+  makeLink() {
+    return {
+      ...this.props.initialLinkState,
+      name: this.state.linkName,
+
+      upstream: {
+        ...this.props.initialLinkState.upstream,
+        type: 'repo',
+        owner: this.state.upstreamOwner,
+        repo: this.state.upstreamRepo,
+        branch: this.state.upstreamBranch,
+        branches: this.state.upstreamBranchList,
+      },
+
+      fork: {
+        ...this.props.initialLinkState.fork,
+        type: this.state.forkType,
+        owner: this.state.forkOwner,
+        repo: this.state.forkRepo,
+        branch: this.state.forkBranch,
+        branches: this.state.forkBranchList,
+      },
+    }
+  }
+
   render() {
     const link = this.props.initialLinkState;
 
@@ -131,6 +159,9 @@ export class LinkDetail extends React.Component {
     }
 
     return <div>
+      {/* report any errors */}
+      <LinkError error={this.props.linkError} />
+
       <div className="link-detail" style={{backgroundColor: link.enabled ? this.state.themeColor : null}}>
         <textarea
           onChange={e => {
@@ -244,39 +275,18 @@ export class LinkDetail extends React.Component {
             </div> : null}
           </div>
         </div>
+
+        <div className="link-detail-save-button-container">
+          <Button
+            className={classnames(`save-button`)}
+            disabled={!this.isLinkValid()}
+            onClick={() => this.isLinkValid() && this.props.onSaveLink(this.makeLink())}
+          >Save</Button>
+        </div>
       </div>
 
-      {/* report any errors */}
-      <LinkError error={this.props.linkError} />
-
       <div className="link-detail-footer">
-        <span
-          className={classnames(`save-button`, {
-            disabled: !this.isLinkValid(),
-          })}
-          onClick={() => this.isLinkValid() && this.props.onSaveLink({
-            ...this.props.initialLinkState,
-            name: this.state.linkName,
-
-            upstream: {
-              ...this.props.initialLinkState.upstream,
-              type: 'repo',
-              owner: this.state.upstreamOwner,
-              repo: this.state.upstreamRepo,
-              branch: this.state.upstreamBranch,
-              branches: this.state.upstreamBranchList,
-            },
-
-            fork: {
-              ...this.props.initialLinkState.fork,
-              type: this.state.forkType,
-              owner: this.state.forkOwner,
-              repo: this.state.forkRepo,
-              branch: this.state.forkBranch,
-              branches: this.state.forkBranchList,
-            },
-          })}
-        >Save</span>
+        <div className="delete-button" onClick={() => this.props.onDeleteLink(this.makeLink())}>Delete</div>
       </div>
     </div>;
   }
@@ -296,6 +306,13 @@ export default connect(state => {
       dispatch(collectionLinksSave(link)).then(() => {
         window.location.hash = '#/links';
       });
+    },
+    onDeleteLink(link) {
+      if (window.confirm('Are you sure you want to delete this link?')) {
+        dispatch(collectionLinksDelete(link)).then(() => {
+          window.location.hash = '#/links';
+        });
+      }
     },
   };
 })(function(props) {

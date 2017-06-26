@@ -1,3 +1,12 @@
+/*
+ *
+ *
+ *
+ *
+ */
+
+/* The link detail card - by default it's gray as its disabled. When enabled, the color is set via
+ * an inline style in the component. */
 .link-detail {
   max-width: 500px;
   margin: 50px auto;
@@ -16,6 +25,8 @@
   transition: all 250ms ease-out;
 }
 
+/* The link detail card title--a textbox--is rendered at the top of the link detail card and used to
+ * change the name of the link the detail card represents. */
 .link-detail-title {
   font-family: "Lato", Helvetica, Arial, sans-serif;
   height: 100px;
@@ -39,6 +50,7 @@
   border-color: rgba(255, 255, 255, 0.4);
 }
 
+/* The on-off switch is under the title and used for enabling / disabling the link. */
 .link-detail-switch {
   margin-left: 24px;
   margin-right: 24px;
@@ -46,7 +58,7 @@
   margin-bottom: 16px;
 }
 
-
+/* A link has two repositories - one to pull changes from and one to push changes to. */
 .link-detail-repository {
   background-color: rgba(0, 0, 0, 0.2);
   color: #fff;
@@ -57,7 +69,7 @@
   flex-direction: column
 }
 
-
+/* Label each repository with its respective label - `upstream` or `fork` */
 .link-detail-repository-header {
   display: flex;
   flex-direction: row;
@@ -69,38 +81,20 @@
 }
 
 
-.link-detail-repository-display {
-  display: flex;
-  flex-direction: row;
-  font-size: 24px;
-  margin-top: 8px;
-  margin-bottom: 16px;
-}
-.link-detail-owner {
-  font-weight: 300;
-}
-.link-detail-name:before {
-  content: " / ";
-  margin-left: 0.15em;
-}
-.link-detail-branch:before {
-  content: " @ ";
-  margin-left: 0.15em;
-}
-
-
-
-
+/* The controls to change the owner / name / branch of a repository */
 .link-detail-repository-edit {
   font-size: 24px;
   margin-top: 16px;
   margin-bottom: 16px;
 }
 
-.link-detail-repository-edit-row-one {
+/* The fork repo first contains two radiobuttons to pick whether the fork should be a specific
+ * fork or all forks of a repo. */
+.link-detail-repository-edit-row-fork-radios {
   margin-bottom: 16px;
 }
 
+/* Style the radiobuttons */
 .link-detail-repository-radio {
   display: none;
 }
@@ -123,12 +117,18 @@
   user-select: none;
 }
 
-
-.link-detail-repository-edit-row-two {
+/* Next, we have the row that contains the repository owner / repository name inputs. */
+.link-detail-repository-edit-row-owner-name {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 }
+.link-detail-decorator {
+  font-size: 32px;
+  padding: 16px 12px;
+}
+
+/* Finally, we have a row with a branch selection input to finish off the repository edit section. */
 .link-detail-repository-edit-row-three {
   display: flex;
   flex-direction: row;
@@ -136,6 +136,8 @@
   margin-top: 16px;
 }
 
+/* Styles for the text inputs and select boxes. These are used throughout the card to create that
+ * "fat border" text input field. */
 .link-detail-box {
   padding: 20px;
   border-radius: 8px;
@@ -155,19 +157,12 @@
 .link-detail-box:focus {
   border-color: rgba(255, 255, 255, 0.4);
 }
-
 .link-detail-box.owner { width: 0%; }
 .link-detail-box.repo { width: 0%; }
-.link-detail-box.branch {
-  height: 72px;
-}
-
-.link-detail-decorator {
-  font-size: 32px;
-  padding: 16px 12px;
-}
+.link-detail-box.branch { height: 72px; }
 
 
+/* The footer. This contains the action buttons (save, delete) as well as displays any errors. */
 .link-detail-footer {
   max-width: 500px;
   margin: 32px auto;
@@ -189,7 +184,6 @@
   opacity: 0.5;
   cursor: default;
 }
-
 .link-detail-error {
   font-family: "Lato", Helvetica, Arial, sans-serif;
   font-size: 18px;

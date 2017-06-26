@@ -1,0 +1,13 @@
+.link-error-container {
+  max-width: 500px;
+  margin: 16px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.link-error {
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  display: inline-block;
+  color: #de3535;
+}

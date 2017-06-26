@@ -154,7 +154,7 @@ export class LinkDetail extends React.Component {
             <span className="link-detail-repository-header-error">{this.state.upstreamError}</span>
           </div>
           <div className="link-detail-repository-edit">
-            <div className="link-detail-repository-edit-row-two">
+            <div className="link-detail-repository-edit-row-owner-name">
               <input
                 className="link-detail-box owner"
                 placeholder="username"
@@ -192,7 +192,7 @@ export class LinkDetail extends React.Component {
             <span className="link-detail-repository-header-error">{this.state.forkError}</span>
           </div>
           <div className="link-detail-repository-edit">
-            <div className="link-detail-repository-edit-row-one">
+            <div className="link-detail-repository-edit-row-fork-radios">
               <input
                 type="radio"
                 id="fork-all"
@@ -211,7 +211,7 @@ export class LinkDetail extends React.Component {
               <label htmlFor="one-fork">One fork</label>
             </div>
             {this.state.forkType === 'repo' ? <div>
-              <div className="link-detail-repository-edit-row-two">
+              <div className="link-detail-repository-edit-row-owner-name">
                 <input
                   className="link-detail-box owner"
                   placeholder="username"

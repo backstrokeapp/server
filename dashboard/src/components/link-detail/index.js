@@ -197,11 +197,19 @@ export class LinkDetail extends React.Component {
                   this.setState({upstreamOwner: e.target.value})
                   this.fetchBranches('upstream');
                 }}
+                onKeyDown={e => {
+                  // Skip to repo box when slash is pressed.
+                  if (e.key === '/') {
+                    this.upstreamRepoBox.focus()
+                    e.preventDefault();
+                  }
+                }}
               />
               <span className="link-detail-decorator">/</span>
               <input
                 className="link-detail-box repo"
                 placeholder="repository"
+                ref={ref => this.upstreamRepoBox = ref}
                 value={this.state.upstreamRepo}
                 onChange={e => {
                   this.setState({upstreamRepo: e.target.value})
@@ -254,12 +262,20 @@ export class LinkDetail extends React.Component {
                     this.setState({forkOwner: e.target.value})
                     this.fetchBranches('fork');
                   }}
+                  onKeyDown={e => {
+                    // Skip to repo box when slash is pressed.
+                    if (e.key === '/') {
+                      this.forkRepoBox.focus()
+                      e.preventDefault();
+                    }
+                  }}
                 />
                 <span className="link-detail-decorator">/</span>
                 <input
                   className="link-detail-box repo"
                   placeholder="repository"
                   value={this.state.forkRepo}
+                  ref={ref => this.forkRepoBox = ref}
                   onChange={e => {
                     this.setState({forkRepo: e.target.value})
                     this.fetchBranches('fork');

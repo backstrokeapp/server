@@ -70,7 +70,7 @@
 .link-list-item-header {
   color: #fff;
   font-size: 32px;
-  margin-bottom: 24px;
+  margin-bottom: 108px;
   padding-right: 24px;
   padding-left: 24px;
 }
@@ -79,7 +79,9 @@
   flex-direction: row;
   padding-right: 24px;
   padding-left: 24px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
+  position: absolute;
+  bottom: 0px;
 }
 .link-list-item-edit {
   margin-top: 8px;

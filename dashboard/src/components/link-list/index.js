@@ -3,9 +3,7 @@ import './styles.css';
 import { connect } from 'react-redux';
 
 import ColorHash from 'color-hash';
-import lightness from 'lightness';
 
-import collectionLinksSelect from '../../actions/collection/links/select';
 import collectionLinksEnable from '../../actions/collection/links/enable';
 import collectionLinksCreate from '../../actions/collection/links/create';
 
@@ -39,7 +37,6 @@ export function LinkList({
     body = <ul className="link-list">
       {links.data.map(link => {
         const themeColor = ch.hex(link.name);
-        const darkThemeColor = lightness(themeColor, -10);
 
         return <li
           className="link-list-item"

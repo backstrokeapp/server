@@ -16,6 +16,7 @@ const initialState = {
 
 export default function links(state=initialState, action) {
   switch (action.type) {
+  case COLLECTION_LINKS_SELECT:
   case ROUTE_TRANSITION_LINK_DETAIL:
     return {...state, selected: action.id};
   case COLLECTION_LINKS_START_LOADING:
@@ -36,8 +37,6 @@ export default function links(state=initialState, action) {
       loading: false,
       page: action.page || 0,
     };
-  case COLLECTION_LINKS_SELECT:
-    return {...state, selected: action.id};
   case COLLECTION_LINKS_PUSH:
     const dataInState = state.data.find(item => action.item.id === item.id);
     return {

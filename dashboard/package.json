@@ -5,7 +5,6 @@
   "dependencies": {
     "@density/conduit": "^0.2.1",
     "color-hash": "^1.0.3",
-    "lightness": "^1.0.0",
     "lodash.debounce": "^4.0.8",
     "normalize.css": "^7.0.0",
     "react": "^15.6.1",

@@ -31,7 +31,7 @@ export class LinkDetail extends React.Component {
   constructor(props) {
     super(props);
     const link = this.props.initialLinkState;
-    const linkName = link ? link.name : '';
+    const linkName = (link && link.name) || '';
 
     // Construct initial state given the initial link as a template.
     this.state = {
@@ -43,12 +43,12 @@ export class LinkDetail extends React.Component {
       upstreamOwner: link && link.upstream ? link.upstream.owner : '',
       upstreamRepo: link && link.upstream ? link.upstream.repo : '',
       upstreamBranch: link && link.upstream ? link.upstream.branch : '',
-      upstreamBranchList: link && link.upstream && link.upstream.branches || [],
+      upstreamBranchList: (link && link.upstream && link.upstream.branches) || [],
 
-      forkOwner: link && link.fork && link.fork.owner || '',
-      forkRepo: link && link.fork && link.fork.repo || '',
-      forkBranch: link && link.fork && link.fork.branch || '',
-      forkBranchList: link && link.fork && link.fork.branches || [],
+      forkOwner: (link && link.fork && link.fork.owner) || '',
+      forkRepo: (link && link.fork && link.fork.repo) || '',
+      forkBranch: (link && link.fork && link.fork.branch) || '',
+      forkBranchList: (link && link.fork && link.fork.branches) || [],
       forkType: link && link.fork ? link.fork.type : 'fork-all',
     };
 

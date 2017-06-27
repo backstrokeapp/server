@@ -32,7 +32,14 @@ const store = createStore(reducer, {}, compose(
 const router = createRouter(store);
 router.addRoute('links', () => routeTransitionLinkList());
 router.addRoute('links/:id', id => routeTransitionLinkDetail(id));
-router.handle();
+
+if (window.location.hash === '') {
+  // Dispatch a route transition.
+  window.location.hash = '#/links';
+} else {
+  // Handle the existing state of the page.
+  router.handle();
+}
 
 // ReactDOM.render(<LinkList />, document.getElementById('root'));
 ReactDOM.render(<Provider store={store}>

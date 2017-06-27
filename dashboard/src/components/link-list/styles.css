@@ -109,4 +109,6 @@
 }
 .link-list-footer a {
   color: #222;
+  cursor: pointer;
+  text-decoration: underline;
 }

@@ -10,6 +10,7 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import {Provider} from 'react-redux';
 
 import createRouter from '@density/conduit';
+import userSet from './actions/user/set';
 import routeTransitionLinkList from './actions/route-transition/link-list';
 import routeTransitionLinkDetail from './actions/route-transition/link-detail';
 
@@ -27,6 +28,19 @@ const store = createStore(reducer, {}, compose(
   applyMiddleware(thunk),
   window.devToolsExtension ? window.devToolsExtension() : f => f
 ));
+
+fetch('https://api.backstroke.us/v1/whoami', {
+  credentials: 'include',
+}).then(resp => {
+  if (resp.ok) {
+    return resp.json().then(data => {
+      store.dispatch(userSet(data));
+    });
+  } else {
+    // User isn't logged in, send them to the login page.
+    window.location.href = 'https://api.backstroke.us/setup/login';
+  }
+});
 
 // Add a router. This handles the transition between the list page and the detail page.
 const router = createRouter(store);

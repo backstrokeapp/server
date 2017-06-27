@@ -20,6 +20,7 @@ export function LinkList({
   onEnableLink,
   onSelectLink,
   onCreateLink,
+  onLogout,
 }) {
   let body;
 
@@ -77,7 +78,7 @@ export function LinkList({
     {body}
 
     <div className="link-list-footer">
-      <a className="logout" href="/logout">Logout 1egoman</a>
+      <a className="logout" onClick={onLogout}>Logout 1egoman</a>
     </div>
   </div>;
 }
@@ -101,5 +102,8 @@ export default connect(state => {
     onEnableLink(link) {
       dispatch(collectionLinksEnable(link));
     },
+    onLogout() {
+      window.location.href = 'https://api.backstroke.us/logout';
+    }
   }
 })(LinkList);

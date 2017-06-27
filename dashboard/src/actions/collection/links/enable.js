@@ -1,10 +1,11 @@
 import collectionLinksError from './error';
 import collectionLinksPush from './push';
+import { API_URL } from '../../../constants';
 
 export default function collectionLinksEnable(link) {
   const desiredEnabledState = !link.enabled;
   return dispatch => {
-    return fetch(`https://api.backstroke.us/v1/links/${link.id}/enable`, {
+    return fetch(`${API_URL}/v1/links/${link.id}/enable`, {
       method: 'POST',
       credentials: 'include',
       body: JSON.stringify({
@@ -23,7 +24,7 @@ export default function collectionLinksEnable(link) {
         });
       } else {
         return resp.json().then(data => {
-          dispatch(collectionLinksError(`Request error: ${data.error}`));
+          dispatch(collectionLinksError(`Error enabling link: ${data.error}`));
         });
       }
     });

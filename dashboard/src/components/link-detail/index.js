@@ -15,6 +15,8 @@ import collectionLinksEnable from '../../actions/collection/links/enable';
 import collectionLinksSave from '../../actions/collection/links/save';
 import collectionLinksDelete from '../../actions/collection/links/delete';
 
+import { API_URL } from '../../constants';
+
 const ch = new ColorHash();
 
 function getDefaultBranch(branchList) {
@@ -77,7 +79,7 @@ export class LinkDetail extends React.Component {
       return;
     }
 
-    return fetch(`https://api.backstroke.us/v1/repos/github/${owner}/${repo}`, {
+    return fetch(`${API_URL}/v1/repos/github/${owner}/${repo}`, {
       credentials: 'include',
     }).then(resp => {
       if (owner.length && repo.length) {
@@ -304,8 +306,10 @@ export default connect(state => {
       dispatch(collectionLinksEnable(link));
     },
     onSaveLink(link) {
-      dispatch(collectionLinksSave(link)).then(() => {
-        window.location.hash = '#/links';
+      dispatch(collectionLinksSave(link)).then(ok => {
+        if (ok) {
+          window.location.hash = '#/links';
+        }
       });
     },
     onDeleteLink(link) {

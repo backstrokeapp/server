@@ -1,9 +1,10 @@
 import collectionLinksError from './error';
 import collectionLinksPush from './push';
+import { API_URL } from '../../../constants';
 
 export default function collectionLinksCreate() {
   return dispatch => {
-    return fetch(`https://api.backstroke.us/v1/links`, {
+    return fetch(`${API_URL}/v1/links`, {
       method: 'POST',
       credentials: 'include',
     }).then(r => r).catch(err => {

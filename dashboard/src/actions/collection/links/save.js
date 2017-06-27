@@ -1,9 +1,10 @@
 import collectionLinksError from './error';
 import collectionLinksPush from './push';
+import { API_URL } from '../../../constants';
 
 export default function collectionLinksSave(link) {
   return dispatch => {
-    return fetch(`https://api.backstroke.us/v1/links/${link.id}`, {
+    return fetch(`${API_URL}/v1/links/${link.id}`, {
       method: 'POST',
       credentials: 'include',
       body: JSON.stringify({link}),
@@ -17,10 +18,12 @@ export default function collectionLinksSave(link) {
       if (resp.ok) {
         return resp.json().then(item => {
           dispatch(collectionLinksPush(link));
+          return true;
         });
       } else {
         return resp.json().then(data => {
-          dispatch(collectionLinksError(`Request error: ${resp.error}`));
+          dispatch(collectionLinksError(`Error saving link: ${data.error}`));
+          return false;
         });
       }
     });

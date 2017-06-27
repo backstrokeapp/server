@@ -14,6 +14,8 @@ import userSet from './actions/user/set';
 import routeTransitionLinkList from './actions/route-transition/link-list';
 import routeTransitionLinkDetail from './actions/route-transition/link-detail';
 
+import { API_URL } from './constants';
+
 import activePage from './reducers/active-page';
 import links from './reducers/links';
 import user from './reducers/user';
@@ -29,7 +31,7 @@ const store = createStore(reducer, {}, compose(
   window.devToolsExtension ? window.devToolsExtension() : f => f
 ));
 
-fetch('https://api.backstroke.us/v1/whoami', {
+fetch(`${API_URL}/v1/whoami`, {
   credentials: 'include',
 }).then(resp => {
   if (resp.ok) {
@@ -38,7 +40,7 @@ fetch('https://api.backstroke.us/v1/whoami', {
     });
   } else {
     // User isn't logged in, send them to the login page.
-    window.location.href = 'https://api.backstroke.us/setup/login';
+    window.location.href = `${API_URL}/setup/login`;
   }
 });
 

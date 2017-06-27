@@ -52,6 +52,7 @@
 
   background-color: #999;
   transition: all 250ms ease-out;
+  position: relative;
 }
 .link-list-item:after {
   content: " ";
@@ -62,6 +63,8 @@
   background-color: rgba(0, 0, 0, 0.2);
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+  position: absolute;
+  bottom: 0px;
 }
 
 .link-list-item-header {
@@ -76,6 +79,7 @@
   flex-direction: row;
   padding-right: 24px;
   padding-left: 24px;
+  margin-bottom: 24px;
 }
 .link-list-item-edit {
   margin-top: 8px;

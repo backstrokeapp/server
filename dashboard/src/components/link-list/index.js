@@ -12,6 +12,8 @@ import LinkError from '../link-error/index';
 import LinkLoading from '../link-loading/index';
 import Button from '../button/index';
 
+import { API_URL } from '../../constants';
+
 const ch = new ColorHash();
 
 export function LinkList({
@@ -103,7 +105,7 @@ export default connect(state => {
       dispatch(collectionLinksEnable(link));
     },
     onLogout() {
-      window.location.href = 'https://api.backstroke.us/logout';
+      window.location.href = `${API_URL}/logout`;
     }
   }
 })(LinkList);

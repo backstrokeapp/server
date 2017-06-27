@@ -5,6 +5,7 @@ import { COLLECTION_LINKS_START_LOADING } from '../../actions/collection/links/s
 import { COLLECTION_LINKS_PUSH } from '../../actions/collection/links/push';
 import { COLLECTION_LINKS_DELETE } from '../../actions/collection/links/delete';
 import { ROUTE_TRANSITION_LINK_DETAIL } from '../../actions/route-transition/link-detail';
+import { ROUTE_TRANSITION_LINK_LIST } from '../../actions/route-transition/link-list';
 
 const initialState = {
   selected: null,
@@ -18,7 +19,9 @@ export default function links(state=initialState, action) {
   switch (action.type) {
   case COLLECTION_LINKS_SELECT:
   case ROUTE_TRANSITION_LINK_DETAIL:
-    return {...state, selected: action.id};
+    return {...state, selected: action.id, error: null};
+  case ROUTE_TRANSITION_LINK_LIST:
+    return {...state, error: null};
   case COLLECTION_LINKS_START_LOADING:
     return {...state, loading: true};
   case COLLECTION_LINKS_ERROR:

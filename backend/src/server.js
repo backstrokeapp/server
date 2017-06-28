@@ -15,8 +15,15 @@ app.options('*', corsHandler);
 import Promise from 'bluebird';
 global.Promise = Promise;
 
-if (process.env.NODE_ENV !== 'production') {
-  app.use(express.static('../frontend/build'));
+// How should we redirect to other origins? If unset, add some mocks to this app to use as those
+// redirects.
+const APP_URL = process.env.APP_URL || '/mocks/app';
+if (APP_URL === '/mocks/app') {
+  app.get('/mocks/app', (req, res) => res.send('This would redirect to the app when deployed.'));
+}
+const ROOT_URL = process.env.ROOT_URL || '/mocks/root';
+if (APP_URL === '/mocks/root') {
+  app.get('/mocks/root', (req, res) => res.send('This would redirect to the main site when deployed.'));
 }
 
 // ----------------------------------------------------------------------------
@@ -96,12 +103,12 @@ app.get('/setup/login/public', passport.authenticate('github', {
 app.get("/auth/github/callback", passport.authenticate("github", {
   failureRedirect: '/setup/failed',
 }), (req, res) => {
-  res.redirect('/#/links'); // on success
+  res.redirect(APP_URL); // on success
 });
 
 app.get('/logout', (req, res) => {
   req.logout();
-  res.redirect('/');
+  res.redirect(ROOT_URL);
 });
 
 // A utility function to check if a user is authenticated, and if so, return

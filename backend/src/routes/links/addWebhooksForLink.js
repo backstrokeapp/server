@@ -6,6 +6,10 @@ export function getBackstrokeUrlFor(link) {
   return `${hostname}/_${link.id}`;
 }
 
+// Constant that is returned when there isn't premission to add the webhook.
+const NO_PERMISSION = 'NO_PERMISSION',
+      ALREADY_EXISTS = 'ALREADY_EXISTS';
+
 function addWebhookToRepo(req, config, owner, repo) {
   return req.github.user.reposCreateHook({
     owner,
@@ -15,15 +19,9 @@ function addWebhookToRepo(req, config, owner, repo) {
     events: ['push'],
   }).catch(err => {
     if (err.code === 422) { // The webhook already exists
-      return false;
+      return ALREADY_EXISTS;
     } else if (err.code === 404) { // No permission to add a webhook to this repo
-      return {
-        error: [
-          `No permission to add a webhook to the repository ${owner}/${repo}.`,
-          `Make sure ${req.user.user} has given Backstroke permission to access this organisation or`,
-          `repo via OAuth.`,
-        ].join(' '),
-      };
+      return NO_PERMISSION;
     } else {
       return Promise.reject(err);
     }
@@ -32,7 +30,7 @@ function addWebhookToRepo(req, config, owner, repo) {
 
 // Given a link, try to add a webhook within the parent repository.
 export function addWebhooksForLink(req, link) {
-  let config = {
+  const config = {
     url: getBackstrokeUrlFor(link),
     content_type: 'json',
   };
@@ -49,14 +47,19 @@ export function addWebhooksForLink(req, link) {
   debug('WEBHOOK ADD TO HOW MANY REPOS %d', operations.length);
 
   return Promise.all(operations).then(results => {
-    let errors = results.filter(r => r && r.error);
+    const errors = results.filter(r => r === NO_PERMISSION);
     debug('WEBHOOK ADD RESULTS %o', results);
 
     // If at least one webhook was successfully added, then succeed.
-    if (errors.length === 0 || results.length - errors.length > 0) {
-      return results.filter(i => i.id).map(i => i.id.toString());
+    if (errors.length === results.length) {
+      const error = errors[0];
+      if (error === NO_PERMISSION) {
+        throw new Error('No permission to add a webhook to either repository in this link - you sure you have write permission to either the upstream or fork?');
+      } else {
+        throw new Error(`Error trying to add webhook to repository: ${error}`);
+      }
     } else {
-      return Promise.reject(errors[0]);
+      return results.filter(i => i.id).map(i => i.id.toString());
     }
   });
 }
@@ -64,7 +67,7 @@ export function addWebhooksForLink(req, link) {
 // Given a link, remove all webhooks stored in the `hookId` property.
 export function removeOldWebhooksForLink(req, link) {
   if (link.upstream.type === 'repo' && link.hookId) {
-    let all = link.hookId.map(id => {
+    const all = link.hookId.map(id => {
       debug('DELETING WEBHOOK %s on %s/%s', id, link.upstream.owner, link.upstream.fork);
       return req.github.user.reposDeleteHook({owner: fromUser, repo: fromRepo, id}).catch(err => {
         if (err.status === 'Not Found') {

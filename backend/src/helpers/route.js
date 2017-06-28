@@ -7,8 +7,7 @@ export default function routeWrapper(handler, dependencies) {
       res.status(200).send(data);
     }).catch(error => {
       res.status(400);
-      // res.headers['Content-Type'] = 'text/plain';
-      res.send(error.stack);
+      res.send({error: error.message, stack: error.stack});
       throw error;
     });
   };

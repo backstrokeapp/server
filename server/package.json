@@ -36,7 +36,7 @@
   },
   "scripts": {
     "start": "NODE_PATH=src/ babel-node src/server.js",
-    "test": "NODE_PATH=src/ NODE_ENV=test mocha test/",
+    "test": "NODE_PATH=src/ NODE_ENV=test mocha src/**/test.js",
     "coverage": "NODE_PATH=src/ NODE_ENV=test nyc --all --reporter=lcov --reporter=text npm test",
     "coverageopen": "open coverage/lcov-report/index.html"
   },

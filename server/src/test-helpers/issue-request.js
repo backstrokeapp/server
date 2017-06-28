@@ -4,6 +4,8 @@ import fs from 'fs';
 import path from 'path';
 import request from 'request';
 
+import route from '../helpers/route';
+
 // A helper to mount a given route to a mock express app and query the endpoint, mainly useful for
 // testing.
 //
@@ -46,7 +48,7 @@ export default function issueRequest(fn, deps, mountAt='/', user=null, requestPa
       req.isAuthenticated = () => req.user ? true : false;
       next();
     });
-    app.all(mountAt, (req, res) => fn.apply(null, [...deps, req, res]));
+    app.all(mountAt, route(fn, deps));
 
     // Listen on a local socket
     app.listen(socketPath, () => {

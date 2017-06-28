@@ -4,8 +4,8 @@
 The Backstroke dashboard interacts with the api to provide a simple management interface for
 Backstroke links.
 
-![http://i.imgur.com/YuK5Nd8.png](http://i.imgur.com/YuK5Nd8.png)
-![http://i.imgur.com/GuwtFiu.png](http://i.imgur.com/GuwtFiu.png)
+<img src="http://i.imgur.com/YuK5Nd8.png" width="" />
+<img src="http://i.imgur.com/GuwtFiu.png" width="400" />
 
 ## Environment variables
 - `REACT_APP_APP_URL`: The path to this project. In production, this is `https://app.backstroke.us`.

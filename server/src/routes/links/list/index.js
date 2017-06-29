@@ -1,4 +1,4 @@
-import {PAGE_SIZE, paginate} from '../helpers';
+import {PAGE_SIZE, paginate} from '../../helpers';
 
 // Return all links in a condensed format. Included is {_id, name, paid, enabled}.
 // This will support pagination.

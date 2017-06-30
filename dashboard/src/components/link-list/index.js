@@ -14,6 +14,8 @@ import Button from '../button/index';
 
 import { API_URL } from '../../constants';
 
+import NoLinks from '../../images/No Links.png';
+
 const ch = new ColorHash();
 
 export function LinkList({
@@ -33,7 +35,13 @@ export function LinkList({
   } else if (links.data.length === 0) {
     body = <ul className="link-list">
       <li className="link-list-item-empty">
-        You have no links, create one above.
+        <p>You haven't created any links.</p>
+        <img className="link-list-item-empty-visual" src={NoLinks} alt="No links" />
+        <Button
+          className="link-list-create-button"
+          color="dark"
+          onClick={onCreateLink}
+        >Create Link</Button>
       </li>
     </ul>
   } else {
@@ -68,13 +76,13 @@ export function LinkList({
       src="/assets/img/logo.png"
     />
 
-  <div className="link-list-create-button-container">
+  {links.data.length > 0 ? <div className="link-list-create-button-container">
     <Button
       className="link-list-create-button"
       color="dark"
       onClick={onCreateLink}
-    >New Link</Button>
-  </div>
+    >Create Link</Button>
+  </div> : null}
 
     {/* The list "card" of links */}
     {body}

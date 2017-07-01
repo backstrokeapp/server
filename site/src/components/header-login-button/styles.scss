@@ -1,0 +1,53 @@
+.header-login-section {
+  position: relative;
+  max-width: 400px;
+
+  margin: 10px auto;
+}
+
+.header-login-button {
+  border: 0px;
+  outline: none;
+
+  background: #222;
+  color: #fff;
+  border-radius: 45px;
+  padding: 24px 32px;
+  width: 100%;
+  cursor: pointer;
+  user-select: none;
+
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+
+  position: absolute;
+  top: 107px;
+  left: 0px;
+
+  // When not on mobile, make the button a fixed width, and make the font size bigger.
+  @media screen and (min-width: 400px) {
+    font-size: 32px;
+    width: 400px;
+  }
+}
+
+.header-login-button.disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.header-login-button:active {
+  opacity: 0.6;
+}
+
+.header-login-button-man {
+  height: 115px;
+  width: 93px;
+  z-index: 10;
+
+  position: relative;
+  top: 0px;
+  left: 50%;
+  margin-left: -46.5px;
+}

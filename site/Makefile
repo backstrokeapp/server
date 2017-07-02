@@ -18,10 +18,13 @@ build:
 
 	# Compile all scss to css.
 	# ie, src/foo.scss => build/output.css
+	# Reverse the order with tac so that less deep stylesheets come first in the file.
 	$(NODESASS) src/ \
 		--ignore=node_modules,dist,src/components/template \
 		-o sass_dist/
-	find sass_dist -type f -exec cat '{}' ';' > build/styles.css
+	for f in `find sass_dist -type f | gtac`; do \
+		cat $$f >> build/styles.css; \
+	done
 	rm -rf sass_dist/
 
 	# Create build folder
@@ -44,5 +47,5 @@ watch:
 	# 1. Watch for changes and build on change
 	# 2. Start the live server
 	$(CONCURRENTLY) \
-		"$(NODEMON) --exec 'make build' -w src/" \
+		"$(NODEMON) --exec 'make build' -w src/ -e 'js scss'" \
 		"node dist/helpers/live-server.js"

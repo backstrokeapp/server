@@ -1,8 +1,8 @@
 .header-login-section {
   position: relative;
   max-width: 400px;
-
   margin: 10px auto;
+  height: 400px;
 }
 
 .header-login-button {
@@ -12,7 +12,7 @@
   background: #222;
   color: #fff;
   border-radius: 45px;
-  padding: 24px 32px;
+  padding: 24px 0px;
   width: 100%;
   cursor: pointer;
   user-select: none;
@@ -20,6 +20,8 @@
   font-family: "Lato", Helvetica, Arial, sans-serif;
   font-size: 24px;
   font-weight: bold;
+  text-align: center;
+  text-decoration: none;
 
   position: absolute;
   top: 107px;

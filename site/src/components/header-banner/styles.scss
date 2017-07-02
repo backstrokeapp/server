@@ -18,14 +18,14 @@
   }
 }
 .header-banner {
-  max-width: 900px;
+  max-width: 500px;
   width: 100%;
   margin: 0px auto;
   padding-top: 30px;
   padding-bottom: 60px;
 
   font-family: "Lato", Helvetica, Arial, sans-serif;
-  font-size: 24px;
+  font-size: 36px;
   font-weight: bold;
   text-align: center;
   text-decoration: none;
@@ -35,6 +35,9 @@
 .header-banner-header {
   text-align: left;
   margin-bottom: 40px;
+  margin-left: 8px;
+  margin-right: 8px;
+  font-size: 24px;
 }
 
 .header-banner-body {
@@ -43,6 +46,21 @@
 }
 .header-banner-body li {
   text-align: left;
-  line-height: 1.35;
+  margin-bottom: 10px;
+  margin-left: 8px;
+  margin-right: 8px;
   font-weight: normal;
+  font-size: 18px;
+}
+
+@media screen and (min-width: 900px) {
+  .header-banner {
+    max-width: 900px;
+  }
+  .header-banner-header {
+    font-size: 48px;
+  }
+  .header-banner-body li {
+    font-size: 28px;
+  }
 }

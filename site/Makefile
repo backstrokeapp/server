@@ -22,8 +22,9 @@ build:
 	$(NODESASS) src/ \
 		--ignore=node_modules,dist,src/components/template \
 		-o sass_dist/
+	rm -rf $(BUILD)/styles.css
 	for f in `find sass_dist -type f | gtac`; do \
-		cat $$f >> build/styles.css; \
+		cat $$f >> $(BUILD)/styles.css; \
 	done
 	rm -rf sass_dist/
 

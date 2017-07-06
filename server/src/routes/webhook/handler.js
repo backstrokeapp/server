@@ -70,7 +70,6 @@ export default function webhook(req, link, pageSize=100) {
       debug('WEBHOOK IS ON THE FORK, SO UPSTREAM = %o AND FORK = %o', upstream, fork);
       return createPullRequest(
         req,
-        link,
         upstream,
         fork
       ).then(response => {
@@ -103,7 +102,7 @@ export default function webhook(req, link, pageSize=100) {
             branches: [],
           };
 
-          return createPullRequest(req, link, upstream, toRepo);
+          return createPullRequest(req, upstream, toRepo);
         });
 
         return Promise.all(all);

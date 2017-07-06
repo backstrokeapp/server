@@ -29,6 +29,18 @@ export default class MockModel {
         return Promise.resolve(true);
       },
     };
+
+    // Add all foreign key methods
+    // ie, instance.upstream() and instance.fork() return the foreign-key'd records
+    for (const key in this.foreignKeyNames) {
+      (function(key) {
+        that.methods[key] = function() {
+          return that.foreignKeyNames[key].findOne({
+            where: {id: this[`${key}Id`]},
+          });
+        };
+      })(key);
+    }
   }
   findOne({where}) {
     const model = this.models.find(model => {

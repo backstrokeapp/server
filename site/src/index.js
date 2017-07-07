@@ -9,7 +9,7 @@ import HowItWorks from './components/how-it-works';
 import UsedBy from './components/used-by';
 
 export default <html>
-  <Head title="foo" />
+  <Head />
   <body>
     <HeaderLogo />
     <HeaderBanner />

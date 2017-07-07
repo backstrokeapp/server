@@ -14,7 +14,7 @@ Link.methods.display = function() { return this; }
 
 describe('webhook', () => {
 
-  it('example webhook test', function() {
+  it('should create a pull request when given a single fork', function() {
     let userData, upstreamData, forkData;
 
     const searchIssues = sinon.stub().resolves({total_issues: 0, issues: []});
@@ -69,95 +69,76 @@ describe('webhook', () => {
       ]);
     });
   });
+  it('should create a pull request on each fork when given a bunch of forks', function() {
+    let userData, upstreamData, forkData;
 
-  // it('should make a PR to all forks of an upstream', () => {
-  //   const fork = generateRepo({
-  //     owner: 'upstream', name: 'my-app',
-  //     default_branch: 'master',
-  //     branches: ['master'],
-  //     issues: [],
-  //   });
-  //   const upstream = generateRepo({
-  //     owner: 'fork', name: 'my-app',
-  //     default_branch: 'master',
-  //     branches: ['master'],
-  //     issues: [],
-  //     forks: [fork],
-  //   });
-  //   const gh = createMockGithubInstance([upstream, fork]);
-  //
-  //   const upstreamId = generateId(),
-  //         forkId = generateId();
-  //   const link = {
-  //     enabled: true,
-  //     upstreamId,
-  //     upstream: () => Promise.resolve({
-  //       id: upstreamId,
-  //       type: 'repo',
-  //       owner: upstream.owner.login,
-  //       repo: upstream.name,
-  //       branch: 'master',
-  //     }),
-  //     forkId,
-  //     fork: () => Promise.resolve({
-  //       id: forkId,
-  //       type: 'fork-all',
-  //     }),
-  //   };
-  //
-  //   return webhook(gh, link, undefined, gh).then(output => {
-  //     assert.deepEqual(output, {
-  //       status: 'ok',
-  //       many: true,
-  //       forkCount: 1,
-  //       isEnabled: true,
-  //     });
-  //   });
-  // });
-  // it('should make a PR to a single fork of an upstream', () => {
-  //   const upstream = generateRepo({
-  //     owner: 'upstream', name: 'my-app',
-  //     default_branch: 'master',
-  //     branches: ['master'],
-  //     issues: [],
-  //   });
-  //   const fork = generateRepo({
-  //     owner: 'fork', name: 'my-app',
-  //     default_branch: 'master',
-  //     branches: ['master'],
-  //     issues: [],
-  //   });
-  //   const gh = createMockGithubInstance([upstream, fork]);
-  //
-  //   const upstreamId = generateId(),
-  //         forkId = generateId();
-  //   const link = {
-  //     enabled: true,
-  //     upstreamId,
-  //     upstream: () => Promise.resolve({
-  //       id: upstreamId,
-  //       type: 'repo',
-  //       owner: upstream.owner.login,
-  //       repo: upstream.name,
-  //       branch: 'master',
-  //     }),
-  //     forkId,
-  //     fork: () => Promise.resolve({
-  //       id: forkId,
-  //       type: 'repo',
-  //       owner: fork.owner.login,
-  //       repo: fork.name,
-  //       branch: 'master',
-  //     }),
-  //   };
-  //
-  //   return webhook(gh, link, undefined, gh).then(optout => {
-  //     assert.equal(optout.status, 'ok');
-  //     assert.equal(optout.isEnabled, true);
-  //     assert.equal(optout.many, false);
-  //     assert.equal(optout.forkCount, 1);
-  //   });
-  // });
+    const reposGetForks = sinon.stub().withArgs({owner: 'foo', repo: 'bar'}).resolves([
+      {owner: {login: 'hello'}, name: 'world'},
+      {owner: {login: 'another'}, name: 'repo'},
+    ]);
+    const searchIssues = sinon.stub().resolves({total_issues: 0, issues: []});
+    const pullRequestsCreate = sinon.stub().resolves('pull request response');
+
+    return Promise.all([
+      User.create({username: 'ryan'}),
+      Repository.create({type: 'repo', owner: 'foo', repo: 'bar', branch: 'master'}), // Upstream
+      Repository.create({type: 'fork-all'}), // Fork
+    ]).then(([user, upstream, fork]) => {
+      userData = user;
+      upstreamData = upstream;
+      return Link.create({
+        name: 'My Link',
+        enabled: true,
+        hookId: ['123456'],
+        owner: user.id,
+        upstream: upstream.id,
+        fork: fork.id,
+      });
+    }).then(link => {
+      return webhook({
+        github: {
+          user: {
+            searchIssues,
+            reposGetForks,
+          },
+          bot: {
+            pullRequestsCreate,
+          },
+        }
+      }, link);
+    }).then(resp => {
+      assert.deepEqual(resp, {
+        status: 'ok',
+        forkCount: 2,
+        many: true,
+        isEnabled: true,
+      });
+
+      assert.deepEqual(pullRequestsCreate.firstCall.args, [
+        {
+          base: "master",
+          body: "Hello!  The remote `foo/bar` has some new changes that aren't in this fork.\n  So, here they are, ready to be merged! :tada:\n\n  If this pull request can be merged without conflict, you can publish your software\n  with these new changes. Otherwise, fix any merge conflicts by clicking the `Resolve Conflicts`\n  button.\n\n  Have fun!\n  --------\n  Created by [Backstroke](http://backstroke.us). Oh yea, I'm a bot.\n  ",
+          head: "foo:master",
+          maintainer_can_modify: false,
+          owner: "hello",
+          repo: "world",
+          title: "Update from upstream repo foo/bar",
+        },
+      ]);
+      assert.deepEqual(pullRequestsCreate.secondCall.args, [
+        {
+          base: "master",
+          body: "Hello!  The remote `foo/bar` has some new changes that aren't in this fork.\n  So, here they are, ready to be merged! :tada:\n\n  If this pull request can be merged without conflict, you can publish your software\n  with these new changes. Otherwise, fix any merge conflicts by clicking the `Resolve Conflicts`\n  button.\n\n  Have fun!\n  --------\n  Created by [Backstroke](http://backstroke.us). Oh yea, I'm a bot.\n  ",
+          head: "foo:master",
+          maintainer_can_modify: false,
+          owner: "another",
+          repo: "repo",
+          title: "Update from upstream repo foo/bar",
+        },
+      ]);
+    });
+  });
+
   // it('should try to make a PR to a single fork of an upstream, but the repo opted out', () => {
   //   const upstream = generateRepo({
   //     owner: 'upstream', name: 'my-app',

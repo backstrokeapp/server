@@ -6,17 +6,18 @@ TEMP="$(mktemp -d)"
 echo "* Initializing server..."
 ssh $HOST "mkdir -p /app/server /app/site /app/dashboard && chown -R root:www-data /app && chmod -R 775 /app"
 
-echo "* Compressing backend..."
-cd .. && tar --exclude='./node_modules' -cvf $TEMP/backend.tar.gz backend/
+echo "* Compressing server..."
+cd .. && tar --exclude='./node_modules' -cvf $TEMP/server.tar.gz server/
 
-echo "* Sending backend..."
-scp $TEMP/backend.tar.gz $HOST:/tmp/backend.tar.gz
+echo "* Sending server..."
+scp $TEMP/server.tar.gz $HOST:/tmp/server.tar.gz
 
 rm -rf $TEMP
 
 echo "* Installing nginx"
 ssh $HOST <<END
-sudo apt-get install nginx
+sudo apt-get update
+sudo apt-get install -y nginx
 
 # For api.backstroke.us
 cat <<EOF > /etc/nginx/sites-enabled/api
@@ -49,19 +50,32 @@ server {
 }
 EOF
 
+# For backstroke.us
+cat <<EOF > /etc/nginx/sites-enabled/site
+server {
+  server_name site.backstroke.us;
+  listen 80;
+  root /app/site;
+  index index.html;
+
+  location / {
+    try_files \\\$uri \\\$uri/ =404;
+  }
+}
+EOF
+
 systemctl restart nginx
 END
 
 echo "* Uncompressing, setting up and booting server..."
 ssh $HOST <<END
 cd /tmp
-tar xf backend.tar.gz
+tar xf server.tar.gz
 rm -rf /app/server.previous/
 mv /app/server /app/server.previous/
-mv /tmp/backend/ /app/server/
+mv /tmp/server/ /app/server/
 
 # Install nvm
-sudo apt-get update
 sudo apt-get install -y build-essential libssl-dev curl git
 curl -sL https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
 . "\$HOME/.nvm/nvm.sh"
@@ -75,7 +89,7 @@ echo "npm -v = \$(npm -v)"
 
 source /app/server.env
 
-# Set up backend
+# Set up server
 cd /app/server
 [ -f \$(which babel) ] || npm i -g babel-cli
 yarn

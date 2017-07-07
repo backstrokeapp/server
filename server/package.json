@@ -43,10 +43,12 @@
   "babel": {
     "presets": [
       "es2015",
+      "es2017",
       "react"
     ],
     "plugins": [
-      "transform-object-rest-spread"
+      "transform-object-rest-spread",
+      "transform-runtime"
     ],
     "env": {
       "test": {

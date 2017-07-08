@@ -7,8 +7,8 @@ export function getBackstrokeUrlFor(link) {
 }
 
 // Constant that is returned when there isn't premission to add the webhook.
-const NO_PERMISSION = 'NO_PERMISSION',
-      ALREADY_EXISTS = 'ALREADY_EXISTS';
+export const NO_PERMISSION = 'NO_PERMISSION',
+             ALREADY_EXISTS = 'ALREADY_EXISTS';
 
 function addWebhookToRepo(req, config, owner, repo) {
   return req.github.user.reposCreateHook({
@@ -69,13 +69,19 @@ export function removeOldWebhooksForLink(req, link) {
   if (link.upstream.type === 'repo' && link.hookId) {
     const all = link.hookId.map(id => {
       debug('DELETING WEBHOOK %s on %s/%s', id, link.upstream.owner, link.upstream.fork);
-      return req.github.user.reposDeleteHook({owner: fromUser, repo: fromRepo, id}).catch(err => {
+
+      const errorHandler = err => {
         if (err.status === 'Not Found') {
           return true; // The given webhook was deleted by the user.
         } else {
           throw err; // rethrow error
         }
-      });
+      }
+
+      return Promise.all([
+        req.github.user.reposDeleteHook({owner: link.fork.owner, repo: link.fork.repo, id}).catch(errorHandler),
+        req.github.user.reposDeleteHook({owner: link.upstream.repo, repo: link.upstream.repo, id}).catch(errorHandler),
+      ]).then(r => true);
     });
     return Promise.all(all);
   } else {

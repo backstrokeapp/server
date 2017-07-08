@@ -44,7 +44,7 @@ import linksDelete from './routes/links/delete';
 import linksUpdate from './routes/links/update';
 import linksEnable from './routes/links/enable';
 
-import {addWebhooksForLink, removeOldWebhooksForLink} from './routes/links/addWebhooksForLink';
+import {addWebhooksForLink, removeOldWebhooksForLink} from './helpers/webhook-utils';
 
 // ----------------------------------------------------------------------------
 // Database stuff

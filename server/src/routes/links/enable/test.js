@@ -17,7 +17,7 @@ Link.methods.display = function() { return this; }
 describe('link enable', () => {
   let userData, linkData, linkDataNoOwn, upstreamData, forkData;
 
-  before(function() {
+  beforeEach(function() {
     return Promise.all([
       User.create({username: 'ryan'}),
       User.create({username: 'bill'}),

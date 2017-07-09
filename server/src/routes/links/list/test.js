@@ -17,7 +17,7 @@ Link.methods.display = function() { return this; }
 describe('link list', () => {
   let userData, linkData, upstreamData, forkData;
 
-  before(function() {
+  beforeEach(function() {
     return Promise.all([
       User.create({username: 'ryan'}),
       Repository.create({type: 'repo'}), // Upstream

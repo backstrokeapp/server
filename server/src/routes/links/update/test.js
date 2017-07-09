@@ -17,7 +17,7 @@ Link.methods.display = function() { return this; }
 describe('link update', () => {
   let userData, linkData, upstreamData, forkData;
 
-  before(function() {
+  beforeEach(function() {
     return Promise.all([
       User.create({username: 'ryan'}),
       Repository.create({type: 'repo'}), // Upstream
@@ -155,7 +155,7 @@ describe('link update', () => {
     };
 
     const addWebhooksForLink = sinon.stub()
-    addWebhooksForLink.onFirstCall().rejects(`Can't add webhook`);
+    addWebhooksForLink.onFirstCall().rejects(new Error(`Can't add webhook`));
     addWebhooksForLink.onSecondCall().resolves();
     const removeOldWebhooksForLink = sinon.stub().resolves();
 

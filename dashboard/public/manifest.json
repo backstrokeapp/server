@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Backstroke",
+  "name": "Backstroke: A Github bot to keep repository forks up to date with their upstream",
   "icons": [
     {
       "src": "favicon.ico",

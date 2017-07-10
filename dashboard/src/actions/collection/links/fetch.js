@@ -9,13 +9,13 @@ export default function collectionLinksFetch() {
     return fetch(`${API_URL}/v1/links`, {
       credentials: 'include',
     }).then(r => r).catch(err => {
-      dispatch(collectionLinksError(err));
+      dispatch(collectionLinksError(`Couldn't fetch link collection: ${err.message}`));
     }).then(resp => {
-      if (resp.ok) {
+      if (resp && resp.ok) {
         return resp.json().then(({data, page}) => {
           dispatch(collectionLinksSet(data, page));
         });
-      } else {
+      } else if (resp) {
         return resp.text().then(data => {
           dispatch(collectionLinksError(`Error fetching links: ${data}`));
         });

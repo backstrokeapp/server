@@ -16,13 +16,13 @@ export default function collectionLinksEnable(link) {
         'Accept': 'application/json',
       }
     }).then(r => r).catch(err => {
-      dispatch(collectionLinksError(err));
+      dispatch(collectionLinksError(`Couldn't enable link: ${err.message}`));
     }).then(resp => {
-      if (resp.ok) {
+      if (resp && resp.ok) {
         return resp.json().then(item => {
           dispatch(collectionLinksPush({...link, enabled: desiredEnabledState}));
         });
-      } else {
+      } else if (resp) {
         return resp.json().then(data => {
           dispatch(collectionLinksError(`Error enabling link: ${data.error}`));
         });

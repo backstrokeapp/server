@@ -13,14 +13,14 @@ export default function collectionLinksSave(link) {
         'Accept': 'application/json',
       },
     }).then(r => r).catch(err => {
-      dispatch(collectionLinksError(err));
+      dispatch(collectionLinksError(`Couldn't save link: ${err.message}`));
     }).then(resp => {
-      if (resp.ok) {
+      if (resp && resp.ok) {
         return resp.json().then(item => {
           dispatch(collectionLinksPush(link));
           return true;
         });
-      } else {
+      } else if (resp) {
         return resp.json().then(data => {
           dispatch(collectionLinksError(`Error saving link: ${data.error}`));
           return false;

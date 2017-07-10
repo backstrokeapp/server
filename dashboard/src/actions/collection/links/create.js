@@ -8,14 +8,14 @@ export default function collectionLinksCreate() {
       method: 'POST',
       credentials: 'include',
     }).then(r => r).catch(err => {
-      dispatch(collectionLinksError(err));
+      dispatch(collectionLinksError(`Couldn't create link: ${err.message}`));
     }).then(resp => {
-      if (resp.ok) {
+      if (resp && resp.ok) {
         return resp.json().then(item => {
           dispatch(collectionLinksPush(item));
           return item;
         });
-      } else {
+      } else if (resp) {
         return resp.json().then(data => {
           dispatch(collectionLinksError(`Error creating link: ${data.error}`));
           return null;

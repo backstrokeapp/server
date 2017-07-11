@@ -1,0 +1,7 @@
+machine:
+  node:
+    version: 6
+
+test:
+  override:
+    - cd server && yarn test

@@ -2,6 +2,17 @@ machine:
   node:
     version: 6
 
+dependencies:
+  cache_directories:
+    - "server/node_modules"
+    - "dashboard/node_modules"
+    - "site/node_modules"
+  override:
+    - cd server && yarn:
+        timeout: 180 # timeout after 3 minutes
+        # IMPORTANT NOTE: ^^ the timeout modifier above must be
+        # double indented (four spaces) from the previous line
+
 test:
   override:
     - cd server && yarn test

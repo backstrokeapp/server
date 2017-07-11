@@ -15,4 +15,4 @@ dependencies:
 
 test:
   override:
-    - cd server && yarn test
+    - cd server && yarn test-ci

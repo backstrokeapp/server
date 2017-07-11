@@ -1,0 +1,4 @@
+name=backstroke-dashboard
+REACT_APP_APP_URL=https://app.backstroke.us
+REACT_APP_API_URL=https://api.backstroke.us
+REACT_APP_ROOT_URL=https://backstroke.us

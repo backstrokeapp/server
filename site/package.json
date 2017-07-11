@@ -1,7 +1,7 @@
 {
-  "name": "site",
+  "name": "@backstroke/site",
   "version": "0.0.1",
-  "description": "Site for backstroke.",
+  "description": "Static website for Backstroke",
   "main": "index.js",
   "author": "Ryan Gaus",
   "license": "MIT",

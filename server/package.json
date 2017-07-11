@@ -61,7 +61,7 @@
     "collectCoverageFrom": ["src/*.js", "src/**/*.js"]
   },
   "author": "Ryan Gaus <rgaus.net>",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-runtime": "^6.23.0",

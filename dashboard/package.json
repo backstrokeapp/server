@@ -1,7 +1,8 @@
 {
-  "name": "dashboard",
+  "name": "@backstroke/dashboard",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "dependencies": {
     "@density/conduit": "^0.2.1",
     "color-hash": "^1.0.3",

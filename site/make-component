@@ -17,7 +17,7 @@ first="$(echo $COMPONENTUPPERCAMEL | cut -c1 | tr [A-Z] [a-z])"
 second="$(echo $COMPONENTUPPERCAMEL | cut -c2-)"
 COMPONENTCAMEL="$first$second"
 
-echo "* Copying template to components/$COMPONENTDASH..."
+echo "* Copying template to src/components/$COMPONENTDASH..."
 cp -R .component-template src/components/$COMPONENTDASH
 
 echo "* Replacing placeholders with variations of $COMPONENTDASH..."

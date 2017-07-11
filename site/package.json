@@ -5,6 +5,9 @@
   "main": "index.js",
   "author": "Ryan Gaus",
   "license": "MIT",
+  "scripts": {
+    "make-component": "./make-component"
+  },
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",

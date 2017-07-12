@@ -1,9 +1,9 @@
-.how-it-works-container {
+.open-source-container {
   width: 100%;
   overflow: hidden;
 }
 
-.how-it-works {
+.open-source {
   font-family: "Lato", Helvetica, Arial, sans-serif;
   display: flex;
 
@@ -12,11 +12,19 @@
   margin: 20px auto;
 }
 
-.how-it-works-left {
+.open-source-left {
+  flex: 1;
+  max-width: 50%;
+
+  img {
+    width: 420px;
+  }
+}
+
+.open-source-right {
   flex: 1;
   margin-top: 30px;
   margin-left: 20px;
-  z-index: 2;
 
   h1 {
     font-size: 36px;
@@ -30,15 +38,14 @@
     line-height: 1.5;
     font-weight: 300;
   }
+
+  a {
+    color: #68CFD9;
+  }
 }
 
-.how-it-works-right {
-  flex: 1;
-  max-width: 50%;
-  z-index: 1;
-
-  img {
-    width: 800px;
-    margin-left: -50px;
-  }
+// Highlight the monthly amount
+.open-source-right #gratipay {
+  color: #68CFD9;
+  font-weight: bold;
 }

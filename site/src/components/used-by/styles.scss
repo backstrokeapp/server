@@ -4,7 +4,7 @@ $used-by-slant-color: #efefef;
   background-color: #eee;
   width: 100%;
   position: relative;
-  margin-bottom: 120px;
+  margin-bottom: 80px;
 
   &:before {
     content: '';
@@ -26,6 +26,11 @@ $used-by-slant-color: #efefef;
     height: 0;
     border-top: $used-by-slant-height solid $used-by-slant-color;
     border-left: 100vw solid transparent;
+  }
+
+  // On desktop...
+  @media screen and (min-width: 500px) {
+    margin-bottom: 120px;
   }
 }
 .used-by {
@@ -50,7 +55,13 @@ $used-by-slant-color: #efefef;
 
 .used-by-grid-row {
   display: flex;
-  margin-bottom: 30px;
+  flex-direction: column;
+
+  // On desktop...
+  @media screen and (min-width: 500px) {
+    flex-direction: row;
+    margin-bottom: 30px;
+  }
 }
 
 .used-by-grid-image-wrapper {
@@ -76,4 +87,19 @@ $used-by-slant-color: #efefef;
   color: #68CFD9;
   font-size: 32px;
   cursor: pointer;
+}
+
+
+// For all siblings of a grid row, give them proper spacing on mobile.
+.used-by-grid-row > div,
+.used-by-grid-row > a,
+.used-by-grid-row span {
+  // When the screen width is < 500px...
+  @media screen and (max-width: 500px) {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    margin-left: 0px;
+    margin-right: 0px;
+    width: 100%;
+  }
 }

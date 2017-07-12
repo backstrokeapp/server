@@ -6,18 +6,26 @@
 .open-source {
   font-family: "Lato", Helvetica, Arial, sans-serif;
   display: flex;
+  flex-direction: column;
 
   max-width: 1000px;
   width: 100%;
   margin: 20px auto;
+
+  // When not on mobile, make the buttons full width.
+  @media screen and (min-width: 850px) {
+    flex-direction: row;
+  }
 }
 
 .open-source-left {
   flex: 1;
   max-width: 50%;
+  margin: 20px auto;
 
   img {
-    width: 420px;
+    max-width: 420px;
+    width: 100%;
   }
 }
 
@@ -25,6 +33,7 @@
   flex: 1;
   margin-top: 30px;
   margin-left: 20px;
+  margin-right: 20px;
 
   h1 {
     font-size: 36px;
@@ -39,7 +48,7 @@
     font-weight: 300;
   }
 
-  a {
+  p a {
     color: #68CFD9;
   }
 }
@@ -48,4 +57,55 @@
 .open-source-right #gratipay {
   color: #68CFD9;
   font-weight: bold;
+}
+
+
+// A button group under the text description
+.open-source-button-group {
+  display: block;
+
+  a {
+    // Apply margin to top of buttons so they don't vertically touch in mobile view.
+    margin-top: 10px;
+  }
+
+  // When not on mobile, make the buttons full width.
+  @media screen and (min-width: 500px) {
+    display: flex;
+    a {
+      flex: 1;
+    }
+    a:first-child {
+      margin-right: 10px;
+    }
+  }
+}
+
+// Buttons within the butotn group
+.open-source-button {
+  border: 0px;
+  outline: none;
+  display: block;
+
+  background: #222;
+  color: #fff;
+  border-radius: 45px;
+  padding: 18px 0px;
+  width: 100%;
+  cursor: pointer;
+  user-select: none;
+
+  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+}
+.open-source-button.faded {
+  background: #efefef;
+  color: #222;
+}
+
+.open-source-button:active {
+  opacity: 0.6;
 }

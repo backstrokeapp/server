@@ -10,6 +10,12 @@
   max-width: 1000px;
   width: 100%;
   margin: 20px auto;
+
+  // On a phone, stack vertically, not horizontally.
+  flex-direction: column;
+  @media screen and (min-width: 600px) {
+    flex-direction: row;
+  }
 }
 
 .how-it-works-left {
@@ -38,7 +44,13 @@
   z-index: 1;
 
   img {
-    width: 800px;
-    margin-left: -50px;
+    width: 600px;
+    margin-left: 0px;
+
+    // On desktops, make the image a bit taller and offset the the left slightly.
+    @media screen and (min-width: 600px) {
+      margin-left: -50px;
+      width: 800px;
+    }
   }
 }

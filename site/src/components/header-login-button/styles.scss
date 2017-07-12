@@ -3,6 +3,14 @@
   max-width: 400px;
   margin: 10px auto;
   height: 300px;
+
+  // On mobile, ditch the centering and set an explicit left and right margin to provide space on
+  // either side of the button. Also make the container shorter.
+  @media screen and (max-width: 400px) {
+    margin-left: 16px;
+    margin-right: 16px;
+    height: 200px;
+  }
 }
 
 .header-login-button {

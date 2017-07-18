@@ -5,10 +5,13 @@ CONCURRENTLY = ./node_modules/.bin/concurrently
 NODEMON = ./node_modules/.bin/nodemon
 NODESASS = ./node_modules/.bin/node-sass
 
-BUILD = build
+BUILD = build/
 
 .PHONY: build
 build:
+	# Create build folder
+	mkdir -p $(BUILD)
+
 	# Transpile all javascript into dist folder.
 	# ie, src/foo.js => dist/foo.js
 	$(BABEL) src/ -d dist \
@@ -27,9 +30,6 @@ build:
 		cat $$f >> $(BUILD)/styles.css; \
 	done
 	rm -rf sass_dist/
-
-	# Create build folder
-	mkdir -p $(BUILD)
 
 	# Copy assets
 	cp -R assets/ build/assets/

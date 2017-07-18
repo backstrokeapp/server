@@ -21,5 +21,5 @@ deployment:
   production:
     branch: /.*/
     commands:
-      - yarn build
-      - surge --project ./build --domain backstroke-$CIRCLECI_BRANCH.surge.sh
+      - cd site && yarn build
+      - surge --project ./site/build --domain backstroke-$CIRCLECI_BRANCH.surge.sh

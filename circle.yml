@@ -26,4 +26,5 @@ deployment:
     branch: /.*/
     commands:
       - cd site && yarn build
+      - npm i -g surge
       - surge --project ./site/build --domain backstroke-$CIRCLECI_BRANCH.surge.sh

@@ -12,6 +12,10 @@ dependencies:
         timeout: 180 # timeout after 3 minutes
         # IMPORTANT NOTE: ^^ the timeout modifier above must be
         # double indented (four spaces) from the previous line
+    - cd site && yarn:
+        timeout: 180 # timeout after 3 minutes
+        # IMPORTANT NOTE: ^^ the timeout modifier above must be
+        # double indented (four spaces) from the previous line
 
 test:
   override:

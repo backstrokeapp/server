@@ -23,7 +23,7 @@ build:
 		--ignore=node_modules,dist,src/components/template \
 		-o sass_dist/
 	rm -rf $(BUILD)/styles.css
-	for f in `find sass_dist -type f | gtac`; do \
+	for f in `find sass_dist -type f | tac`; do \
 		cat $$f >> $(BUILD)/styles.css; \
 	done
 	rm -rf sass_dist/

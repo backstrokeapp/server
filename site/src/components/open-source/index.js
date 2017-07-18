@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Script from '../script';
 
 export default function OpenSource() {
   return <div className="open-source-container">

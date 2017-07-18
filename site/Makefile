@@ -5,7 +5,7 @@ CONCURRENTLY = ./node_modules/.bin/concurrently
 NODEMON = ./node_modules/.bin/nodemon
 NODESASS = ./node_modules/.bin/node-sass
 
-BUILD = build/
+BUILD = build
 
 .PHONY: build
 build:

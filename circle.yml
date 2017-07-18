@@ -16,3 +16,10 @@ dependencies:
 test:
   override:
     - cd server && yarn test-ci
+
+deployment:
+  production:
+    branch: ".*"
+    commands:
+      - yarn build
+      - surge --project ./build --domain backstroke-$CIRCLECI_BRANCH.surge.sh

@@ -19,7 +19,7 @@ test:
 
 deployment:
   production:
-    branch: ".*"
+    branch: /.*/
     commands:
       - yarn build
       - surge --project ./build --domain backstroke-$CIRCLECI_BRANCH.surge.sh

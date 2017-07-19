@@ -22,5 +22,9 @@ export default <html>
     <OpenSource />
 
     <Footer />
+
+    {/* In production, provide analytics */}
+    <script src="https://cdn.ravenjs.com/3.17.0/raven.min.js" crossorigin="anonymous"></script>
+    <script src="/assets/scripts/analytics.js"></script>
   </body>
 </html>;

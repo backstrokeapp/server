@@ -22,6 +22,11 @@ Curently, there is no javascript on the site. At some point it'll be needed and 
 javascript build step to the process, but for now just Reat / SCSS works pretty well.
 
 # Development
+
+*NOTE* `tac` is required for the Makefile to work properly.
+- OSX: https://unix.stackexchange.com/a/114042/121882
+- Ubuntu should have `tac` already.
+
 ```sh
 $ cd backstroke/site
 $ # Install dependencies

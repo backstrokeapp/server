@@ -72,7 +72,7 @@ if (process.env.MIGRATE) {
 }
 
 // Use sentry in production
-import raven from 'raven';
+import Raven from 'raven';
 if (process.env.SENTRY_CONFIG) {
   Raven.config(process.env.SENTRY_CONFIG).install();
 }

@@ -1,14 +1,18 @@
 # This is a Biomefile. It helps you create an environment to run this app.
 # More info at https://github.com/1egoman/biome
 name=backstroke
-GITHUB_TOKEN=
 PORT=8000
-BACKSTROKE_SERVER=http://localhost:8001
 MONGODB_URI=
+CORS_ORIGIN_REGEXP='(localhost|127\.0\.0\.1)'
+
 GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
 GITHUB_CALLBACK_URL=
+GITHUB_TOKEN=
+
 SESSION_SECRET=hello world
-LETSENCRYPT_ID=
-BACKSTROKE_HOSTNAME=http://localhost:8000
 USE_MIXPANEL=
+
+API_URL=http://localhost:$PORT
+APP_URL=
+ROOT_URL=

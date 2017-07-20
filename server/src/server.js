@@ -4,7 +4,11 @@ const app = express();
 import cors from 'cors';
 const corsHandler = cors({
   origin(origin, callback) {
-    callback(null, true);
+    if (origin.match(new Regexp(process.argv.CORS_ORIGIN_REGEXP, 'i'))) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
   },
   credentials: true,
 });
@@ -65,6 +69,12 @@ if (process.env.MIGRATE) {
   console.log('Migrating schema...');
   schema.automigrate();
   console.log('Done.');
+}
+
+// Use sentry in production
+import raven from 'raven';
+if (process.env.SENTRY_CONFIG) {
+  Raven.config(process.env.SENTRY_CONFIG).install();
 }
 
 // ----------------------------------------------------------------------------

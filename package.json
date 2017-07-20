@@ -28,6 +28,7 @@
     "nyc": "^8.1.0",
     "passport": "^0.3.2",
     "passport-github2": "^0.1.10",
+    "raven": "^2.1.0",
     "request": "^2.81.0",
     "sinon": "^2.3.6",
     "uuid": "^3.0.1",
@@ -59,7 +60,10 @@
     }
   },
   "jest": {
-    "collectCoverageFrom": ["src/*.js", "src/**/*.js"]
+    "collectCoverageFrom": [
+      "src/*.js",
+      "src/**/*.js"
+    ]
   },
   "author": "Ryan Gaus <rgaus.net>",
   "license": "MIT",

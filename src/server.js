@@ -4,11 +4,12 @@ const app = express();
 import cors from 'cors';
 const corsHandler = cors({
   origin(origin, callback) {
-    if (origin.match(new Regexp(process.argv.CORS_ORIGIN_REGEXP, 'i'))) {
-      callback(null, true);
-    } else {
-      callback(null, false);
-    }
+    callback(null, true);
+    // if (origin.match(new Regexp(process.argv.CORS_ORIGIN_REGEXP, 'i'))) {
+    //   callback(null, true);
+    // } else {
+    //   callback(null, false);
+    // }
   },
   credentials: true,
 });

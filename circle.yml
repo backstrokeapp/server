@@ -46,7 +46,7 @@ deployment:
         EOF
 
         systemctl restart nginx
-      END
+        END
 
       # Set up nvm, node, and deployment utilities, then boot server
       - |

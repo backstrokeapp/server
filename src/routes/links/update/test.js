@@ -10,32 +10,33 @@ import MockModel from '../../../test-helpers/mock-model';
 
 const User = new MockModel(),
       Repository = new MockModel(),
-      Link = new MockModel([], {upstream: Repository, owner: User, fork: Repository});
+      Link = new MockModel([], {owner: User});
 
 Link.methods.display = function() { return this; }
+Link.methods.update = sinon.stub().callsFake(function() { return Promise.resolve(this); });
 
 describe('link update', () => {
   let userData, linkData, upstreamData, forkData;
 
-  beforeEach(function() {
-    return Promise.all([
-      User.create({username: 'ryan'}),
-      Repository.create({type: 'repo'}), // Upstream
-      Repository.create({type: 'repo'}), // Fork
-    ]).then(([user, upstream, fork]) => {
-      userData = user;
-      upstreamData = upstream;
-      forkData = fork;
-      return Link.create({
-        name: 'My Link',
-        enabled: true,
-        hookId: ['123456'],
-        owner: user.id,
-        upstream: upstream.id,
-        fork: fork.id,
-      });
-    }).then(link => {
-      linkData = link;
+  beforeEach(async function() {
+    userData = await User.create({username: 'ryan'});
+    linkData = await Link.create({
+      name: 'My Link',
+      enabled: true,
+      owner: userData.id,
+
+      upstreamType: 'repo',
+      upstreamOwner: 'foo',
+      upstreamRepo: 'bar',
+      upstreamIsFork: false,
+      upstreamBranches: '["master"]',
+      upstreamBranch: 'master',
+
+      forkType: 'all-forks',
+      forkOwner: undefined,
+      forkRepo: undefined,
+      forkBranches: undefined,
+      forkBranch: undefined,
     });
   });
 
@@ -52,20 +53,26 @@ describe('link update', () => {
         body: {
           link: {
             name: 'Another name for my link!',
-            upstream: upstreamData.id,
-            fork: forkData.id,
+            upstream: {
+              type: 'repo',
+              owner: 'foo',
+              repo: 'bar',
+              isFork: false,
+              branches: '["master"]',
+              branch: 'master',
+            },
+            fork: {
+              type: 'all-forks'
+            },
           },
         },
-      }
+      },
     ).then(res => {
       const body = res.body;
-      assert.equal(body.id, linkData.id);
-      assert.equal(body.upstreamId, upstreamData.id);
-      assert.equal(body.forkId, forkData.id);
-      assert.equal(body.forkId, forkData.id);
+      console.log(body)
       assert.equal(body.name, 'Another name for my link!');
 
-      return Link.findOne({where: {id: linkData.id}});
+      return Link.find(linkData.id);
     }).then(link => {
       assert.equal(link.name, 'Another name for my link!');
     });
@@ -288,5 +295,4 @@ describe('link update', () => {
       assert.equal(body.error, `The 'upstream' repo must be a repo, not a bunch of forks.`);
     });
   });
-
 });

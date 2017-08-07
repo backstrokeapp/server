@@ -9,36 +9,18 @@ export default function strategy(User) {
 		clientSecret: process.env.GITHUB_CLIENT_SECRET,
 		callbackURL: process.env.GITHUB_CALLBACK_URL,
 	}, function(accessToken, refreshToken, profile, cb) {
-		let user;
-
 		debug('PROVIDER ID %s', profile.id);
 
-		// Is the user already in the system?
-		User.findOne({
-			where: {providerId: profile.id.toString()},
-		}).then(model => {
-			debug('USER FOUND %o', model);
-
-			// Add the data fetched from this last request to the existing data, if it exists.
-			user = Object.assign({}, model, {
-				username: profile.username,
-				email: profile._json.email,
-				picture: profile._json.avatar_url,
-				providerId: profile.id,
-				accessToken,
-				refreshToken,
-			});
-
-			if (model) {
-				debug('UPDATING USER MODEL %o WITH %o', model, user);
-				return model.updateAttributes(user);
-			} else {
-				debug('CREATE USER %o', user);
-				return User.create(user);
-			}
-		}).then(model => {
+    // Register a new user.
+    User.register(profile, accessToken).then(model => {
 			debug('LOGGED IN USER %o', model);
 			cb(null, model);
-		}).catch(cb);
+    }).catch(err => {
+      if (err.name === 'ValidationError') {
+        cb(JSON.stringify({ok: false, error: 'validation', context: err.context, issues: err.codes}));
+      } else {
+        cb(err);
+      };
+    });
 	});
 }

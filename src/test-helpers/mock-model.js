@@ -53,6 +53,9 @@ export default class MockModel {
     });
     return Promise.resolve(model ? this.formatModelInstance(model) : null);
   }
+  find(id) {
+    return Promise.resolve(this.models.find(i => i.id === id));
+  }
   create(data) {
     data.id = (++this.idCounter).toString();
 

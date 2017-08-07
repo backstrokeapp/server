@@ -4,7 +4,7 @@ const app = express();
 import cors from 'cors';
 const corsHandler = cors({
   origin(origin, callback) {
-    if (origin.match(new Regexp(process.argv.CORS_ORIGIN_REGEXP, 'i'))) {
+    if (!origin || origin.match(new RegExp(process.argv.CORS_ORIGIN_REGEXP, 'i'))) {
       callback(null, true);
     } else {
       callback(null, false);
@@ -29,6 +29,16 @@ const ROOT_URL = process.env.ROOT_URL || '/mocks/root';
 if (APP_URL === '/mocks/root') {
   app.get('/mocks/root', (req, res) => res.send('This would redirect to the main site when deployed.'));
 }
+app.get('/', (req, res) => {
+  if (req.user) {
+    res.send(`${req.user.username} logged in.`);
+  } else {
+    res.send(`
+    <a href="/setup/login">Login private</a>
+    <a href="/setup/login/public">Login public</a>
+    `);
+  }
+});
 
 // ----------------------------------------------------------------------------
 // Routes and helpers for the routes
@@ -50,26 +60,21 @@ import linksEnable from './routes/links/enable';
 
 import {addWebhooksForLink, removeOldWebhooksForLink} from './helpers/webhook-utils';
 
-// ----------------------------------------------------------------------------
-// Database stuff
-// ----------------------------------------------------------------------------
-import {Schema} from 'jugglingdb';
-import userBuilder from './models/User';
-import linkBuilder from './models/Link';
-import repositoryBuilder from './models/Repository';
-// const schema = new Schema('sqlite3', {database: 'db.sqlite3'});
-const schema = new Schema('mongodb', {
-  url: 'mongodb://backstroke:backstroke@ds017256.mlab.com:17256/backstroke-dev',
-});
-const User = userBuilder(schema);
-const Repository = repositoryBuilder(schema);
-const Link = linkBuilder(schema);
+import { Link, User, Repository } from './models';
 
-if (process.env.MIGRATE) {
-  console.log('Migrating schema...');
-  schema.automigrate();
-  console.log('Done.');
-}
+/* app.use((err, req, res, next) => { */
+/*   if (err.name === 'ValidationError') { */
+/*     res.status(err.statusCode).send({ */
+/*       ok: false, */
+/*       error: 'validation', */
+/*       context: err.context, */
+/*       issues: err.codes, */
+/*     }); */
+/*   } else { */
+/*     console.error(err.stack); */
+/*     res.status(500).send(err.stack); */
+/*   }; */
+/* }) */
 
 // Use sentry in production
 import Raven from 'raven';
@@ -82,11 +87,20 @@ if (process.env.SENTRY_CONFIG) {
 // ----------------------------------------------------------------------------
 import passport from 'passport';
 import session from 'express-session';
+import fileStore from 'session-file-store';
+const FileStore = fileStore(session);
 import strategy from './auth/strategy';
 import serialize from './auth/serialize';
 app.use(session({
   secret: process.env.SESSION_SECRET,
-  // store: mongoStore,
+  store: new FileStore({
+    path: "/tmp/sessions/",
+    useAsync: true,
+    reapInterval: 5000,
+    maxAge: 10000
+  }),
+  saveUninitialized: true,
+  resave: true,
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -100,17 +114,22 @@ app.use(morgan('tiny'));
 // Authenticate a user
 app.get('/setup/login', passport.authenticate('github', {
   successRedirect: '/',
-  failureRedirect: '/setup/failed',
   scope: ["repo", "write:repo_hook", "user:email"],
 }));
 app.get('/setup/login/public', passport.authenticate('github', {
   successRedirect: '/',
-  failureRedirect: '/setup/failed',
   scope: ["public_repo", "write:repo_hook", "user:email"],
 }));
 
 // Second leg of the auth
 app.get("/auth/github/callback", passport.authenticate("github", {
+  failureRedirect: '/setup/failed',
+}), (req, res) => {
+  res.redirect(APP_URL); // on success
+});
+
+// Second leg of the auth
+app.get("/auth/github-public/callback", passport.authenticate("github-public", {
   failureRedirect: '/setup/failed',
 }), (req, res) => {
   res.redirect(APP_URL); // on success

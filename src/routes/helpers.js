@@ -14,10 +14,17 @@ export function paginate(req) {
 // Something bad happened. Throw a 500.
 export function internalServerErrorOnError(res) {
   return error => {
-    res.status(500);
-    // res.headers['Content-Type'] = 'text/plain';
-    res.send(error.toString());
-    throw error;
+    if (err.name === 'ValidationError') {
+      res.status(err.statusCode).send({
+        ok: false,
+        error: 'validation',
+        context: err.context,
+        issues: err.codes,
+      });
+    } else {
+      console.error(err.stack);
+      res.status(500).send(err.stack);
+    };
   };
 }
 

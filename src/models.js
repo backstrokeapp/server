@@ -5,11 +5,9 @@ import fetch from 'node-fetch';
 
 import RedisMQ from 'rsmq';
 const redis = new RedisMQ({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: 6379,
+  client: require('redis').createClient(process.env.REDIS_URL),
   ns: 'rsmq',
 });
-
 
 export const WebhookQueue = {
   queueName: process.env.REDIS_QUEUE_NAME || 'webhookQueue',

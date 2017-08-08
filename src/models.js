@@ -58,13 +58,9 @@ WebhookQueue.initialize();
 
 
 
-import {Schema} from 'jugglingdb';
+import { Schema } from 'jugglingdb';
 const schema = new Schema('postgres', {
-  username: 'postgres',
-  password: 'mysecretpassword', 
-  database: 'backstroke',
-  host: process.env.DATABASE_HOST || 'localhost', 
-  port: 5432, 
+  url: process.env.DATABASE_URL,
   debug: true,
   // ssl: true, 
 });

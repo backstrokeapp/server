@@ -60,7 +60,7 @@ import linksEnable from './routes/links/enable';
 
 import {addWebhooksForLink, removeOldWebhooksForLink} from './helpers/webhook-utils';
 
-import { Link, User, Repository } from './models';
+import { Link, User, Repository, WebhookQueue } from './models';
 
 /* app.use((err, req, res, next) => { */
 /*   if (err.name === 'ValidationError') { */
@@ -157,16 +157,16 @@ app.use(githubInstanceMiddleware);
 // Redirect calls to `/api/v1` => `/v1`
 app.all(/^\/api\/v1\/.*$/, (req, res) => res.redirect(req.url.replace(/^\/api/, '')));
 
-// identify the currently logged in user
+// Identify the currently logged in user
 app.get('/v1/whoami', whoami);
 
-// get all links
+// GET all links
 app.get('/v1/links', bodyParser.json(), assertLoggedIn, route(linksList, [Link]));
 
 // GET a given link
 app.get('/v1/links/:id', bodyParser.json(), assertLoggedIn, route(linksGet, [Link]));
 
-// create a new link
+// Create a new link
 app.post('/v1/links', bodyParser.json(), assertLoggedIn, route(linksCreate, [Link]));
 
 // delete a link
@@ -176,11 +176,7 @@ app.delete('/v1/links/:id', assertLoggedIn, route(linksDelete, [Link, removeOldW
 app.get('/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, checkRepo);
 
 // POST link updates
-app.post('/v1/links/:linkId',
-  bodyParser.json(),
-  assertLoggedIn,
-  route(linksUpdate, [Link, Repository, addWebhooksForLink, removeOldWebhooksForLink])
-);
+app.post('/v1/links/:linkId', bodyParser.json(), assertLoggedIn, route(linksUpdate, [Link]));
 
 // enable or disable a repository
 app.post('/v1/links/:linkId/enable', bodyParser.json(), route(linksEnable, [Link]));
@@ -192,7 +188,7 @@ app.post("/", bodyParser.json(), route(webhookOld, [webhook]));
 // the new webhook route
 // No body parsing, all oauth-based
 import webhookHandler from './routes/webhook/handler';
-app.all('/_:linkId', route(webhook, [Link, webhookHandler]));
+app.all('/_:linkId', route(webhook, [Link, WebhookQueue]));
 
 if (require.main === module) {
   const port = process.env.PORT || 8001;

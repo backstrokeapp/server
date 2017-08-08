@@ -9,33 +9,32 @@ import issueRequest from '../../../test-helpers/issue-request';
 import MockModel from '../../../test-helpers/mock-model';
 
 const User = new MockModel(),
-      Repository = new MockModel(),
-      Link = new MockModel([], {upstream: Repository, owner: User, fork: Repository});
+      Link = new MockModel([], {owner: User});
 
 Link.methods.display = function() { return this; }
 
 describe('link get', () => {
-  let userData, linkData, upstreamData, forkData;
+  let user, link, link2;
 
-  beforeEach(function() {
-    return Promise.all([
-      User.create({username: 'ryan'}),
-      Repository.create({type: 'repo'}), // Upstream
-      Repository.create({type: 'repo'}), // Fork
-    ]).then(([user, upstream, fork]) => {
-      userData = user;
-      upstreamData = upstream;
-      forkData = fork;
-      return Link.create({
-        name: 'My Link',
-        enabled: true,
-        hookId: ['123456'],
-        owner: user.id,
-        upstream: upstream.id,
-        fork: fork.id,
-      });
-    }).then(link => {
-      linkData = link;
+  beforeEach(async function() {
+    user = await User.create({username: 'ryan'});
+    link = await Link.create({
+      name: 'My Link',
+      enabled: true,
+      owner: user.id,
+
+      upstreamType: 'repo',
+      upstreamOwner: 'foo',
+      upstreamRepo: 'bar',
+      upstreamIsFork: false,
+      upstreamBranches: '["master"]',
+      upstreamBranch: 'master',
+
+      forkType: 'all-forks',
+      forkOwner: undefined,
+      forkRepo: undefined,
+      forkBranches: undefined,
+      forkBranch: undefined,
     });
   });
 
@@ -45,7 +44,7 @@ describe('link get', () => {
 
     return issueRequest(
       get, [Link],
-      '/:id', userData, {
+      '/:id', user, {
         method: 'GET',
         url: `/${linkModel.id}`,
         json: true,
@@ -61,7 +60,23 @@ describe('link get', () => {
 
     return issueRequest(
       get, [Link],
-      '/:id', userData, {
+      '/:id', user, {
+        method: 'GET',
+        url: `/13527501385710357139f313`, // Bogus id
+        json: true,
+      }
+    ).then(res => {
+      const body = res.body;
+      assert.equal(body.error, 'No such link.');
+    });
+  });
+  it('should try to get a link but the link is not owned by the authed user', () => {
+    // Grab the first model from the mock (.models is a mock-specific property)
+    const linkModel = Link.models[0];
+
+    return issueRequest(
+      get, [Link],
+      '/:id', null, {
         method: 'GET',
         url: `/13527501385710357139f313`, // Bogus id
         json: true,

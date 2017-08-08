@@ -9,33 +9,32 @@ import issueRequest from '../../../test-helpers/issue-request';
 import MockModel from '../../../test-helpers/mock-model';
 
 const User = new MockModel(),
-      Repository = new MockModel(),
-      Link = new MockModel([], {upstream: Repository, owner: User, fork: Repository});
+      Link = new MockModel([], {owner: User});
 
 Link.methods.display = function() { return this; }
 
 describe('link delete', () => {
-  let userData, linkData, upstreamData, forkData;
+  let user, link;
 
-  beforeEach(function() {
-    return Promise.all([
-      User.create({username: 'ryan'}),
-      Repository.create({type: 'repo'}), // Upstream
-      Repository.create({type: 'repo'}), // Fork
-    ]).then(([user, upstream, fork]) => {
-      userData = user;
-      upstreamData = upstream;
-      forkData = fork;
-      return Link.create({
-        name: 'My Link',
-        enabled: true,
-        hookId: ['123456'],
-        owner: user.id,
-        upstream: upstream.id,
-        fork: fork.id,
-      });
-    }).then(link => {
-      linkData = link;
+  beforeEach(async function() {
+    user = await User.create({username: 'ryan'});
+    link = await Link.create({
+      name: 'My Link',
+      enabled: true,
+      owner: user.id,
+
+      upstreamType: 'repo',
+      upstreamOwner: 'foo',
+      upstreamRepo: 'bar',
+      upstreamIsFork: false,
+      upstreamBranches: '["master"]',
+      upstreamBranch: 'master',
+
+      forkType: 'all-forks',
+      forkOwner: undefined,
+      forkRepo: undefined,
+      forkBranches: undefined,
+      forkBranch: undefined,
     });
   });
 
@@ -43,14 +42,14 @@ describe('link delete', () => {
     const removeOldWebhooksForLink = sinon.stub().resolves(true);
     return issueRequest(
       del, [Link, removeOldWebhooksForLink],
-      '/:id', userData, {
+      '/:id', user, {
         method: 'DELETE',
-        url: `/${linkData.id}`,
+        url: `/${link.id}`,
         json: true,
       }
     ).then(res => {
       assert.equal(res.statusCode, 200);
-      return Link.findOne({where: {id: linkData.id}});
+      return Link.findOne({where: {id: link.id}});
     }).then(link => {
       assert.equal(link, null); // Link no longer exists.
     });
@@ -59,7 +58,7 @@ describe('link delete', () => {
     const removeOldWebhooksForLink = sinon.stub().resolves(true);
     return issueRequest(
       del, [Link, removeOldWebhooksForLink],
-      '/:id', userData, {
+      '/:id', user, {
         method: 'DELETE',
         url: `/21t2413131314913491`, // Bogus link id
         json: true,

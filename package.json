@@ -31,6 +31,7 @@
     "passport": "^0.3.2",
     "passport-github2": "^0.1.10",
     "request": "^2.81.0",
+    "rsmq": "^0.8.2",
     "session-file-store": "^1.1.1",
     "sinon": "^2.3.6",
     "uuid": "^3.0.1",
@@ -77,8 +78,6 @@
     "babel-preset-es2017": "^6.24.1",
     "faker": "^4.1.0",
     "jest": "^20.0.4",
-    "nodemon": "^1.11.0",
-    "superagent-extend": "^0.1.6",
-    "supertest": "^3.0.0"
+    "nodemon": "^1.11.0"
   }
 }

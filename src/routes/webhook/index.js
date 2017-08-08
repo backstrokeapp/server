@@ -1,36 +1,23 @@
 import webhookHandler from './handler';
 import GitHubApi from 'github';
 import {constructor} from '../../github';
+const MANUAL = 'MANUAL';
 
-export default function webhook(req, res, Link) {
-  return Link.findOne({
-    where: {id: req.params.linkId},
-  }).then(link => {
-    if (link) {
-      return link.owner().then(owner => {
-        // Use the owner of the link to make all queries.
-        const github = new GitHubApi({});
-        github.authenticate({
-          type: 'oauth',
-          token: owner.accessToken,
-        });
-        req.github = req.github || {};
-        req.github.user = constructor(github);
+export default async function webhook(req, res, Link, WebhookQueue) {
+  const link = await Link.findOne({where: {webhookId: req.params.linkId}});
+  if (link) {
+    const user = await link.owner();
+    const enqueuedAs = await WebhookQueue.push({
+      type: MANUAL,
+      user,
+      link,
+    });
 
-        return webhookHandler(req, link);
-      });
-    } else {
-      throw new Error(`No such link with the id ${req.params.linkId}`);
-    }
-  }).then(output => {
-    if (output.isEnabled === false) {
-      return {
-        enabled: false,
-        status: 'not-enabled',
-        msg: `The link isn't enabled.`,
-      }
-    } else {
-      return {status: 'ok', output};
-    }
-  });
+    res.status(201).send({
+      message: 'Scheduled webhook.',
+      enqueuedAs,
+    });
+  } else {
+    throw new Error(`No such link with the id ${req.params.linkId}`);
+  }
 }

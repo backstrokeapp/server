@@ -15,42 +15,41 @@ const User = new MockModel(),
 Link.methods.display = function() { return this; }
 
 describe('link create', () => {
-  let userData, linkData, upstreamData, forkData;
+  let user, link;
 
-  beforeEach(function() {
-    return Promise.all([
-      User.create({username: 'ryan'}),
-      Repository.create({type: 'repo'}), // Upstream
-      Repository.create({type: 'repo'}), // Fork
-    ]).then(([user, upstream, fork]) => {
-      userData = user;
-      upstreamData = upstream;
-      forkData = fork;
-      return Link.create({
-        name: 'My Link',
-        enabled: true,
-        hookId: ['123456'],
-        owner: user.id,
-        upstream: upstream.id,
-        fork: fork.id,
-      });
-    }).then(link => {
-      linkData = link;
+  beforeEach(async function() {
+    user = await User.create({username: 'ryan'});
+    link = await Link.create({
+      name: 'My Link',
+      enabled: true,
+      owner: user.id,
+
+      upstreamType: 'repo',
+      upstreamOwner: 'foo',
+      upstreamRepo: 'bar',
+      upstreamIsFork: false,
+      upstreamBranches: '["master"]',
+      upstreamBranch: 'master',
+
+      forkType: 'all-forks',
+      forkOwner: undefined,
+      forkRepo: undefined,
+      forkBranches: undefined,
+      forkBranch: undefined,
     });
   });
 
   it('should create a link for a user', () => {
     return issueRequest(
       create, [Link],
-      '/', userData, {
+      '/', user, {
         method: 'POST',
         url: '/',
         json: true,
       }
     ).then(res => {
-      const body = res.body;
-      assert.notEqual(body.id, linkData.id); // Make sure the id is something else.
-      return Link.findOne({where: {id: body.id}});
+      assert.notEqual(res.body.id, link.id); // Make sure the id is something else.
+      return Link.find(res.body.id);
     }).then(link => {
       assert.equal(link.enabled, false);
     });

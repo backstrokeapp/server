@@ -3,8 +3,64 @@ import debug from 'debug';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
 
-import {Schema} from 'jugglingdb';
+import RedisMQ from 'rsmq';
+const redis = new RedisMQ({
+  host: process.env.REDIS_HOST || 'localhost',
+  port: 6379,
+  ns: 'rsmq',
+});
 
+
+export const WebhookQueue = {
+  queueName: process.env.REDIS_QUEUE_NAME || 'webhookQueue',
+  initialize() {
+    return new Promise((resolve, reject) => {
+      redis.createQueue({qname: this.queueName}, (err, resp) => {
+        if (err.name === 'queueExists') {
+          // Queue was already created.
+          resolve();
+        } else if (err) {
+          reject(err);
+        } else {
+          resolve(resp);
+        }
+      });
+    });
+  },
+  push(data) {
+    return new Promise((resolve, reject) => {
+      redis.sendMessage({qname: this.queueName, message: JSON.stringify(data)}, (err, id) => {
+        if (err) {
+          reject(err);
+        } else {
+          // Resolves the message id.
+          resolve(id);
+        }
+      });
+    });
+  },
+  pop() {
+    return new Promise((resolve, reject) => {
+      redis.popMessage({qname: this.queueName}, (err, {message, id}) => {
+        if (err) {
+          reject(err);
+        } else if (typeof id === 'undefined') {
+          // No items in the queue
+          resolve(null);
+        } else {
+          // Item was found on the end of the queue!
+          resolve(message);
+        }
+      });
+    });
+  }
+};
+WebhookQueue.initialize();
+
+
+
+
+import {Schema} from 'jugglingdb';
 const schema = new Schema('postgres', {
   username: 'postgres',
   password: 'mysecretpassword', 
@@ -96,7 +152,7 @@ export const Link = schema.define('Link', {
 
   webhookId: { type: String, default: () => uuid.v4().replace(/-/g, '') },
 
-  upstreamType: {type: String, enum: ['repo', 'all-forks']},
+  upstreamType: {type: String, enum: ['repo']},
   upstreamOwner: String,
   upstreamRepo: String,
   upstreamIsFork: Boolean,
@@ -116,35 +172,6 @@ Link.belongsTo(schema.models.User, {as: 'owner', foreignKey: 'ownerId'});
 // Link.validatesInclusionOf('forkType', {in: ['repo', 'all-forks']});
 // Link.validatesInclusionOf('upstreamType', {in: ['repo', 'all-forks']});
 
-// The update method takes the nested format (with upstream / fork) as sub-objects.
-Link.updateRaw = Link.update
-Link.prototype.update = async function update(data) {
-  if (!data.upstream) {
-    throw new Error(`Link doesn't have an 'upstream' key.`);
-  }
-  if (!data.fork) {
-    throw new Error(`Link doesn't have an 'fork' key.`);
-  }
-
-  return this.updateAttributes({
-    name: data.name,
-    enabled: data.enabled,
-
-    upstreamType: data.upstream.type,
-    upstreamOwner: data.upstream.owner,
-    upstreamRepo: data.upstream.repo,
-    upstreamIsFork: data.upstream.fork,
-    upstreamBranches: data.upstream.branches,
-    upstreamBranch: data.upstream.branch,
-
-    forkType: data.fork.type,
-    forkOwner: data.fork.owner,
-    forkRepo: data.fork.repo,
-    forkBranches: data.fork.branches,
-    forkBranch: data.fork.branch,
-  });
-}
-
 // Convert a link to its owtward-facing structure. Expand all foreign keys and
 // remove sensitive data.
 Link.prototype.display = function display() {
@@ -152,6 +179,7 @@ Link.prototype.display = function display() {
     id: this.id,
     name: this.name,
     enabled: this.enabled,
+    webhook: this.webhookId,
 
     fork: this.fork(),
     upstream: this.upstream(),
@@ -195,9 +223,11 @@ if (require.main === module) {
       useGlobal: true,
     };
     const context = {
+      redis,
       schema,
       Link,
       User,
+      WebhookQueue,
     };
 
     // From https://stackoverflow.com/questions/33673999/passing-context-to-interactive-node-shell-leads-to-typeerror-sandbox-argument

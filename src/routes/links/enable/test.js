@@ -9,55 +9,36 @@ import issueRequest from '../../../test-helpers/issue-request';
 import MockModel from '../../../test-helpers/mock-model';
 
 const User = new MockModel(),
-      Repository = new MockModel(),
-      Link = new MockModel([], {upstream: Repository, owner: User, fork: Repository});
+      Link = new MockModel([], {owner: User});
 
 Link.methods.display = function() { return this; }
 
 describe('link enable', () => {
-  let userData, linkData, linkDataNoOwn, upstreamData, forkData;
+  let user, user2, link, link2;
 
-  beforeEach(function() {
-    return Promise.all([
-      User.create({username: 'ryan'}),
-      User.create({username: 'bill'}),
-      Repository.create({type: 'repo'}), // Upstream
-      Repository.create({type: 'repo'}), // Fork
-    ]).then(([user, user2, upstream, fork]) => {
-      userData = user;
-      upstreamData = upstream;
-      forkData = fork;
-      return Promise.all([
-        Link.create({
-          name: 'My Link',
-          enabled: true,
-          hookId: ['123456'],
-          owner: user.id,
-          upstream: upstream.id,
-          fork: fork.id,
-        }),
-        Link.create({
-          name: 'My non-owned Link',
-          enabled: true,
-          hookId: ['123456'],
-          owner: user2.id,
-          upstream: upstream.id,
-          fork: fork.id,
-        }),
-      ]);
-    }).then(([link, linkNoOwn]) => {
-      linkData = link;
-      linkDataNoOwn = linkNoOwn;
+  beforeEach(async function() {
+    user = await User.create({username: 'ryan'});
+    user2 = await User.create({username: 'bill'});
+
+    link = await Link.create({
+      name: 'My Link',
+      enabled: true,
+      owner: user.id,
+    });
+    link2 = await Link.create({
+      name: 'My non-owned Link',
+      enabled: true,
+      owner: user2.id,
     });
   });
 
   it('should enable a link for a user', () => {
-    const enabledState = !linkData.enabled;
+    const enabledState = !link.enabled;
     return issueRequest(
       enable, [Link],
-      '/:linkId', userData, {
+      '/:linkId', user, {
         method: 'PUT',
-        url: `/${linkData.id}`,
+        url: `/${link.id}`,
         json: true,
         body: {
           enabled: enabledState,
@@ -65,18 +46,18 @@ describe('link enable', () => {
       }
     ).then(res => {
       assert.equal(res.statusCode, 200);
-      return Link.findOne({where: {id: linkData.id}});
+      return Link.findOne({where: {id: link.id}});
     }).then(link => {
       assert.equal(link.enabled, enabledState);
-    })
+    });
   });
   it('should try to enable a link, but fail with a malformed body', () => {
-    const enabledState = !linkData.enabled;
+    const enabledState = !link.enabled;
     return issueRequest(
       enable, [Link],
-      '/:linkId', userData, {
+      '/:linkId', user, {
         method: 'PUT',
-        url: `/${linkData.id}`,
+        url: `/${link.id}`,
         json: true,
         body: {
           no: 'enabled',
@@ -85,13 +66,13 @@ describe('link enable', () => {
       }
     ).then(res => {
       assert.equal(res.body.error, `Enabled property not specified in the body.`);
-    })
+    });
   });
   it('should try to enable a link, but should fail with a bad link id', () => {
-    const enabledState = !linkData.enabled;
+    const enabledState = !link.enabled;
     return issueRequest(
       enable, [Link],
-      '/:linkId', userData, {
+      '/:linkId', user, {
         method: 'PUT',
         url: `/32542542y52451311341`, // Bogus link id
         json: true,
@@ -100,23 +81,23 @@ describe('link enable', () => {
         },
       }
     ).then(res => {
-      assert.equal(res.body.error, 'No link found with the given id that is owned by you.');
-    })
+      assert.equal(res.body.error, 'No such link.');
+    });
   });
   it(`should try to enable a link, but should fail when the link isn't owned by the current user.`, () => {
-    const enabledState = !linkData.enabled;
+    const enabledState = !link2.enabled;
     return issueRequest(
       enable, [Link],
-      '/:linkId', userData, {
+      '/:linkId', user, {
         method: 'PUT',
-        url: `/${linkDataNoOwn.id}`, // Bogus link id
+        url: `/${link2.id}`, // Bogus link id
         json: true,
         body: {
           enabled: enabledState,
         },
       }
     ).then(res => {
-      assert.equal(res.body.error, 'No link found with the given id that is owned by you.');
-    })
+      assert.equal(res.body.error, 'No such link.');
+    });
   });
 });

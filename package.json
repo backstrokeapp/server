@@ -36,7 +36,8 @@
     "session-file-store": "^1.1.1",
     "sinon": "^2.3.6",
     "uuid": "^3.0.1",
-    "watchify": "^3.7.0"
+    "watchify": "^3.7.0",
+    "nodemon": "^1.11.0"
   },
   "scripts": {
     "start": "nodemon --exec 'babel-node src/server.js'",
@@ -78,7 +79,6 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2017": "^6.24.1",
     "faker": "^4.1.0",
-    "jest": "^20.0.4",
-    "nodemon": "^1.11.0"
+    "jest": "^20.0.4"
   }
 }

@@ -40,7 +40,8 @@
     "nodemon": "^1.11.0"
   },
   "scripts": {
-    "start": "nodemon --exec 'babel-node src/server.js'",
+    "start": "babel-node src/server.js",
+    "start-dev": "nodemon --exec 'babel-node src/server.js'",
     "test": "NODE_ENV=test jest --watch",
     "test-ci": "NODE_ENV=test CI=true jest",
     "coverage": "NODE_ENV=test nyc --all --reporter=lcov --reporter=text npm test",

@@ -49,7 +49,6 @@ import whoami from './routes/whoami';
 import checkRepo from './routes/checkRepo';
 
 import webhook from './routes/webhook';
-import webhookOld from './routes/webhookOld';
 
 import linksList from './routes/links/list';
 import linksGet from './routes/links/get';
@@ -57,8 +56,6 @@ import linksCreate from './routes/links/create';
 import linksDelete from './routes/links/delete';
 import linksUpdate from './routes/links/update';
 import linksEnable from './routes/links/enable';
-
-import {addWebhooksForLink, removeOldWebhooksForLink} from './helpers/webhook-utils';
 
 import { Link, User, Repository, WebhookQueue } from './models';
 
@@ -150,10 +147,6 @@ function assertLoggedIn(req, res, next) {
   }
 }
 
-// Add a bit of middleware that Injects github clients at `req.github.user` and `req.github.bot`.
-import githubInstanceMiddleware from './githubInstanceMiddleware';
-app.use(githubInstanceMiddleware);
-
 // Redirect calls to `/api/v1` => `/v1`
 app.all(/^\/api\/v1\/.*$/, (req, res) => res.redirect(req.url.replace(/^\/api/, '')));
 
@@ -170,7 +163,7 @@ app.get('/v1/links/:id', bodyParser.json(), assertLoggedIn, route(linksGet, [Lin
 app.post('/v1/links', bodyParser.json(), assertLoggedIn, route(linksCreate, [Link]));
 
 // delete a link
-app.delete('/v1/links/:id', assertLoggedIn, route(linksDelete, [Link, removeOldWebhooksForLink]));
+app.delete('/v1/links/:id', assertLoggedIn, route(linksDelete, [Link]));
 
 // return the branches for a given repo
 app.get('/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, checkRepo);
@@ -181,13 +174,7 @@ app.post('/v1/links/:linkId', bodyParser.json(), assertLoggedIn, route(linksUpda
 // enable or disable a repository
 app.post('/v1/links/:linkId/enable', bodyParser.json(), route(linksEnable, [Link]));
 
-// the old webhook route
-// This parses the body of the request to get most of its data.
-app.post("/", bodyParser.json(), route(webhookOld, [webhook]));
-
 // the new webhook route
-// No body parsing, all oauth-based
-import webhookHandler from './routes/webhook/handler';
 app.all('/_:linkId', route(webhook, [Link, WebhookQueue]));
 
 if (require.main === module) {

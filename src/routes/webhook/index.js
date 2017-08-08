@@ -1,6 +1,4 @@
 import webhookHandler from './handler';
-import GitHubApi from 'github';
-import {constructor} from '../../github';
 const MANUAL = 'MANUAL';
 
 export default async function webhook(req, res, Link, WebhookQueue) {

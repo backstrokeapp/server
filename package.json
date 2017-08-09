@@ -7,7 +7,10 @@
   "dependencies": {
     "babel-cli": "^6.10.1",
     "babel-plugin-istanbul": "^2.0.1",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2017": "^6.24.1",
     "babel-preset-react": "^6.11.1",
     "babelify": "^7.3.0",
     "bluebird": "^3.4.3",
@@ -30,16 +33,14 @@
     "nyc": "^8.1.0",
     "passport": "^0.3.2",
     "passport-github2": "^0.1.10",
+    "pg": "4.6",
     "raven": "^2.1.1",
     "request": "^2.81.0",
     "rsmq": "^0.8.2",
     "session-file-store": "^1.1.1",
     "sinon": "^2.3.6",
     "uuid": "^3.0.1",
-    "watchify": "^3.7.0",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-es2017": "^6.24.1"
+    "watchify": "^3.7.0"
   },
   "scripts": {
     "start": "babel-node src/server.js",
@@ -78,8 +79,8 @@
   "author": "Ryan Gaus <rgaus.net>",
   "license": "MIT",
   "devDependencies": {
-    "nodemon": "^1.11.0",
     "faker": "^4.1.0",
-    "jest": "^20.0.4"
+    "jest": "^20.0.4",
+    "nodemon": "^1.11.0"
   }
 }

@@ -62,7 +62,7 @@ import { Schema } from 'jugglingdb';
 const schema = new Schema('postgres', {
   url: process.env.DATABASE_URL,
   debug: true,
-  // ssl: true, 
+  ssl: true, 
 });
 
 

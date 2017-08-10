@@ -49,8 +49,9 @@ describe('link create', () => {
       }
     ).then(res => {
       assert.notEqual(res.body.id, link.id); // Make sure the id is something else.
-      return Link.find(res.body.id);
+      return Link.findById(res.body.id);
     }).then(link => {
+      assert.equal(link.name, '');
       assert.equal(link.enabled, false);
     });
   });

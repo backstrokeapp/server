@@ -14,7 +14,7 @@ export const WebhookQueue = {
   initialize() {
     return new Promise((resolve, reject) => {
       redis.createQueue({qname: this.queueName}, (err, resp) => {
-        if (err.name === 'queueExists') {
+        if (err && err.name === 'queueExists') {
           // Queue was already created.
           resolve();
         } else if (err) {
@@ -58,29 +58,47 @@ WebhookQueue.initialize();
 
 
 
-import { Schema } from 'jugglingdb';
-const schema = new Schema('postgres', {
-  url: process.env.DATABASE_URL,
-  debug: true,
-  ssl: true, 
+import Sequelize from 'sequelize';
+const schema = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: true
+  }
 });
 
 
 
 
-export const User = schema.define('User', {
-  username: String,
-  email: String,
-  githubId: String,
-  accessToken: String,
-  publicScope: Boolean, // Did the user register with the `public` scope (only providing access to open source repos)?
+export const User = schema.define('user', {
+  id: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  username: {
+    type: Sequelize.STRING,
+    unique: true,
+  },
+  email: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  githubId: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  accessToken: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
 
-  createdAt: { type: Date, default: () => new Date },
-  lastLoggedInAt: { type: Date, default: () => new Date },
+  // Did the user register with the `public` scope (only providing access to open source repos)?
+  publicScope: { type: Sequelize.BOOLEAN },
+
+  createdAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW},
+  lastLoggedInAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW},
 });
-
-User.validatesPresenceOf('username', 'githubId', 'accessToken');
-User.validatesUniquenessOf('username', {message: 'Username is not unique'});
 
 // Create a new user in the registration function
 User.register = async function register(profile, accessToken) {
@@ -113,7 +131,8 @@ User.register = async function register(profile, accessToken) {
       profile.email,
       publicScope,
     );
-    return model.updateAttributes({
+
+    const [updatedId] = await User.update({
       username: profile.username,
       email: profile._json.email,
       githubId: profile.id,
@@ -121,10 +140,12 @@ User.register = async function register(profile, accessToken) {
       publicScope,
 
       lastLoggedInAt: new Date,
-    });
+    }, {where: {id: model.id}});
+
+    return User.findById(updatedId);
   } else {
     logger('CREATE USER %o', profile.username);
-    return this.create({
+    return User.create({
       username: profile.username,
       email: profile._json.email,
       githubId: profile.id,
@@ -140,31 +161,34 @@ User.register = async function register(profile, accessToken) {
 
 
 
-export const Link = schema.define('Link', {
-  name: String,
-  enabled: Boolean,
+export const Link = schema.define('link', {
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  enabled: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+  },
 
-  webhookId: { type: String, default: () => uuid.v4().replace(/-/g, '') },
+  webhookId: { type: Sequelize.STRING, defaultValue: () => uuid.v4().replace(/-/g, '') },
 
-  upstreamType: {type: String, enum: ['repo']},
-  upstreamOwner: String,
-  upstreamRepo: String,
-  upstreamIsFork: Boolean,
-  upstreamBranches: Schema.JSON,
-  upstreamBranch: String,
+  upstreamType: {type: Sequelize.ENUM, values: ['repo']},
+  upstreamOwner: Sequelize.STRING,
+  upstreamRepo: Sequelize.STRING,
+  upstreamIsFork: Sequelize.BOOLEAN,
+  upstreamBranches: Sequelize.STRING,
+  upstreamBranch: Sequelize.STRING,
 
-  forkType: {type: String, enum: ['repo', 'all-forks']},
-  forkOwner: String,
-  forkRepo: String,
-  forkBranches: Schema.JSON,
-  forkBranch: String,
+  forkType: {type: Sequelize.ENUM, values: ['repo', 'fork-all']},
+  forkOwner: Sequelize.STRING,
+  forkRepo: Sequelize.STRING,
+  forkBranches: Sequelize.STRING,
+  forkBranch: Sequelize.STRING,
 });
 
 // A link has a foreign key to a user.
-Link.belongsTo(schema.models.User, {as: 'owner', foreignKey: 'ownerId'});
-
-// Link.validatesInclusionOf('forkType', {in: ['repo', 'all-forks']});
-// Link.validatesInclusionOf('upstreamType', {in: ['repo', 'all-forks']});
+Link.belongsTo(User, {as: 'owner', foreignKey: 'ownerId'});
 
 // Convert a link to its owtward-facing structure. Expand all foreign keys and
 // remove sensitive data.
@@ -189,7 +213,7 @@ Link.prototype.fork = function fork() {
       owner: this.forkOwner,
       repo: this.forkRepo,
       isFork: true,
-      branches: this.forkBranches,
+      branches: JSON.parse(this.forkBranches),
       branch: this.forkBranch,
     };
   }
@@ -201,7 +225,7 @@ Link.prototype.upstream = function upstream() {
     owner: this.upstreamOwner,
     repo: this.upstreamRepo,
     isFork: this.upstreamFork,
-    branches: this.upstreamBranches,
+    branches: JSON.parse(this.upstreamBranches),
     branch: this.upstreamBranch,
   };
 }
@@ -209,7 +233,8 @@ Link.prototype.upstream = function upstream() {
 if (require.main === module) {
   if (process.argv[2] === 'migrate') {
     console.log('Migrating schema...');
-    schema.automigrate();
+    Link.sync({alter: true});
+    User.sync({alter: true});
     console.log('Done.');
   } else if (process.argv[2] === 'shell') {
     const options = {

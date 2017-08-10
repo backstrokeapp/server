@@ -25,7 +25,10 @@ export default function routeWrapper(handler, dependencies) {
   return (req, res) => {
     try {
       return handler(req, res, ...dependencies).then(data => {
-        res.status(200).send(data);
+        // Only send what is resolved is something hasn't been otherwise sent.
+        if (!res._headerSent) {
+          res.status(200).send(data);
+        }
       }).catch(error => handleError(res, error));
     } catch (error) {
       return handleError(res, error);

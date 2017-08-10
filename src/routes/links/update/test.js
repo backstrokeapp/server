@@ -12,7 +12,6 @@ const User = new MockModel(),
       Link = new MockModel([], {owner: User});
 
 Link.methods.display = function() { return this; }
-Link.methods.update = sinon.stub().callsFake(function() { return Promise.resolve(this); });
 
 describe('link update', () => {
   let user, link;
@@ -53,7 +52,7 @@ describe('link update', () => {
             owner: 'foo',
             repo: 'bar',
             isFork: false,
-            branches: '["master"]',
+            branches: ['master'],
             branch: 'master',
           },
           fork: {
@@ -65,44 +64,70 @@ describe('link update', () => {
       const body = res.body;
       assert.equal(body.name, 'Another name for my link!');
 
-      return Link.find(link.id);
+      return Link.findById(link.id);
     }).then(link => {
       assert.equal(link.name, 'Another name for my link!');
     });
   });
-  it('should update a link with a new upstream', () => {
-    const addWebhooksForLink = sinon.stub().resolves(['98765']);
-    const removeOldWebhooksForLink = sinon.stub().resolves();
-
-    // First, remove the upstream id from the link to test against.
-    return link.updateAttribute('upstreamId', null).then(() => {
-      return issueRequest(
-        update, [Link],
-        '/:linkId', user, {
-          method: 'PUT',
-          url: `/${link.id}`,
-          json: true,
-          body: {
-            name: 'Another name for my link!',
-            upstream: {
-              type: 'repo',
-              owner: 'foo',
-              repo: 'bar',
-              branches: ['master'],
-              branch: 'master',
-            },
-            fork: {
-              type: 'fork-all',
-            },
+  it(`should update a link for a user but the user doesn't own the link`, () => {
+    return issueRequest(
+      update, [Link],
+      '/:linkId', {id: 'bogus'} /* bogus user */, {
+        method: 'PUT',
+        url: `/${link.id}`,
+        json: true,
+        body: {
+          name: 'Another name for my link!',
+          upstream: {
+            type: 'repo',
+            owner: 'foo',
+            repo: 'bar',
+            isFork: false,
+            branches: ['master'],
+            branch: 'master',
           },
-        }
-      );
-    }).then(res => {
+          fork: {
+            type: 'all-forks'
+          },
+        },
+      },
+    ).then(res => {
+      assert.equal(res.statusCode, 404);
+      assert.equal(res.body.error, 'No such link found that is owned by this account.');
+
+      return Link.findById(link.id);
+    }).then(link => {
+      assert.equal(link.name, 'My Link');
+    });
+  });
+  it('should update a link with a new upstream', () => {
+    // First, remove the upstream id from the link to test against.
+    return issueRequest(
+      update, [Link],
+      '/:linkId', user, {
+        method: 'PUT',
+        url: `/${link.id}`,
+        json: true,
+        body: {
+          name: 'Another name for my link!',
+          upstream: {
+            type: 'repo',
+            owner: 'foo',
+            repo: 'bar',
+            branches: ['master'],
+            branch: 'master',
+          },
+          fork: {
+            type: 'fork-all',
+          },
+        },
+      }
+    ).then(res => {
       const body = res.body;
       assert.equal(body.id, link.id);
       assert.equal(body.name, 'Another name for my link!');
 
-      return Link.find(link.id);
+      return Link.findById(link.id);
     }).then(link => {
       assert.equal(link.name, 'Another name for my link!');
     });
@@ -131,7 +156,7 @@ describe('link update', () => {
       }
     ).then(res => {
       const body = res.body;
-      assert.equal(body.error, `No such link with that id.`);
+      assert.equal(body.error, `No such link found that is owned by this account.`);
     });
   });
   it(`should try to update a link with a malformed body`, () => {

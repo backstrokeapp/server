@@ -4,6 +4,8 @@ import Promise from 'bluebird';
 // in place of the real model.
 export default class MockModel {
   constructor(models, foreignKeyNames={}) {
+
+    // A list of all models that exist.
     this.models = []
     if (models) {
       models.forEach(this.create.bind(this));
@@ -11,50 +13,72 @@ export default class MockModel {
     this.foreignKeyNames = foreignKeyNames;
     this.idCounter = 0;
 
-    // Methods that are exposed on an item.
-    const that = this;
-    this.methods = {
-      updateAttribute(field, value) {
-        this[field] = value;
-        return Promise.resolve(this);
-      },
-      updateAttributes(props) {
-        for (const key in props) {
-          this.updateAttribute.apply(this, [key, props[key]]);
-        }
-        return Promise.resolve(this);
-      },
-      destroy() {
-        that.models = that.models.filter(i => i.id !== this.id);
-        return Promise.resolve(true);
-      },
-    };
+    this.methods = [];
+  }
 
-    // Add all foreign key methods
-    // ie, instance.upstream() and instance.fork() return the foreign-key'd records
-    for (const key in this.foreignKeyNames) {
-      (function(key) {
-        that.methods[key] = function() {
-          return that.foreignKeyNames[key].findOne({
-            where: {id: this[`${key}Id`]},
-          });
-        };
-      })(key);
-    }
-  }
-  findOne({where}) {
-    const model = this.models.find(model => {
-      for (const key in where) {
-        if (where[key] !== model[key]) {
-          return false;
+  _handleQueries({where, limit, include}) {
+    let models = this.models;
+
+    if (where) {
+      models = models.filter(model => {
+        for (const key in where) {
+          if (where[key] !== model[key]) {
+            return false;
+          }
         }
-      }
-      return true;
-    });
-    return Promise.resolve(model ? this.formatModelInstance(model) : null);
+        return true;
+      });
+    }
+
+    if (limit) {
+      models = models.slice(0, limit)
+    }
+
+    if (include) {
+      include.forEach(({model, as}) => {
+        // Add the foreign key to the query specified with `include`.
+        models = models.map(m => {
+          model[as] = model.models.find(i => i.id === m[`${as}Id`]);
+        });
+      });
+    }
+
+    return models;
   }
-  find(id) {
-    return Promise.resolve(this.models.find(i => i.id === id));
+
+  findOne(query) {
+    const model = this._handleQueries({...query, limit: 1});
+    return Promise.resolve(model.length ? this.formatModelInstance(model[0]) : null);
+  }
+  update(data, query) {
+    // Get models to update
+    const models = this._handleQueries(query).map(i => i.id);
+
+    // Perform update
+    this.models = this.models.map(model => {
+      if (models.indexOf(model.id) >= 0) {
+        return Object.assign({}, model, data);
+      } else {
+        return model;
+      }
+    });
+
+    // Resolve the number of changed items.
+    return Promise.resolve([models.length]);
+  }
+  destroy(query) {
+    // Get models to update
+    const models = this._handleQueries(query).map(i => i.id);
+
+    // Remove all matching models from the collection.
+    this.models = this.models.filter(model => models.indexOf(model.id) === -1);
+
+    // Resolve the number of changed items.
+    return Promise.resolve(models.length);
+  }
+  findById(id) {
+    const model = this._handleQueries({where: {id}, limit: 1});
+    return Promise.resolve(model.length ? this.formatModelInstance(model[0]) : null);
   }
   create(data) {
     data.id = (++this.idCounter).toString();
@@ -62,11 +86,6 @@ export default class MockModel {
     // Any foriegn keys get a `Id` suffixed version too.
     for (const fkey in this.foreignKeyNames) {
       data[fkey+'Id'] = data[fkey];
-    }
-
-    // Add all the methods to this item.
-    for (const method in this.methods) {
-      data[method] = this.methods[method].bind(data);
     }
 
     this.models.push(data);
@@ -86,9 +105,13 @@ export default class MockModel {
       })];
     }, []);
 
+    // Add all the methods to this item.
+    for (const method in this.methods) {
+      instance[method] = this.methods[method].bind(instance);
+    }
+
     return Promise.all(all).then(() => {
       return instance;
     });
   }
 }
-

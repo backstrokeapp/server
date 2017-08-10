@@ -4,7 +4,7 @@ export default function userSerialization(User, passport) {
     done(null, user.id);
   });
   passport.deserializeUser(function(id, done) {
-    User.findOne({where: {id}})
+    User.findById(id)
       .then(model => done(null, model))
       .catch(err => done(err));
   });

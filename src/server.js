@@ -147,6 +147,59 @@ function assertLoggedIn(req, res, next) {
   }
 }
 
+import GitHubApi from 'github';
+function constructor(github) {
+  return {
+    reposGet: Promise.promisify(github.repos.get),
+    reposGetBranch: Promise.promisify(github.repos.getBranch),
+    reposGetBranches: Promise.promisify(github.repos.getBranches),
+    reposGetForks: Promise.promisify(github.repos.getForks),
+    reposFork: Promise.promisify(github.repos.fork),
+    reposEdit: Promise.promisify(github.repos.edit),
+    reposDelete: Promise.promisify(github.repos['delete']),
+    reposMerge: Promise.promisify(github.repos.merge),
+    reposAddCollaborator: Promise.promisify(github.repos.addCollaborator),
+
+    pullRequestsCreate: Promise.promisify(github.pullRequests.create),
+    pullRequestsGetAll: Promise.promisify(github.pullRequests.getAll),
+    pullRequestsMerge: Promise.promisify(github.pullRequests.merge),
+
+    reposCreateHook: Promise.promisify(github.repos.createHook),
+    reposDeleteHook: Promise.promisify(github.repos.deleteHook),
+    reposFork: Promise.promisify(github.repos.fork),
+    reposGetCollaborators: Promise.promisify(github.repos.getCollaborators),
+    searchIssues: Promise.promisify(github.search.issues),
+  };
+}
+
+// Authorize the bot.
+const bot = new GitHubApi({});
+bot.authenticate({
+  type: "oauth",
+  token: process.env.GITHUB_TOKEN,
+});
+
+// An express middleware that adds a github api instance to the request for the currently
+// authenticated user. If no user is logged in, the property isn't set.
+function authedGithubInstance(req, res, next) {
+  req.github = {};
+
+  // Add the bot api instance to the request.
+  req.github.bot = constructor(bot);
+
+  // If a user is logged in, create an add a user instance.
+  if (req.user) {
+    const github = new GitHubApi({});
+    github.authenticate({
+      type: "oauth",
+      token: req.user.accessToken,
+    });
+    
+    req.github.user = constructor(github);
+  }
+  return next();
+}
+
 // Redirect calls to `/api/v1` => `/v1`
 app.all(/^\/api\/v1\/.*$/, (req, res) => res.redirect(req.url.replace(/^\/api/, '')));
 
@@ -166,7 +219,7 @@ app.post('/v1/links', bodyParser.json(), assertLoggedIn, route(linksCreate, [Lin
 app.delete('/v1/links/:id', assertLoggedIn, route(linksDelete, [Link]));
 
 // return the branches for a given repo
-app.get('/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, checkRepo);
+app.get('/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, authedGithubInstance, checkRepo);
 
 // POST link updates
 app.post('/v1/links/:linkId', bodyParser.json(), assertLoggedIn, route(linksUpdate, [Link]));
@@ -175,7 +228,7 @@ app.post('/v1/links/:linkId', bodyParser.json(), assertLoggedIn, route(linksUpda
 app.post('/v1/links/:linkId/enable', bodyParser.json(), route(linksEnable, [Link]));
 
 // the new webhook route
-app.all('/_:linkId', route(webhook, [Link, WebhookQueue]));
+app.all('/_:linkId', route(webhook, [Link, User, WebhookQueue]));
 
 if (require.main === module) {
   const port = process.env.PORT || 8001;

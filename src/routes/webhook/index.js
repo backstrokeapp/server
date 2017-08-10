@@ -7,6 +7,7 @@ export default async function webhook(req, res, Link, User, WebhookQueue) {
     include: [{model: User, as: 'owner'}],
   });
 
+  // If the webhook is enabled, add it to the queue.
   if (link && link.enabled) {
     const enqueuedAs = await WebhookQueue.push({
       type: MANUAL,

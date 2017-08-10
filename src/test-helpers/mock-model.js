@@ -38,7 +38,12 @@ export default class MockModel {
       include.forEach(({model, as}) => {
         // Add the foreign key to the query specified with `include`.
         models = models.map(m => {
-          model[as] = model.models.find(i => i.id === m[`${as}Id`]);
+          const output = model.models.find(i => i.id === m[`${as}Id`]);
+          if (output) {
+            return {...m, [as]: output};
+          } else {
+            throw new Error(`No such model ${as} found with the id ${i.id}`);
+          }
         });
       });
     }

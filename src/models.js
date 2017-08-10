@@ -173,6 +173,8 @@ export const Link = schema.define('link', {
 
   webhookId: { type: Sequelize.STRING, defaultValue: () => uuid.v4().replace(/-/g, '') },
 
+  lastSyncedAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW},
+
   upstreamType: {type: Sequelize.ENUM, values: ['repo']},
   upstreamOwner: Sequelize.STRING,
   upstreamRepo: Sequelize.STRING,
@@ -198,6 +200,7 @@ Link.prototype.display = function display() {
     name: this.name,
     enabled: this.enabled,
     webhook: this.webhookId,
+    createdAt: this.createdAt,
 
     fork: this.fork(),
     upstream: this.upstream(),

@@ -55,6 +55,10 @@ export default class MockModel {
     const model = this._handleQueries({...query, limit: 1});
     return Promise.resolve(model.length ? this.formatModelInstance(model[0]) : null);
   }
+  findAll(query) {
+    const models = this._handleQueries({...query, limit: 1});
+    return Promise.resolve(models.length ? Promise.all(models.map(this.formatModelInstance)) : null);
+  }
   update(data, query) {
     // Get models to update
     const models = this._handleQueries(query).map(i => i.id);

@@ -1,7 +1,12 @@
 import webhookHandler from './handler';
+import Debug from 'debug';
+const debug = Debug('backstroke:webhook:manual');
+
 const MANUAL = 'MANUAL';
 
 export default async function webhook(req, res, Link, User, WebhookQueue) {
+  // Note: it is purposeful we are not filtering by user below, since this endpoint is
+  // unathenticated.
   const link = await Link.findOne({
     where: {webhookId: req.params.linkId},
     include: [{model: User, as: 'owner'}],

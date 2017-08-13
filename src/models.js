@@ -3,17 +3,47 @@ import debug from 'debug';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
 
+import Redis from 'redis';
+const redis = Redis.createClient(process.env.REDIS_URL);
 import RedisMQ from 'rsmq';
-const redis = new RedisMQ({
-  client: require('redis').createClient(process.env.REDIS_URL),
+const redisQueue = new RedisMQ({
+  client: redis,
   ns: 'rsmq',
 });
+
+const ONE_HOUR_IN_SECONDS = 60 * 60;
+export const WebhookStatusStore = {
+  set(webhookId, status, expiresIn=ONE_HOUR_IN_SECONDS) {
+    return new Promise((resolve, reject) => {
+      redis.set(`webhook:status:${webhookId}`, JSON.stringify(status), 'EX', expiresIn, (err, id) => {
+        if (err) {
+          reject(err);
+        } else {
+          // Resolves the message id.
+          resolve(id);
+        }
+      });
+    });
+  },
+  get(webhookId) {
+    return new Promise((resolve, reject) => {
+      redis.get(`webhook:status:${webhookId}`, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          // Resolves the cached data.
+          resolve(JSON.parse(data));
+        }
+      });
+    });
+  },
+};
 
 export const WebhookQueue = {
   queueName: process.env.REDIS_QUEUE_NAME || 'webhookQueue',
   initialize() {
     return new Promise((resolve, reject) => {
-      redis.createQueue({qname: this.queueName}, (err, resp) => {
+      redisQueue.createQueue({qname: this.queueName}, (err, resp) => {
         if (err && err.name === 'queueExists') {
           // Queue was already created.
           resolve();
@@ -27,7 +57,7 @@ export const WebhookQueue = {
   },
   push(data) {
     return new Promise((resolve, reject) => {
-      redis.sendMessage({qname: this.queueName, message: JSON.stringify(data)}, (err, id) => {
+      redisQueue.sendMessage({qname: this.queueName, message: JSON.stringify(data)}, (err, id) => {
         if (err) {
           reject(err);
         } else {
@@ -39,7 +69,7 @@ export const WebhookQueue = {
   },
   pop() {
     return new Promise((resolve, reject) => {
-      redis.popMessage({qname: this.queueName}, (err, {message, id}) => {
+      redisQueue.popMessage({qname: this.queueName}, (err, {message, id}) => {
         if (err) {
           reject(err);
         } else if (typeof id === 'undefined') {
@@ -47,7 +77,7 @@ export const WebhookQueue = {
           resolve(null);
         } else {
           // Item was found on the end of the queue!
-          resolve(message);
+          resolve({data: JSON.parse(message), id});
         }
       });
     });
@@ -162,6 +192,11 @@ User.register = async function register(profile, accessToken) {
 
 
 export const Link = schema.define('link', {
+  id: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
   name: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -200,7 +235,9 @@ Link.prototype.display = function display() {
     name: this.name,
     enabled: this.enabled,
     webhook: this.webhookId,
+
     createdAt: this.createdAt,
+    lastSyncedAt: this.lastSyncedAt,
 
     fork: this.fork(),
     upstream: this.upstream(),
@@ -250,6 +287,7 @@ if (require.main === module) {
       Link,
       User,
       WebhookQueue,
+      WebhookStatusStore,
     };
 
     // From https://stackoverflow.com/questions/33673999/passing-context-to-interactive-node-shell-leads-to-typeerror-sandbox-argument

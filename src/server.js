@@ -44,7 +44,8 @@ import whoami from './routes/whoami';
 import checkRepo from './routes/checkRepo';
 
 import webhook from './routes/webhook';
-import webhookJob from './jobs/webhook';
+import webhookDispatcherJob from './jobs/webhook-dispatcher';
+import webhookConsumerJob from './jobs/webhook-consumer';
 
 import linksList from './routes/links/list';
 import linksGet from './routes/links/get';
@@ -53,7 +54,7 @@ import linksDelete from './routes/links/delete';
 import linksUpdate from './routes/links/update';
 import linksEnable from './routes/links/enable';
 
-import { Link, User, WebhookQueue } from './models';
+import { Link, User, WebhookQueue, WebhookStatusStore } from './models';
 
 /* app.use((err, req, res, next) => { */
 /*   if (err.name === 'ValidationError') { */
@@ -76,11 +77,12 @@ if (process.env.SENTRY_CONFIG) {
 }
 
 // ----------------------------------------------------------------------------
-// Start the webhook job
+// Start the webhook jobs
 // ----------------------------------------------------------------------------
 if (require.main === module) {
-  console.log('Starting webhook job...');
-  webhookJob(Link, User, WebhookQueue);
+  console.log('Starting webhook jobs...');
+  webhookDispatcherJob(Link, User, WebhookQueue);
+  webhookConsumerJob(WebhookQueue, WebhookStatusStore);
 }
 
 // ----------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-# Webhook Job
+# Webhook Dispatcher Job
 
 This job is used to push automatic updates to the queue. Every 30 seconds, the database is queried
 to see if there are any links that were last updated over 10 minutes ago. If so, an `AUTOMATIC`

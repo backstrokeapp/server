@@ -69,15 +69,15 @@ export const WebhookQueue = {
   },
   pop() {
     return new Promise((resolve, reject) => {
-      redisQueue.popMessage({qname: this.queueName}, (err, {message, id}) => {
+      redisQueue.popMessage({qname: this.queueName}, (err, data) => {
         if (err) {
           reject(err);
-        } else if (typeof id === 'undefined') {
+        } else if (!data || typeof data.id === 'undefined') {
           // No items in the queue
           resolve(null);
         } else {
           // Item was found on the end of the queue!
-          resolve({data: JSON.parse(message), id});
+          resolve({data: JSON.parse(data.message), id: data.id});
         }
       });
     });

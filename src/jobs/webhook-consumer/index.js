@@ -17,11 +17,10 @@ const ONE_HOUR_IN_SECONDS = 60 * 60;
 function logger() { console.log.apply(console, ['   *', ...arguments]); }
 
 // The batch processing function. Eats off the queue and publishes results to redis.
-async function processBatch(WebhookQueue, WebhookStatusStore) {
+export async function processBatch(WebhookQueue, WebhookStatusStore) {
   while (true) {
     // Fetch a new webhook event.
     const webhook = await WebhookQueue.pop();
-    console.log('at top', webhook);
     // The queue is empty? Cool, we're done.
     if (!webhook) { break; }
 

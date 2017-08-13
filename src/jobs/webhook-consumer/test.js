@@ -1,5 +1,5 @@
 import assert from 'assert';
-import {webhookJob} from './index';
+import {processBatch} from './index';
 import MockModel from '../../test-helpers/mock-model';
 import sinon from 'sinon';
 
@@ -20,13 +20,27 @@ const MockWebhookQueue = {
   },
   pop() {
     const popped = this.queue.pop();
-    return Promise.resolve(popped ? popped.item : null);
+    return Promise.resolve(popped ? {data: popped.item, id: popped.id}: null);
+  },
+};
+
+const MockWebhookStatusStore = {
+  data: {},
+  reset() {
+    this.data = {};
+  },
+  set(id, data) {
+    this.data[id] = data;
+    return Promise.resolve(id);
+  },
+  get(id) {
+    return Promise.resolve(this.data[id]);
   },
 };
 
 Link.methods.display = function() { return this; }
 
-describe('webhook job', function() {
+describe('webhook consumer job', function() {
   let user, link;
   beforeEach(async () => {
     MockWebhookQueue.reset();
@@ -45,7 +59,7 @@ describe('webhook job', function() {
       upstreamBranches: '["master"]',
       upstreamBranch: 'master',
 
-      forkType: 'all-forks',
+      forkType: 'fork-all',
       forkOwner: undefined,
       forkRepo: undefined,
       forkBranches: undefined,
@@ -53,30 +67,22 @@ describe('webhook job', function() {
     });
   });
 
-  it(`should queue an update if the link hasn't been updated`, async function() {
-    Link.findAll = sinon.stub().resolves([{...link, owner: user}]);
+  it(`should process a webhook`, async function() {
+    // First, add an item to the queue
+    const enqueuedAs = await MockWebhookQueue.push({
+      type: 'MANUAL',
+      user,
+      link: {...link, owner: user},
+    });
 
-    const result = await webhookJob(Link, User, MockWebhookQueue);
+    // Run the worker.
+    await processBatch(MockWebhookQueue, MockWebhookStatusStore);
+    const webhookStatus = await MockWebhookStatusStore.get(enqueuedAs)
 
-    // Item was added to the queue.
-    assert.equal(MockWebhookQueue.queue.length, 1);
-    assert.equal(MockWebhookQueue.queue[0].item.type, 'AUTOMATIC');
-    assert.equal(MockWebhookQueue.queue[0].item.link.id, link.id);
-    assert.equal(MockWebhookQueue.queue[0].item.user.id, link.ownerId);
-
-    // And the last synced time was updated.
-    assert.notEqual((await Link.findById(link.id)).lastSyncedAt, LONG_TIME_AGO);
-  });
-  it(`should not fail if there are no links to be updated`, async function() {
-    Link.findAll = sinon.stub().resolves([]); // No links
-
-    const result = await webhookJob(Link, User, MockWebhookQueue);
-    assert.equal(result, null);
-
-    // Queue is still empty
-    assert.equal(MockWebhookQueue.queue.length, 0);
-
-    // Link last synced time wasn't changed.
-    assert.equal((await Link.findById(link.id)).lastSyncedAt, LONG_TIME_AGO);
+    // Make sure i\that it set the correct status.
+    assert.equal(webhookStatus.status, 'OK');
+    assert.equal(typeof webhookStatus.startedAt, 'string');
+    assert.equal(typeof webhookStatus.finishedAt, 'string');
+    assert.equal(webhookStatus.output.toString(), '[object Object]');
   });
 });

@@ -20,13 +20,13 @@ const MockWebhookQueue = {
   },
   pop() {
     const popped = this.queue.pop();
-    return Promise.resolve(popped ? popped.item : null);
+    return Promise.resolve(popped ? {data: popped.item, id: popped.id}: null);
   },
 };
 
 Link.methods.display = function() { return this; }
 
-describe('webhook job', function() {
+describe('webhook dispatcher job', function() {
   let user, link;
   beforeEach(async () => {
     MockWebhookQueue.reset();

@@ -9,12 +9,22 @@ export default async function enable(req, res, Link) {
   } 
 
   const link = await Link.findById(req.params.linkId)
+
+  // Link not owned by user.
   if (link && link.ownerId !== req.user.id) {
     debug('Link %o not owned by %o', link.id, req.user.id);
     throw new Error('No such link.');
+
+  // Link not valid.
+  } else if (link && (!link.upstreamType || !link.forkType)) {
+    throw new Error('Please update the link with a valid upstream and fork before enabling.');
+
+  // Link is valid!
   } else if (link) {
     await Link.update({enabled: req.body.enabled}, {where: {id: link.id}});
     return {status: 'ok'};
+
+  // Link does not exist.
   } else {
     throw new Error('No such link.');
   }

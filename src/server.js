@@ -43,7 +43,8 @@ import route from './helpers/route';
 import whoami from './routes/whoami';
 import checkRepo from './routes/checkRepo';
 
-import webhook from './routes/webhook';
+import manual from './routes/webhook/manual';
+import status from './routes/webhook/status';
 import webhookDispatcherJob from './jobs/webhook-dispatcher';
 
 import linksList from './routes/links/list';
@@ -231,8 +232,13 @@ app.post('/v1/links/:linkId', bodyParser.json(), assertLoggedIn, route(linksUpda
 // enable or disable a repository
 app.post('/v1/links/:linkId/enable', bodyParser.json(), route(linksEnable, [Link]));
 
-// the new webhook route
-app.all('/_:linkId', route(webhook, [Link, User, WebhookQueue]));
+// the new webhook route - both the condensed verson meant to be called by a user and the interal
+// variant that follows REST a bit closer.
+app.all('/_:linkId', route(manual, [Link, User, WebhookQueue]));
+// app.post('/v1/webhooks/:linkId/update', assertLoggedIn, route(manual, [Link, User, WebhookQueue]));
+
+// check to see how a link operation is doing after it has been kicked off
+app.get('/v1/webhooks/status/:operationId', route(status, [WebhookStatusStore]));
 
 if (require.main === module) {
   const port = process.env.PORT || 8001;

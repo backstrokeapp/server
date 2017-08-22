@@ -45,7 +45,6 @@ import checkRepo from './routes/checkRepo';
 
 import webhook from './routes/webhook';
 import webhookDispatcherJob from './jobs/webhook-dispatcher';
-import webhookConsumerJob from './jobs/webhook-consumer';
 
 import linksList from './routes/links/list';
 import linksGet from './routes/links/get';
@@ -77,12 +76,11 @@ if (process.env.SENTRY_CONFIG) {
 }
 
 // ----------------------------------------------------------------------------
-// Start the webhook jobs
+// Start the webhook job to add to the queue automatically
 // ----------------------------------------------------------------------------
 if (require.main === module) {
   console.log('Starting webhook jobs...');
   webhookDispatcherJob(Link, User, WebhookQueue);
-  webhookConsumerJob(WebhookQueue, WebhookStatusStore);
 }
 
 // ----------------------------------------------------------------------------

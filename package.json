@@ -5,6 +5,7 @@
   "description": "",
   "main": "src/server.js",
   "dependencies": {
+    "@backstroke/worker": "^1.0.2",
     "babel-cli": "^6.10.1",
     "babel-plugin-istanbul": "^2.0.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
@@ -22,10 +23,6 @@
     "express": "^4.14.0",
     "express-session": "^1.14.1",
     "github": "^8.1.0",
-    "jugglingdb": "^2.0.0-rc8",
-    "jugglingdb-mongodb": "^0.2.0",
-    "jugglingdb-postgres": "^0.1.0",
-    "jugglingdb-sqlite3": "^0.1.0",
     "mixpanel": "^0.5.0",
     "mocha": "^2.5.3",
     "morgan": "^1.7.0",

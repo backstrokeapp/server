@@ -239,7 +239,7 @@ app.all('/_:linkId', route(manual, [Link, User, WebhookQueue]));
 // app.post('/v1/webhooks/:linkId/update', assertLoggedIn, route(manual, [Link, User, WebhookQueue]));
 
 // check to see how a link operation is doing after it has been kicked off
-app.get('/v1/webhooks/status/:operationId', route(status, [WebhookStatusStore]));
+app.get('/v1/operations/:operationId', route(status, [WebhookStatusStore]));
 
 if (require.main === module) {
   const port = process.env.PORT || 8001;

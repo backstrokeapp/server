@@ -7,11 +7,12 @@ const UPDATE_SECONDS = 30;
 const WEBHOOK_SYNC_DURATION = '10 minutes';
 
 // Every 30 seconds, try to update a link.
-export default function(Link, User, WebhookQueue) {
+export default function(Link, User, WebhookQueue, upstreamSHAChanged) {
+  webhookJob.apply(null, arguments);
   return setInterval(() => webhookJob.apply(null, arguments), UPDATE_SECONDS * 1000);
 }
 
-export async function webhookJob(Link, User, WebhookQueue) {
+export async function webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBranch) {
   const links = await Link.findAll({
     where: {
       name: {ne: ''},
@@ -37,15 +38,19 @@ export async function webhookJob(Link, User, WebhookQueue) {
   }
 
   const responses = links.map(async link => {
-    debug(`Updating link %o, last updated %o`, link.id, link.lastSyncedAt);
-    const enqueuedAs = await WebhookQueue.push({
-      type: AUTOMATIC,
-      user: link.owner,
-      link,
-    });
+    const headSha = await fetchSHAForUpstreamBranch(link);
 
-    debug(`Update successful for link %o.`, link.id);
-    await Link.update({lastSyncedAt: new Date}, {where: {id: link.id}, limit: 1});
+    // Before enqueuing an update, make sure that the commit hash actually changed of the upstream
+    debug(`Updating link %o, last updated %o, last SHA %o`, link.id, link.lastSyncedAt, link.upstreamLastSHA);
+    if (!link.upstreamLastSHA || link.upstreamLastSHA !== headSha) {
+      await WebhookQueue.push({type: AUTOMATIC, user: link.owner, link});
+      debug(`Update enqueued successfully for link %o.`, link.id);
+    } else {
+      debug(`Link didn't change, update not required.`);
+    }
+
+    // Update the link instance to say that the link has been synced (or, at least checked)
+    await Link.update({lastSyncedAt: new Date, upstreamLastSHA: headSha}, {where: {id: link.id}, limit: 1});
   });
 
   return Promise.all(responses).catch(err => {

@@ -46,6 +46,7 @@ import checkRepo from './routes/checkRepo';
 import manual from './routes/webhook/manual';
 import status from './routes/webhook/status';
 import webhookDispatcherJob from './jobs/webhook-dispatcher';
+import fetchSHAForUpstreamBranch from './jobs/webhook-dispatcher/fetch-sha-for-upstream-branch';
 
 import linksList from './routes/links/list';
 import linksGet from './routes/links/get';
@@ -81,7 +82,7 @@ if (process.env.SENTRY_CONFIG) {
 // ----------------------------------------------------------------------------
 if (require.main === module) {
   console.log('Starting webhook jobs...');
-  webhookDispatcherJob(Link, User, WebhookQueue);
+  webhookDispatcherJob(Link, User, WebhookQueue, fetchSHAForUpstreamBranch);
 }
 
 // ----------------------------------------------------------------------------

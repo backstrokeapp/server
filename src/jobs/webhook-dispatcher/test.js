@@ -27,7 +27,7 @@ const MockWebhookQueue = {
 Link.methods.display = function() { return this; }
 
 describe('webhook dispatcher job', function() {
-  let user, link;
+  let user, link, linkExistingUpstreamSHA;
   beforeEach(async () => {
     MockWebhookQueue.reset();
 
@@ -51,12 +51,33 @@ describe('webhook dispatcher job', function() {
       forkBranches: undefined,
       forkBranch: undefined,
     });
+    linkExistingUpstreamSHA = await Link.create({
+      name: 'My Link',
+      enabled: true,
+      owner: user.id,
+      lastSyncedAt: LONG_TIME_AGO,
+
+      upstreamType: 'repo',
+      upstreamOwner: 'foo',
+      upstreamRepo: 'bar',
+      upstreamIsFork: false,
+      upstreamBranches: '["master"]',
+      upstreamBranch: 'master',
+      upstreamLastSHA: 'SOMERANDOMSHATHATWSONTHELINKALREADY',
+
+      forkType: 'all-forks',
+      forkOwner: undefined,
+      forkRepo: undefined,
+      forkBranches: undefined,
+      forkBranch: undefined,
+    });
   });
 
-  it(`should queue an update if the link hasn't been updated`, async function() {
+  it(`should queue an update if the link is brand new (ie, hasn't been updated before)`, async function() {
     Link.findAll = sinon.stub().resolves([{...link, owner: user}]);
+    const fetchSHAForUpstreamBranch = sinon.stub().resolves(false);
 
-    const result = await webhookJob(Link, User, MockWebhookQueue);
+    const result = await webhookJob(Link, User, MockWebhookQueue, fetchSHAForUpstreamBranch);
 
     // Item was added to the queue.
     assert.equal(MockWebhookQueue.queue.length, 1);
@@ -67,10 +88,26 @@ describe('webhook dispatcher job', function() {
     // And the last synced time was updated.
     assert.notEqual((await Link.findById(link.id)).lastSyncedAt, LONG_TIME_AGO);
   });
+  it(`should queue an update if the link's upstream has a new commit`, async function() {
+    Link.findAll = sinon.stub().resolves([{...linkExistingUpstreamSHA, owner: user}]);
+    const fetchSHAForUpstreamBranch = sinon.stub().resolves(true); // New commit on upstream!
+
+    const result = await webhookJob(Link, User, MockWebhookQueue, fetchSHAForUpstreamBranch);
+
+    // Item was added to the queue.
+    assert.equal(MockWebhookQueue.queue.length, 1);
+    assert.equal(MockWebhookQueue.queue[0].item.type, 'AUTOMATIC');
+    assert.equal(MockWebhookQueue.queue[0].item.link.id, linkExistingUpstreamSHA.id);
+    assert.equal(MockWebhookQueue.queue[0].item.user.id, linkExistingUpstreamSHA.ownerId);
+
+    // And the last synced time was updated.
+    assert.notEqual((await Link.findById(linkExistingUpstreamSHA.id)).lastSyncedAt, LONG_TIME_AGO);
+  });
   it(`should not fail if there are no links to be updated`, async function() {
     Link.findAll = sinon.stub().resolves([]); // No links
+    const fetchSHAForUpstreamBranch = sinon.stub().resolves(false);
 
-    const result = await webhookJob(Link, User, MockWebhookQueue);
+    const result = await webhookJob(Link, User, MockWebhookQueue, fetchSHAForUpstreamBranch);
     assert.equal(result, null);
 
     // Queue is still empty

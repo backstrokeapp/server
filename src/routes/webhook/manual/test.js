@@ -87,7 +87,11 @@ describe('webhook tests', function() {
       // And that the response was correct.
       const enqueuedAs = MockWebhookQueue.queue[0].id;
       assert.equal(res.statusCode, 201);
-      assert.deepEqual(res.body, {message: 'Scheduled webhook.', enqueuedAs});
+      assert.deepEqual(res.body, {
+        message: 'Scheduled webhook.',
+        enqueuedAs,
+        statusUrl: `http://localhost:8000/v1/operations/${enqueuedAs}`,
+      });
     });
   });
   it('should not add to the queue when a link is disabled', function() {

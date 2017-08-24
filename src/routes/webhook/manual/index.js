@@ -2,6 +2,7 @@ import Debug from 'debug';
 const debug = Debug('backstroke:webhook:manual');
 
 const MANUAL = 'MANUAL';
+const API_URL = process.env.API_URL || `http://localhost:${process.env.PORT || 8000}`;
 
 export default async function webhook(req, res, Link, User, WebhookQueue) {
   // Note: it is purposeful we are not filtering by user below, since this endpoint is
@@ -22,6 +23,7 @@ export default async function webhook(req, res, Link, User, WebhookQueue) {
     res.status(201).send({
       message: 'Scheduled webhook.',
       enqueuedAs,
+      statusUrl: `${API_URL}/v1/operations/${enqueuedAs}`,
     });
   } else if (link) {
     throw new Error(`Link is not enabled!`);

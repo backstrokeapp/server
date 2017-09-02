@@ -1,5 +1,5 @@
-.repository-box {
-  @include repo-box;
+.link-box {
+  @include link-box;
   background-color: $brand-success;
   color: #FFF;
   position: relative;
@@ -11,7 +11,7 @@
     top: 1em;
   }
 
-  .repo-name-box {
+  .link-name-box {
     margin-bottom: 0.5em;
 
     i.fa-check { color: $brand-success; } // unpaid repos
@@ -21,7 +21,7 @@
 }
 
 .fork-box {
-  @include repo-box;
+  @include link-box;
   background-color: $brand-info;
   color: #FFF;
 

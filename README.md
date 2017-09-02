@@ -14,13 +14,10 @@ Heavily inspired by Greenkeeper.
 
 ## Add Backstroke to a repository
 
-1. Go to [backstroke.us](https://backstroke.us), and sign in with your Github account.
-2. Click `Create new link`
-3. Add a source repo under the text `From` (the big, green box)
-4. Add a destination repository under the text `To`, or choose `All Forks` to
-   sync to all forks of the source repo.
-5. Click `Save`. If you push a change to the repo listed under `From`, you'll
-   get a pull request with any updates in the repo(s) under `To`!
+1. Install our integration: https://github.com/integration/backstroke
+2. Either install on a fork or an upstream:
+- If added to a fork, backstroke will sync changes from the upstream to the fork.
+- If added to an upstream, Backstroke will sync changes to all forks from the upstream.
 
 ### Use Backstroke classic
 Backstroke classic is no longer the recommended way to set up Backstroke,

@@ -38,7 +38,9 @@ export async function webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBr
   }
 
   const responses = links.map(async link => {
-    const headSha = await fetchSHAForUpstreamBranch(link);
+    const headSha = await fetchSHAForUpstreamBranch(link).catch(err => {
+      console.warn(`Warning: ${err.message}`);
+    });
 
     // Before enqueuing an update, make sure that the commit hash actually changed of the upstream
     debug(`Updating link %o, last updated %o, last SHA %o`, link.id, link.lastSyncedAt, link.upstreamLastSHA);

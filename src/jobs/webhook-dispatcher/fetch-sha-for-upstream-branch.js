@@ -42,12 +42,16 @@ export default async function fetchSHAForUpstreamBranch({
   github.authenticate({ type: 'token', token: owner.accessToken });
 
   // Fetch the latest commit in the branch `upstreamBranch`.
-  const results = await github.repos.getCommits({
-    owner: upstreamOwner,
-    repo: upstreamRepo,
-    sha: upstreamBranch,
-    per_page: 1,
-  });
+  try {
+    const results = await github.repos.getCommits({
+      owner: upstreamOwner,
+      repo: upstreamRepo,
+      sha: upstreamBranch,
+      per_page: 1,
+    });
+  } catch (err) {
+    throw new Error(`Repository ${upstreamOwner}/${upstreamRepo} does not exist.`);
+  }
 
   // The branch has no commits? No commit hash, so return null.
   if (results.length === 0) {

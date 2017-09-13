@@ -96,12 +96,6 @@ import strategy from './auth/strategy';
 import serialize from './auth/serialize';
 app.use(session({
   secret: process.env.SESSION_SECRET,
-  store: new FileStore({
-    path: "/tmp/sessions/",
-    useAsync: true,
-    reapInterval: 5000,
-    maxAge: 10000
-  }),
   saveUninitialized: true,
   resave: true,
 }));

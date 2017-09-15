@@ -92,8 +92,8 @@ import Sequelize from 'sequelize';
 const schema = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   dialectOptions: {
-    ssl: true
-  }
+    ssl: process.env.DATABASE_REQUIRE_SSL.toLowerCase() === 'true' ? true : false,
+  },
 });
 
 

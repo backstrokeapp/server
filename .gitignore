@@ -1,0 +1,4 @@
+node_modules/
+.*.sw*
+docker-compose.yml
+.DS_Store

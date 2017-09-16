@@ -29,7 +29,7 @@ const ROOT_URL = process.env.ROOT_URL || '/mocks/root';
 if (APP_URL === '/mocks/root') {
   app.get('/mocks/root', (req, res) => res.send('This would redirect to the main site when deployed.'));
 }
-app.get('/', (req, res) => res.sendFile('./root-file.html'));
+app.get('/', (req, res) => res.sendFile(__dirname+'/root-file.html'));
 
 // ----------------------------------------------------------------------------
 // Routes and helpers for the routes

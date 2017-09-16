@@ -51,6 +51,7 @@ export default async function fetchSHAForUpstreamBranch({
     });
   } catch (err) {
     throw new Error(`Repository ${upstreamOwner}/${upstreamRepo} does not exist.`);
+    return false;
   }
 
   // The branch has no commits? No commit hash, so return null.

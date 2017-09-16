@@ -43,12 +43,16 @@ export async function webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBr
     });
 
     // Before enqueuing an update, make sure that the commit hash actually changed of the upstream
-    debug(`Updating link %o, last updated %o, last SHA %o`, link.id, link.lastSyncedAt, link.upstreamLastSHA);
-    if (!link.upstreamLastSHA || link.upstreamLastSHA !== headSha) {
-      await WebhookQueue.push({type: AUTOMATIC, user: link.owner, link});
-      debug(`Update enqueued successfully for link %o.`, link.id);
+    debug(`Updating link %o, last updated = %o, last known SHA = %o, current SHA = %o`, link.id, link.lastSyncedAt, link.upstreamLastSHA, headSha);
+    if (headSha !== false) {
+      if (!link.upstreamLastSHA || link.upstreamLastSHA !== headSha) {
+        await WebhookQueue.push({type: AUTOMATIC, user: link.owner, link});
+        debug(`Update enqueued successfully for link %o.`, link.id);
+      } else {
+        debug(`Link didn't change, update not required.`);
+      }
     } else {
-      debug(`Link didn't change, update not required.`);
+      debug(`Upstream repository within link %o doesn't exist.`, link.id)
     }
 
     // Update the link instance to say that the link has been synced (or, at least checked)

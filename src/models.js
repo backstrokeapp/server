@@ -214,7 +214,7 @@ export const Link = schema.define('link', {
   upstreamOwner: Sequelize.STRING,
   upstreamRepo: Sequelize.STRING,
   upstreamIsFork: Sequelize.BOOLEAN,
-  upstreamBranches: Sequelize.STRING,
+  upstreamBranches: Sequelize.TEXT,
   upstreamBranch: Sequelize.STRING,
   // Store the last known SHA for the commit at the HEAD of the `upstreamBranch` branch.
   upstreamLastSHA: Sequelize.STRING,
@@ -222,7 +222,7 @@ export const Link = schema.define('link', {
   forkType: {type: Sequelize.ENUM, values: ['repo', 'fork-all']},
   forkOwner: Sequelize.STRING,
   forkRepo: Sequelize.STRING,
-  forkBranches: Sequelize.STRING,
+  upstreamBranches: Sequelize.TEXT,
   forkBranch: Sequelize.STRING,
 });
 
@@ -255,7 +255,7 @@ Link.prototype.fork = function fork() {
       owner: this.forkOwner,
       repo: this.forkRepo,
       isFork: true,
-      branches: JSON.parse(this.forkBranches),
+      branches: this.forkBranches ? JSON.parse(this.forkBranches) : [],
       branch: this.forkBranch,
     };
   }
@@ -267,7 +267,7 @@ Link.prototype.upstream = function upstream() {
     owner: this.upstreamOwner,
     repo: this.upstreamRepo,
     isFork: this.upstreamFork,
-    branches: JSON.parse(this.upstreamBranches),
+    branches: this.upstreamBranches ? JSON.parse(this.upstreamBranches) : [],
     branch: this.upstreamBranch,
   };
 }

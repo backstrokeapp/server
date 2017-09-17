@@ -3,6 +3,9 @@ import debug from 'debug';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
 
+import { webhookJob } from './jobs/webhook-dispatcher';
+import fetchSHAForUpstreamBranch from './jobs/webhook-dispatcher/fetch-sha-for-upstream-branch';
+
 import Redis from 'redis';
 const redis = Redis.createClient(process.env.REDIS_URL);
 import RedisMQ from 'rsmq';
@@ -222,7 +225,7 @@ export const Link = schema.define('link', {
   forkType: {type: Sequelize.ENUM, values: ['repo', 'fork-all']},
   forkOwner: Sequelize.STRING,
   forkRepo: Sequelize.STRING,
-  upstreamBranches: Sequelize.TEXT,
+  forkBranches: Sequelize.TEXT,
   forkBranch: Sequelize.STRING,
 });
 
@@ -294,5 +297,13 @@ if (require.main === module) {
 
     // From https://stackoverflow.com/questions/33673999/passing-context-to-interactive-node-shell-leads-to-typeerror-sandbox-argument
     Object.assign(repl.start(options).context, context);
+  } else if (process.argv[2] == 'manual-job') {
+    webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBranch).then(resp => {
+      console.log('Completed. Response:');
+      console.log(resp);
+    }).catch(err => {
+      console.error('Error:');
+      console.error(error);
+    });
   }
 }

@@ -4,7 +4,7 @@ const debug = Debug('backstroke:webhook:job');
 
 const AUTOMATIC = 'AUTOMATIC';
 const UPDATE_SECONDS = 30;
-const WEBHOOK_SYNC_DURATION = '10 minutes';
+const WEBHOOK_SYNC_DURATION = process.env.WEBHOOK_SYNC_DURATION || '1 minutes';
 
 // Every 30 seconds, try to update a link.
 export default function(Link, User, WebhookQueue, upstreamSHAChanged) {
@@ -34,19 +34,21 @@ export async function webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBr
 
   // No links to update?
   if (!links || links.length === 0) {
+    debug('No links to update. Breaking...');
     return null;
   }
 
   const responses = links.map(async link => {
     const headSha = await fetchSHAForUpstreamBranch(link).catch(err => {
-      console.warn(`Warning: ${err.message}`);
+      debug(`Error fetching upstream sha: ${err.message}`);
+      return null;
     });
 
     // Before enqueuing an update, make sure that the commit hash actually changed of the upstream
     debug(`Updating link %o, last updated = %o, last known SHA = %o, current SHA = %o`, link.id, link.lastSyncedAt, link.upstreamLastSHA, headSha);
 
     // Head sha of the upstream wasn't able to found. Maybe the repo was deleted?
-    if (typeof headSha === 'undefined') {
+    if (!headSha ) {
       debug(`Upstream repository within link %o doesn't exist.`, link.id);
 
     // Link hasn't been synced, ever, since no 'last sha' value is present. Sync it.
@@ -65,6 +67,7 @@ export async function webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBr
 
     // Update the link instance to say that the link has been synced (or, at least checked)
     await Link.update({lastSyncedAt: new Date, upstreamLastSHA: headSha}, {where: {id: link.id}, limit: 1});
+    return true;
   });
 
   return Promise.all(responses).catch(err => {

@@ -44,15 +44,23 @@ export async function webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBr
 
     // Before enqueuing an update, make sure that the commit hash actually changed of the upstream
     debug(`Updating link %o, last updated = %o, last known SHA = %o, current SHA = %o`, link.id, link.lastSyncedAt, link.upstreamLastSHA, headSha);
-    if (headSha) {
-      if (!link.upstreamLastSHA || link.upstreamLastSHA !== headSha) {
-        await WebhookQueue.push({type: AUTOMATIC, user: link.owner, link});
-        debug(`Update enqueued successfully for link %o.`, link.id);
-      } else {
-        debug(`Link didn't change, update not required.`);
-      }
+
+    // Head sha of the upstream wasn't able to found. Maybe the repo was deleted?
+    if (typeof headSha === 'undefined') {
+      debug(`Upstream repository within link %o doesn't exist.`, link.id);
+
+    // Link hasn't been synced, ever, since no 'last sha' value is present. Sync it.
+    } else if (typeof link.upstreamLastSHA === 'undefined') {
+      await WebhookQueue.push({type: AUTOMATIC, user: link.owner, link});
+      debug(`Update enqueued successfully for link %o. REASON = FIRST_SYNC`, link.id);
+
+    // The upstream has new commits since the last polling attempt. Sync it.
+    } else if (link.upstreamLastSHA !== headSha) {
+      await WebhookQueue.push({type: AUTOMATIC, user: link.owner, link});
+      debug(`Update enqueued successfully for link %o. REASON = UPSTREAM_NEW_COMMITS`, link.id);
+
     } else {
-      debug(`Upstream repository within link %o doesn't exist.`, link.id)
+      debug(`Link didn't change, update not required.`);
     }
 
     // Update the link instance to say that the link has been synced (or, at least checked)

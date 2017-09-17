@@ -3,37 +3,57 @@ const debug = Debug('backstroke:links:update');
 
 // Update a Link. This method requires a body with a link property.
 // Responds with {"status": "ok"} on success.
-export default async function update(req, res, Link) {
+export default async function update(req, res, Link, isCollaboratorOfRepository) {
   // Ensure req.body is an object (ie, {})
   if (Object.prototype.toString.call(req.body) !== '[object Object]') {
-    throw new Error('Invalid json body.');
+    res.status(400).send({error: 'Invalid json body.'});
   }
 
   if (!req.body.upstream) {
-    throw new Error(`Link doesn't have an 'upstream' key.`);
+    res.status(400).send({error: `Link doesn't have an 'upstream' key.`});
   }
   if (!req.body.fork) {
-    throw new Error(`Link doesn't have a 'fork' key.`);
+    res.status(400).send({error: `Link doesn't have a 'fork' key.`});
   }
 
   if (req.body.upstream && req.body.upstream.type === 'fork-all') {
-    throw new Error(`The 'upstream' repo must be a repo, not a bunch of forks.`);
+    res.status(400).send({error: `The 'upstream' repo must be a repo, not a bunch of forks.`});
   }
 
   if (!Array.isArray(req.body.upstream.branches)) {
-    throw new Error(`The upstream wasn't passed an array of branches.`);
+    res.status(400).send({error: `The upstream wasn't passed an array of branches.`});
   }
 
   if (req.body.upstream.type === 'repo' && !Array.isArray(req.body.upstream.branches)) {
-    throw new Error(`An array of branches wasn't passed to the upstream.`);
+    res.status(400).send({error: `An array of branches wasn't passed to the upstream.`});
   }
 
   if (req.body.fork.type === 'repo' && !Array.isArray(req.body.fork.branches)) {
-    throw new Error(`An array of branches wasn't passed to the fork.`);
+    res.status(400).send({error: `An array of branches wasn't passed to the fork.`});
   } else if (req.body.fork.type === 'fork-all') {
     // A link of type fork-all doesn't have any branches.
     req.body.fork.branches = [];
   }
+
+  // Make sure that the user has permission to create this link.
+  // 1. If the fork.type == 'repo', then make sure the user has permission to write to the fork repository.
+  // 2. If the fork.type == 'fork-all', then make sure the user has permission to the upstream.
+  if (req.body.fork.type === 'fork-all') {
+    const isCollaborator = await isCollaboratorOfRepository(req.user, req.body.upstream);
+    if (!isCollaborator) {
+      debug('WITHIN LINK %o, CHECKING ON UPSTREAM, USER IS NOT COLLABORATOR', req.params.linkId);
+      res.status(400).send({error: `To update a link that syncs changes from the upstream ${req.body.upstream.owner}/${req.body.upstream.repo} to all fork, you need to be a collaborator on ${req.body.upstream.owner}/${req.body.upstream.repo}. Instead, sync to a single fork that you own instead of all forks.`});
+      return
+    }
+  } else {
+    const isCollaborator = await isCollaboratorOfRepository(req.user, req.body.fork);
+    if (!isCollaborator) {
+      debug('WITHIN LINK %o, CHECKING ON FORK, USER IS NOT COLLABORATOR', req.params.linkId);
+      res.status(400).send({error: `You need to be a collaborator of ${req.body.fork.owner}/${req.body.fork.repo} to sync changes to that fork.`});
+      return
+    }
+  }
+  debug('USER HAS PERMISSION TO CREATE/UPDATE LINK %o', req.params.linkId);
 
   // Execute the update.
   const response = await Link.update({

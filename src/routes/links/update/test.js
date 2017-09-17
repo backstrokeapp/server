@@ -8,6 +8,8 @@ import assert from 'assert';
 import issueRequest from '../../../test-helpers/issue-request';
 import MockModel from '../../../test-helpers/mock-model';
 
+const isCollaboratorOfRepository = () => Promise.resolve(true);
+
 const User = new MockModel(),
       Link = new MockModel([], {owner: User});
 
@@ -30,7 +32,7 @@ describe('link update', () => {
       upstreamBranches: '["master"]',
       upstreamBranch: 'master',
 
-      forkType: 'all-forks',
+      forkType: 'fork-all',
       forkOwner: undefined,
       forkRepo: undefined,
       forkBranches: undefined,
@@ -40,7 +42,7 @@ describe('link update', () => {
 
   it('should update a link for a user', () => {
     return issueRequest(
-      update, [Link],
+      update, [Link, isCollaboratorOfRepository],
       '/:linkId', user, {
         method: 'PUT',
         url: `/${link.id}`,
@@ -56,7 +58,7 @@ describe('link update', () => {
             branch: 'master',
           },
           fork: {
-            type: 'all-forks'
+            type: 'fork-all'
           },
         },
       },
@@ -71,7 +73,7 @@ describe('link update', () => {
   });
   it(`should update a link for a user but the user doesn't own the link`, () => {
     return issueRequest(
-      update, [Link],
+      update, [Link, isCollaboratorOfRepository],
       '/:linkId', {id: 'bogus'} /* bogus user */, {
         method: 'PUT',
         url: `/${link.id}`,
@@ -87,7 +89,7 @@ describe('link update', () => {
             branch: 'master',
           },
           fork: {
-            type: 'all-forks'
+            type: 'fork-all',
           },
         },
       },
@@ -103,7 +105,7 @@ describe('link update', () => {
   it('should update a link with a new upstream', () => {
     // First, remove the upstream id from the link to test against.
     return issueRequest(
-      update, [Link],
+      update, [Link, isCollaboratorOfRepository],
       '/:linkId', user, {
         method: 'PUT',
         url: `/${link.id}`,
@@ -135,7 +137,7 @@ describe('link update', () => {
   it(`should try to update a link with a bad id.`, () => {
     // First, remove the upstream id from the link to test against.
     return issueRequest(
-      update, [Link],
+      update, [Link, isCollaboratorOfRepository],
       '/:linkId', user, {
         method: 'PUT',
         url: `/BOGUS-ID-HERE`,
@@ -162,7 +164,7 @@ describe('link update', () => {
   it(`should try to update a link with a malformed body`, () => {
     // First, remove the upstream id from the link to test against.
     return issueRequest(
-      update, [Link],
+      update, [Link, isCollaboratorOfRepository],
       '/:linkId', user, {
         method: 'PUT',
         url: `/${link.id}`,
@@ -177,7 +179,7 @@ describe('link update', () => {
   it(`should try to update a link with a valid body but no upstream`, () => {
     // First, remove the upstream id from the link to test against.
     return issueRequest(
-      update, [Link],
+      update, [Link, isCollaboratorOfRepository],
       '/:linkId', user, {
         method: 'PUT',
         url: `/${link.id}`,
@@ -198,7 +200,7 @@ describe('link update', () => {
   it(`should try to update a link with a valid body but no fork`, () => {
     // First, remove the upstream id from the link to test against.
     return issueRequest(
-      update, [Link],
+      update, [Link, isCollaboratorOfRepository],
       '/:linkId', user, {
         method: 'PUT',
         url: `/${link.id}`,
@@ -223,7 +225,7 @@ describe('link update', () => {
   it(`should try to update a link with a valid body but an upstream that isn't a repo`, () => {
     // First, remove the upstream id from the link to test against.
     return issueRequest(
-      update, [Link],
+      update, [Link, isCollaboratorOfRepository],
       '/:linkId', user, {
         method: 'PUT',
         url: `/${link.id}`,
@@ -241,6 +243,65 @@ describe('link update', () => {
     ).then(res => {
       const body = res.body;
       assert.equal(body.error, `The 'upstream' repo must be a repo, not a bunch of forks.`);
+    });
+  });
+  it(`should try to update a link (the link syncs to all forks), but the user isn't a collaborator on the upstream`, () => {
+    return issueRequest(
+      update, [Link, () => Promise.resolve(false)],
+      '/:linkId', user, {
+        method: 'PUT',
+        url: `/${link.id}`,
+        json: true,
+        body: {
+          name: 'Another name for my link!',
+          upstream: {
+            type: 'repo',
+            owner: 'foo',
+            repo: 'bar',
+            isFork: false,
+            branches: ['master'],
+            branch: 'master',
+          },
+          fork: {
+            type: 'fork-all',
+          },
+        },
+      },
+    ).then(res => {
+      const body = res.body;
+      assert.equal(body.error, `To update a link that syncs changes from the upstream foo/bar to all fork, you need to be a collaborator on foo/bar. Instead, sync to a single fork that you own instead of all forks.`);
+    });
+  });
+  it(`should try to update a link (the link syncs to a single fork), but the user isn't a collaborator on the fork`, () => {
+    return issueRequest(
+      update, [Link, () => Promise.resolve(false)],
+      '/:linkId', user, {
+        method: 'PUT',
+        url: `/${link.id}`,
+        json: true,
+        body: {
+          name: 'Another name for my link!',
+          upstream: {
+            type: 'repo',
+            owner: 'foo',
+            repo: 'bar',
+            isFork: false,
+            branches: ['master'],
+            branch: 'master',
+          },
+          fork: {
+            type: 'repo',
+            owner: 'hello',
+            repo: 'world',
+            isFork: false,
+            branches: ['master'],
+            branch: 'master',
+          },
+        },
+      },
+    ).then(res => {
+      const body = res.body;
+      assert.equal(body.error, `You need to be a collaborator of hello/world to sync changes to that fork.`);
     });
   });
 });

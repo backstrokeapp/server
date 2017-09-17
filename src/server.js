@@ -43,6 +43,7 @@ import manual from './routes/webhook/manual';
 import status from './routes/webhook/status';
 import webhookDispatcherJob from './jobs/webhook-dispatcher';
 import fetchSHAForUpstreamBranch from './jobs/webhook-dispatcher/fetch-sha-for-upstream-branch';
+import { isCollaboratorOfRepository } from './routes/links/update/helpers';
 
 import linksList from './routes/links/list';
 import linksGet from './routes/links/get';
@@ -218,7 +219,7 @@ app.delete('/v1/links/:id', assertLoggedIn, route(linksDelete, [Link]));
 app.get('/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, authedGithubInstance, checkRepo);
 
 // POST link updates
-app.post('/v1/links/:linkId', bodyParser.json(), assertLoggedIn, route(linksUpdate, [Link]));
+app.post('/v1/links/:linkId', bodyParser.json(), assertLoggedIn, route(linksUpdate, [Link, isCollaboratorOfRepository]));
 
 // enable or disable a repository
 app.post('/v1/links/:linkId/enable', bodyParser.json(), route(linksEnable, [Link]));

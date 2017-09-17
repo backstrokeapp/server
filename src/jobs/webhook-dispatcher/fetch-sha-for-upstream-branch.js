@@ -50,7 +50,7 @@ export default async function fetchSHAForUpstreamBranch({
       per_page: 1,
     });
   } catch (err) {
-    throw new Error(`Repository ${upstreamOwner}/${upstreamRepo} does not exist.`);
+    throw new Error(`Repository ${upstreamOwner}/${upstreamRepo} does not exist. ${err}`);
     return false;
   }
 

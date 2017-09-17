@@ -44,7 +44,7 @@ export async function webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBr
 
     // Before enqueuing an update, make sure that the commit hash actually changed of the upstream
     debug(`Updating link %o, last updated = %o, last known SHA = %o, current SHA = %o`, link.id, link.lastSyncedAt, link.upstreamLastSHA, headSha);
-    if (headSha !== false) {
+    if (headSha) {
       if (!link.upstreamLastSHA || link.upstreamLastSHA !== headSha) {
         await WebhookQueue.push({type: AUTOMATIC, user: link.owner, link});
         debug(`Update enqueued successfully for link %o.`, link.id);

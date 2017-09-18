@@ -165,7 +165,8 @@ User.register = async function register(profile, accessToken) {
       publicScope,
     );
 
-    const [updatedId] = await User.update({
+    // Update the profile with the new information.
+    await User.update({
       username: profile.username,
       email: profile._json.email,
       githubId: profile.id,
@@ -175,7 +176,7 @@ User.register = async function register(profile, accessToken) {
       lastLoggedInAt: new Date,
     }, {where: {id: model.id}});
 
-    return User.findById(updatedId);
+    return User.findById(model.id);
   } else {
     logger('CREATE USER %o', profile.username);
     return User.create({

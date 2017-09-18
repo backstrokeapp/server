@@ -48,11 +48,11 @@ export async function webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBr
     debug(`Updating link %o, last updated = %o, last known SHA = %o, current SHA = %o`, link.id, link.lastSyncedAt, link.upstreamLastSHA, headSha);
 
     // Head sha of the upstream wasn't able to found. Maybe the repo was deleted?
-    if (!headSha ) {
-      debug(`Upstream repository within link %o doesn't exist.`, link.id);
+    if (link.upstreamLastSHA && !headSha) {
+      debug(`Unable to fetch upstream sha for link %o`, link.id);
 
     // Link hasn't been synced, ever, since no 'last sha' value is present. Sync it.
-    } else if (typeof link.upstreamLastSHA === 'undefined') {
+    } else if (!link.upstreamLastSHA) {
       await WebhookQueue.push({type: AUTOMATIC, user: link.owner, link});
       debug(`Update enqueued successfully for link %o. REASON = FIRST_SYNC`, link.id);
 

@@ -11,28 +11,30 @@ export default async function fetchSHAForUpstreamBranch({
   upstreamRepo,
   upstreamBranch,
 }) {
-  // Get the short version of the sha
-  const upstreamLastSHAShort = upstreamLastSHA ? upstreamLastSHA.slice(0, 8) : null;
+  if (upstreamLastSHA) {
+    // Get the short version of the sha
+    const upstreamLastSHAShort = upstreamLastSHA ? upstreamLastSHA.slice(0, 8) : null;
 
-  // First check. Search for the short versino of the last sha on the github repo page. The hope
-  // here is to avoid having to use a query with the api token if not required.
-  const foundLastSHAOnPage = await fetch(
-    `https://github.com/${upstreamOwner}/${upstreamRepo}/tree/${upstreamBranch}`
-  ).then(async resp => {
-    if (resp.ok) {
-      return resp.text().catch(err => null).then(data => {
-        // Search for the sha in the return from the github page. If it's found, then we know that
-        // it's the latest commit.
-        return data.indexOf(upstreamLastSHAShort) >= 0;
-      });
-    } else {
-      return null;
+    // First check. Search for the short versino of the last sha on the github repo page. The hope
+    // here is to avoid having to use a query with the api token if not required.
+    const foundLastSHAOnPage = await fetch(
+      `https://github.com/${upstreamOwner}/${upstreamRepo}/tree/${upstreamBranch}`
+    ).then(async resp => {
+      if (resp.ok) {
+        return resp.text().catch(err => null).then(data => {
+          // Search for the sha in the return from the github page. If it's found, then we know that
+          // it's the latest commit.
+          return data.indexOf(upstreamLastSHAShort) >= 0;
+        });
+      } else {
+        return null;
+      }
+    });
+
+    if (foundLastSHAOnPage) {
+      debug('Found commit hash on github page, so nothing changed.');
+      return upstreamLastSHA;
     }
-  });
-
-  if (foundLastSHAOnPage) {
-    debug('Found commit hash on github page, so nothing changed.');
-    return upstreamLastSHA;
   }
 
   // Second check. If no definitive answer was found by looking at the github page, then make an api

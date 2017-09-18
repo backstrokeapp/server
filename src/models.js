@@ -16,7 +16,7 @@ const redisQueue = new RedisMQ({
 
 const ONE_HOUR_IN_SECONDS = 60 * 60;
 export const WebhookStatusStore = {
-  set(webhookId, status, expiresIn=ONE_HOUR_IN_SECONDS) {
+  set(webhookId, status, expiresIn=24*ONE_HOUR_IN_SECONDS) {
     return new Promise((resolve, reject) => {
       redis.set(`webhook:status:${webhookId}`, JSON.stringify(status), 'EX', expiresIn, (err, id) => {
         if (err) {

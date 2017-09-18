@@ -65,3 +65,4 @@ export default async function fetchSHAForUpstreamBranch({
     return results[0].sha;
   }
 }
+

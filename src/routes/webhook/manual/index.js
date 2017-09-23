@@ -26,8 +26,8 @@ export default async function webhook(req, res, Link, User, WebhookQueue) {
       statusUrl: `${API_URL}/v1/operations/${enqueuedAs}`,
     });
   } else if (link) {
-    throw new Error(`Link is not enabled!`);
+    res.status(400).send({error: `Link is not enabled!`});
   } else {
-    throw new Error(`No such link with the id ${req.params.linkId}`);
+    res.status(404).send({error: `No such link with the id ${req.params.linkId}`});
   }
 }

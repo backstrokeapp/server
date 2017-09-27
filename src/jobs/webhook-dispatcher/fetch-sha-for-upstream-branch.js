@@ -1,5 +1,4 @@
 import fetch from 'node-fetch';
-import GithubApi from 'github';
 
 import Debug from 'debug';
 const debug = Debug('backstroke:webhook:fetch-sha-for-upstream-branch');
@@ -40,18 +39,19 @@ export default async function fetchSHAForUpstreamBranch({
   // Second check. If no definitive answer was found by looking at the github page, then make an api
   // call to github to figure it out.
   debug('Falling back to proper api call...');
-  const github = new GithubApi();
-  github.authenticate({ type: 'token', token: owner.accessToken });
 
   // Fetch the latest commit in the branch `upstreamBranch`.
   let results = [];
   try {
-    results = await github.repos.getCommits({
-      owner: upstreamOwner,
-      repo: upstreamRepo,
-      sha: upstreamBranch,
-      per_page: 1,
+    const resp = await fetch(`https://api.github.com/repos/${encodeURIComponent(upstreamOwner)}/${encodeURIComponent(upstreamRepo)}/commits`, {
+      qs: {
+        sha: upstreamBranch,
+        per_page: 1,
+        access_token: `token ${owner.accessToken}`,
+      },
     });
+
+    results = await resp.json();
   } catch (err) {
     throw new Error(`Repository ${upstreamOwner}/${upstreamRepo} does not exist. ERROR = '${err.toString()}'`);
     return null;

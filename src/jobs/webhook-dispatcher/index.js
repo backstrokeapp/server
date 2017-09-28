@@ -39,10 +39,13 @@ export async function webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBr
   }
 
   const responses = links.map(async link => {
-    const headSha = await fetchSHAForUpstreamBranch(link).catch(err => {
-      debug(`Error fetching upstream sha: ${err.message}`);
-      return null;
-    });
+    let headSha;
+    try {
+      headSha = await fetchSHAForUpstreamBranch(link);
+    } catch (err) {
+      debug(`Error fetching upstream sha for %o: %o`, link.id, err.message);
+      headSha = null;
+    }
 
     // Before enqueuing an update, make sure that the commit hash actually changed of the upstream
     debug(`Updating link %o, last updated = %o, last known SHA = %o, current SHA = %o`, link.id, link.lastSyncedAt, link.upstreamLastSHA, headSha);
@@ -62,7 +65,7 @@ export async function webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBr
       debug(`Update enqueued successfully for link %o. REASON = UPSTREAM_NEW_COMMITS`, link.id);
 
     } else {
-      debug(`Link didn't change, update not required.`);
+      debug(`Link %o didn't change, update not required.`, link.id);
     }
 
     // Update the link instance to say that the link has been synced (or, at least checked)

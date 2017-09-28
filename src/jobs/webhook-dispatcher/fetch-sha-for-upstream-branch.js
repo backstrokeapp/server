@@ -4,6 +4,7 @@ import Debug from 'debug';
 const debug = Debug('backstroke:webhook:fetch-sha-for-upstream-branch');
 
 export default async function fetchSHAForUpstreamBranch({
+  id,
   owner,
   upstreamLastSHA,
   upstreamOwner,
@@ -31,14 +32,14 @@ export default async function fetchSHAForUpstreamBranch({
     });
 
     if (foundLastSHAOnPage) {
-      debug('Found commit hash on github page, so nothing changed.');
+      debug('Link %o, Found commit hash on github page, so nothing changed.', id);
       return upstreamLastSHA;
     }
   }
 
   // Second check. If no definitive answer was found by looking at the github page, then make an api
   // call to github to figure it out.
-  debug('Falling back to proper api call...');
+  debug('Link %o, Falling back to proper api call...', id);
 
   // Fetch the latest commit in the branch `upstreamBranch`.
   let results = [];
@@ -56,6 +57,8 @@ export default async function fetchSHAForUpstreamBranch({
     throw new Error(`Repository ${upstreamOwner}/${upstreamRepo} does not exist. ERROR = '${err.toString()}'`);
     return null;
   }
+
+  debug('Link %o, Response from getting HEAD of %o branch on %o/%o: %o', id, upstreamBranch, upstreamOwner, upstreamBranch, results);
 
   // The branch has no commits? No commit hash, so return null.
   if (results.length === 0) {

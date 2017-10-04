@@ -4,7 +4,7 @@ const debug = Debug('backstroke:webhook:job');
 
 const AUTOMATIC = 'AUTOMATIC';
 const UPDATE_SECONDS = 30;
-const WEBHOOK_SYNC_DURATION = process.env.WEBHOOK_SYNC_DURATION || '30 minutes';
+const WEBHOOK_SYNC_DURATION = process.env.WEBHOOK_SYNC_DURATION || '10 minutes';
 
 // Every 30 seconds, try to update a link.
 export default function(Link, User, WebhookQueue, upstreamSHAChanged) {

@@ -1,7 +1,7 @@
 ![Backstroke](https://backstroke.us/assets/img/logo.png)
 Backstroke
 ===
-A Github bot to keep a fork updated with any changes made to its upstream.
+A Github bot to keep a fork updated with any changes made to its upstream. [Visit our Website](https://backstroke.co)
 
 [![Build Status](https://travis-ci.org/1egoman/backstroke.svg?branch=master)](https://travis-ci.org/1egoman/backstroke)
 [![Gratipay Team](https://img.shields.io/gratipay/team/Backstroke.svg?maxAge=2592001)](https://gratipay.com/Backstroke/)

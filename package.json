@@ -1,6 +1,5 @@
 {
-  "name": "@backstroke/backend",
-  "private": true,
+  "name": "@backstroke/server",
   "version": "2.0.0",
   "description": "",
   "main": "src/server.js",

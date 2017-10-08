@@ -7,16 +7,9 @@ jobs:
 
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           name: "Install dependencies"
           command: yarn
       - run:
           name: "Run tests"
           command: yarn test-ci
-      - run:
-          name: "Looks good and on master? Deploy."
-          command: |
-            if [ "$CIRCLE_BRANCH" == "master" ]; then
-              heroku container:push web --app backstroke-server
-            fi

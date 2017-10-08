@@ -8,7 +8,7 @@ export const PAGE_SIZE = 20;
 // Model.all({...paginate(req)}).then(data => ...);
 export function paginate(req) {
   let page = parseInt(req.query.page, 10) || 0;
-  return {skip: page * PAGE_SIZE, limit: PAGE_SIZE};
+  return {offset: page * PAGE_SIZE, limit: PAGE_SIZE};
 }
 
 // Something bad happened. Throw a 500.

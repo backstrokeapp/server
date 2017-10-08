@@ -10,7 +10,8 @@ export default function index(req, res, Link) {
     // Add all owners to each link
     return Promise.all(data.map(i => i.display())).then(data => {
       return {
-        page: req.query.page || 0,
+        page: parseInt(req.query.page, 10) || 0,
+        pageSize: PAGE_SIZE,
         data,
       };
     });

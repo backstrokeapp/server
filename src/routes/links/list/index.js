@@ -3,7 +3,7 @@ import {PAGE_SIZE, paginate} from '../../helpers';
 // Return a list of all links that belong to the logged in user.
 // This route is paginated.
 export default function index(req, res, Link) {
-  return Link.all({
+  return Link.findAll({
     where: {ownerId: req.user.id},
     ...paginate(req),
   }).then(data => {

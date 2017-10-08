@@ -24,7 +24,7 @@ export default async function fetchSHAForUpstreamBranch({
         return resp.text().catch(err => null).then(data => {
           // Search for the sha in the return from the github page. If it's found, then we know that
           // it's the latest commit.
-          return data.indexOf(upstreamLastSHAShort) >= 0;
+          return data.match(new RegExp(`Latest commit[^]{0,150}${upstreamLastSHAShort}`, 'i')) !== null;
         });
       } else {
         return null;

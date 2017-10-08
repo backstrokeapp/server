@@ -43,6 +43,7 @@ describe('link list', () => {
       const body = res.body;
       assert.equal(body.data.length, 1);
       assert.equal(body.data[0].id, linkData.id);
+      assert.equal(body.page, 0);
     });
   });
 
@@ -67,6 +68,7 @@ describe('link list', () => {
       ).then(res => {
         const body = res.body;
         assert.equal(body.data.length, 20);
+        assert.equal(body.page, 0);
       });
     });
     it('should return the second, partial page of all links for a user', () => {
@@ -81,6 +83,7 @@ describe('link list', () => {
       ).then(res => {
         const body = res.body;
         assert.equal(body.data.length, 5);
+        assert.equal(body.page, 1);
       });
     });
     it('should return the third, empty page of all links for a user', () => {
@@ -95,6 +98,7 @@ describe('link list', () => {
       ).then(res => {
         const body = res.body;
         assert.equal(body.data.length, 0);
+        assert.equal(body.page, 2);
       });
     });
   });

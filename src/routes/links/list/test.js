@@ -24,6 +24,7 @@ describe('link list', () => {
       return Link.create({
         name: 'My Link',
         enabled: true,
+        owner: userData.id,
       });
     }).then(link => {
       linkData = link;
@@ -42,6 +43,63 @@ describe('link list', () => {
       const body = res.body;
       assert.equal(body.data.length, 1);
       assert.equal(body.data[0].id, linkData.id);
+      assert.equal(body.page, 0);
+    });
+  });
+
+  describe('paging', () => {
+    beforeEach(() => {
+      // Add 25 links to the model.
+      Link.models = [];
+      for (let i = 0; i < 25; i++) {
+        Link.models.push({id: i, name: `My link: ${Math.random()}`, ownerId: userData.id});
+      }
+    });
+
+    it('should return the first, full page of all links for a user', () => {
+      return issueRequest(
+        list, [Link],
+        '/', userData, {
+          method: 'GET',
+          url: '/',
+          json: true,
+          qs: { page: '0' },
+        }
+      ).then(res => {
+        const body = res.body;
+        assert.equal(body.data.length, 20);
+        assert.equal(body.page, 0);
+      });
+    });
+    it('should return the second, partial page of all links for a user', () => {
+      return issueRequest(
+        list, [Link],
+        '/', userData, {
+          method: 'GET',
+          url: '/',
+          json: true,
+          qs: { page: '1' },
+        }
+      ).then(res => {
+        const body = res.body;
+        assert.equal(body.data.length, 5);
+        assert.equal(body.page, 1);
+      });
+    });
+    it('should return the third, empty page of all links for a user', () => {
+      return issueRequest(
+        list, [Link],
+        '/', userData, {
+          method: 'GET',
+          url: '/',
+          json: true,
+          qs: { page: '2' },
+        }
+      ).then(res => {
+        const body = res.body;
+        assert.equal(body.data.length, 0);
+        assert.equal(body.page, 2);
+      });
     });
   });
 });

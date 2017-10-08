@@ -4,7 +4,6 @@ import Promise from 'bluebird';
 // in place of the real model.
 export default class MockModel {
   constructor(models, foreignKeyNames={}) {
-
     // A list of all models that exist.
     this.models = []
     if (models) {
@@ -16,7 +15,7 @@ export default class MockModel {
     this.methods = [];
   }
 
-  _handleQueries({where, limit, include}) {
+  _handleQueries({where, limit, include, offset}) {
     let models = this.models;
 
     if (where) {
@@ -28,6 +27,10 @@ export default class MockModel {
         }
         return true;
       });
+    }
+
+    if (offset) {
+      models = models.slice(offset)
     }
 
     if (limit) {
@@ -47,7 +50,6 @@ export default class MockModel {
         });
       });
     }
-
     return models;
   }
 
@@ -56,8 +58,8 @@ export default class MockModel {
     return Promise.resolve(model.length ? this.formatModelInstance(model[0]) : null);
   }
   findAll(query) {
-    const models = this._handleQueries({...query, limit: 1});
-    return Promise.resolve(models.length ? Promise.all(models.map(this.formatModelInstance)) : null);
+    const models = this._handleQueries(query);
+    return Promise.all(models.map(this.formatModelInstance.bind(this)));
   }
   update(data, query) {
     // Get models to update

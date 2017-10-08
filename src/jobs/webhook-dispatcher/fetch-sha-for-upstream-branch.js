@@ -60,7 +60,7 @@ export default async function fetchSHAForUpstreamBranch({
     return null;
   }
 
-  debug('Link %o, Response from getting HEAD of %o branch on %o/%o: %o', id, upstreamBranch, upstreamOwner, upstreamRepo, results);
+  debug('Link %o, Response from getting HEAD of %o branch on %o/%o: %o results', id, upstreamBranch, upstreamOwner, upstreamRepo, results.length);
 
   // The branch has no commits? No commit hash, so return null.
   if (results.length === 0) {

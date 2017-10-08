@@ -48,7 +48,7 @@ export default async function fetchSHAForUpstreamBranch({
       qs: {
         sha: upstreamBranch,
         per_page: 1,
-        access_token: `token ${owner.accessToken}`,
+        access_token: owner.accessToken,
       },
     });
 
@@ -58,7 +58,7 @@ export default async function fetchSHAForUpstreamBranch({
     return null;
   }
 
-  debug('Link %o, Response from getting HEAD of %o branch on %o/%o: %o', id, upstreamBranch, upstreamOwner, upstreamBranch, results);
+  debug('Link %o, Response from getting HEAD of %o branch on %o/%o: %o', id, upstreamBranch, upstreamOwner, upstreamRepo, results);
 
   // The branch has no commits? No commit hash, so return null.
   if (results.length === 0) {

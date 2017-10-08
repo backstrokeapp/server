@@ -12,7 +12,6 @@ export default function index(req, res, Link) {
       return {
         page: req.query.page || 0,
         data,
-        lastItem: paginate(req).skip + data.length,
       };
     });
   });

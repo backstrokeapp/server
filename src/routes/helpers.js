@@ -7,7 +7,7 @@ export const PAGE_SIZE = 20;
 // Use like:
 // Model.all({...paginate(req)}).then(data => ...);
 export function paginate(req) {
-  let page = req.query.page || 0;
+  let page = parseInt(req.query.page, 10) || 0;
   return {skip: page * PAGE_SIZE, limit: PAGE_SIZE};
 }
 

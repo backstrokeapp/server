@@ -48,7 +48,9 @@ export default async function fetchSHAForUpstreamBranch({
       qs: {
         sha: upstreamBranch,
         per_page: 1,
-        access_token: owner.accessToken,
+      },
+      headers: {
+        'Authorization': `Bearer ${owner.accessToken}`,
       },
     });
 

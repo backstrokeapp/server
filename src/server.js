@@ -134,6 +134,7 @@ app.get('/logout', (req, res) => {
   res.redirect(ROOT_URL);
 });
 
+import analyticsForRoute from './helpers/mixpanel';
 // A utility function to check if a user is authenticated, and if so, return
 // the authenticated user. Otherwise, this function will throw an error
 function assertLoggedIn(req, res, next) {
@@ -204,25 +205,25 @@ app.all(/^\/api\/v1\/.*$/, (req, res) => res.redirect(req.url.replace(/^\/api/, 
 app.get('/v1/whoami', whoami);
 
 // GET all links
-app.get('/v1/links', bodyParser.json(), assertLoggedIn, route(linksList, [Link]));
+app.get('/v1/links', bodyParser.json(), assertLoggedIn, analyticsForRoute, route(linksList, [Link]));
 
 // GET a given link
-app.get('/v1/links/:id', bodyParser.json(), assertLoggedIn, route(linksGet, [Link]));
+app.get('/v1/links/:id', bodyParser.json(), assertLoggedIn, analyticsForRoute, route(linksGet, [Link]));
 
 // Create a new link
-app.post('/v1/links', bodyParser.json(), assertLoggedIn, route(linksCreate, [Link]));
+app.post('/v1/links', bodyParser.json(), assertLoggedIn, analyticsForRoute, route(linksCreate, [Link]));
 
 // delete a link
-app.delete('/v1/links/:id', assertLoggedIn, route(linksDelete, [Link]));
+app.delete('/v1/links/:id', assertLoggedIn, analyticsForRoute, route(linksDelete, [Link]));
 
 // return the branches for a given repo
 app.get('/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, authedGithubInstance, checkRepo);
 
 // POST link updates
-app.post('/v1/links/:linkId', bodyParser.json(), assertLoggedIn, route(linksUpdate, [Link, isCollaboratorOfRepository]));
+app.post('/v1/links/:linkId', bodyParser.json(), assertLoggedIn, analyticsForRoute, route(linksUpdate, [Link, isCollaboratorOfRepository]));
 
 // enable or disable a repository
-app.post('/v1/links/:linkId/enable', bodyParser.json(), route(linksEnable, [Link]));
+app.post('/v1/links/:linkId/enable', bodyParser.json(), assertLoggedIn, analyticsForRoute, route(linksEnable, [Link]));
 
 // the new webhook route - both the condensed verson meant to be called by a user and the interal
 // variant that follows REST a bit closer.

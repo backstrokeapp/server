@@ -873,10 +873,6 @@ binary-extensions@^1.0.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-1.9.0.tgz#66506c16ce6f4d6928a5b3cd6a33ca41e941e37b"
 
-bindings@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.2.1.tgz#14ad6113812d2d37d72e67b4cacb4bb726505f11"
-
 bindings@^1.2.1:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.3.0.tgz#b346f6ecf6a95f5a815c5839fc7cdb22502f1ed7"
@@ -1069,18 +1065,6 @@ bser@^2.0.0:
   resolved "https://registry.yarnpkg.com/bser/-/bser-2.0.0.tgz#9ac78d3ed5d915804fd87acb158bc797147a1719"
   dependencies:
     node-int64 "^0.4.0"
-
-bson@~1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/bson/-/bson-1.0.4.tgz#93c10d39eaa5b58415cbc4052f3e53e562b0b72c"
-
-buffer-shims@~1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/buffer-shims/-/buffer-shims-1.0.0.tgz#9978ce317388c649ad8793028c3477ef044a8b51"
-
-buffer-writer@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/buffer-writer/-/buffer-writer-1.0.0.tgz#6c29c3b2dea0c9e455a1f261a199a48a04f88b08"
 
 buffer-writer@1.0.1:
   version "1.0.1"
@@ -1725,10 +1709,6 @@ es6-iterator@2, es6-iterator@^2.0.1:
     es5-ext "^0.10.14"
     es6-symbol "^3.1"
 
-es6-promise@3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-3.2.1.tgz#ec56233868032909207170c39448e24449dd1fc4"
-
 es6-promise@^3.0.2:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-3.3.1.tgz#a08cdde84ccdbf34d027a1451bc91d4bcd28a613"
@@ -2172,10 +2152,6 @@ gaze@^0.5.1:
   dependencies:
     globule "~0.1.0"
 
-generic-pool@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/generic-pool/-/generic-pool-2.1.1.tgz#af04dc2c325cfcb975023fa52bfce9617a7435fd"
-
 generic-pool@^3.1.6:
   version "3.1.7"
   resolved "https://registry.yarnpkg.com/generic-pool/-/generic-pool-3.1.7.tgz#dac22b2c7a7a04e41732f7d8d2d25a303c88f662"
@@ -2602,10 +2578,6 @@ infinity-agent@^2.0.0:
 inflection@1.10.0:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/inflection/-/inflection-1.10.0.tgz#5bffcb1197ad3e81050f8e17e21668087ee9eb2f"
-
-inflection@=1.2.7:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/inflection/-/inflection-1.2.7.tgz#59db4505310a746677182ed46e155e003bfb3591"
 
 inflight@^1.0.4:
   version "1.0.6"
@@ -3236,50 +3208,6 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-jugglingdb-mongodb@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/jugglingdb-mongodb/-/jugglingdb-mongodb-0.2.0.tgz#104b283699dfa11e475449a210eb9bc9a4f4857d"
-  dependencies:
-    mongodb "^2.2.4"
-
-jugglingdb-postgres@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/jugglingdb-postgres/-/jugglingdb-postgres-0.1.0.tgz#181859a465c839e87e48543abf77a5315a8fc8ff"
-  dependencies:
-    jugglingdb "= 0.2.x"
-    pg "~3"
-
-jugglingdb-sqlite3@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/jugglingdb-sqlite3/-/jugglingdb-sqlite3-0.1.0.tgz#4c635175818bbb80fff128b84e25611101d94e6f"
-  dependencies:
-    jugglingdb "=2.0.0-rc5"
-    sqlite3 "=3.1.4"
-
-"jugglingdb@= 0.2.x":
-  version "0.2.14"
-  resolved "https://registry.yarnpkg.com/jugglingdb/-/jugglingdb-0.2.14.tgz#55ee995ed3dcab4a02084975d65dfe3e2265a17d"
-  dependencies:
-    inflection "=1.2.7"
-
-jugglingdb@=2.0.0-rc5:
-  version "2.0.0-rc5"
-  resolved "https://registry.yarnpkg.com/jugglingdb/-/jugglingdb-2.0.0-rc5.tgz#aa54f010243423ab9728a0bc5a470512031d1e30"
-  dependencies:
-    inflection "=1.2.7"
-    mocha "^2.5.3"
-    should "^9.0.2"
-    when "3.7.3"
-
-jugglingdb@^2.0.0-rc8:
-  version "2.0.0-rc8"
-  resolved "https://registry.yarnpkg.com/jugglingdb/-/jugglingdb-2.0.0-rc8.tgz#a3164d4607af3190f1287ad1da9e49f2e77d3528"
-  dependencies:
-    inflection "=1.2.7"
-    mocha "^2.5.3"
-    should "^9.0.2"
-    when "3.7.3"
-
 kind-of@^3.0.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-3.2.2.tgz#31ea21a734bab9bbb0f32466d893aea51e4a3c64"
@@ -3711,9 +3639,11 @@ minimist@~0.0.1:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.10.tgz#de3f98543dbf96082be48ad1a0c7cda836301dcf"
 
-mixpanel@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/mixpanel/-/mixpanel-0.5.0.tgz#b40e8a852490a6bc3d21d2f61641d950f8175380"
+mixpanel@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/mixpanel/-/mixpanel-0.7.0.tgz#2971aa6e19a6262f7c85fc22e1154f4f5e2f616f"
+  dependencies:
+    https-proxy-agent "^1.0.0"
 
 mkdirp@0.3.0:
   version "0.3.0"
@@ -3770,21 +3700,6 @@ moment-timezone@^0.5.4:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
 
-mongodb-core@2.1.15:
-  version "2.1.15"
-  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-2.1.15.tgz#841f53b87ffff4c7458189c35c8ae827e1169764"
-  dependencies:
-    bson "~1.0.4"
-    require_optional "~1.0.0"
-
-mongodb@^2.2.4:
-  version "2.2.31"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-2.2.31.tgz#1940445c661e19217bb3bf8245d9854aaef548db"
-  dependencies:
-    es6-promise "3.2.1"
-    mongodb-core "2.1.15"
-    readable-stream "2.2.7"
-
 morgan@^1.7.0:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/morgan/-/morgan-1.8.2.tgz#784ac7734e4a453a9c6e6e8680a9329275c8b687"
@@ -3809,17 +3724,9 @@ multipipe@^0.1.2:
   dependencies:
     duplexer2 "0.0.2"
 
-nan@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-1.3.0.tgz#9a5b8d5ef97a10df3050e59b2c362d3baf779742"
-
 nan@^2.3.0, nan@^2.3.4:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.6.2.tgz#e4ff34e6c95fdfb5aecc08de6596f43605a7db45"
-
-nan@~2.3.3:
-  version "2.3.5"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.3.5.tgz#822a0dc266290ce4cd3a12282ca3e7e364668a08"
 
 native-promise-only@^0.8.1:
   version "0.8.1"
@@ -3871,7 +3778,7 @@ node-notifier@^5.0.2:
     shellwords "^0.1.0"
     which "^1.2.12"
 
-node-pre-gyp@^0.6.36, node-pre-gyp@~0.6.28:
+node-pre-gyp@^0.6.36:
   version "0.6.36"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.6.36.tgz#db604112cb74e0d477554e9b505b17abddfab786"
   dependencies:
@@ -4149,10 +4056,6 @@ package-json@^1.0.0:
     got "^3.2.0"
     registry-url "^3.0.0"
 
-packet-reader@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/packet-reader/-/packet-reader-0.2.0.tgz#819df4d010b82d5ea5671f8a1a3acf039bcd7700"
-
 packet-reader@0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/packet-reader/-/packet-reader-0.3.1.tgz#cd62e60af8d7fea8a705ec4ff990871c46871f27"
@@ -4354,10 +4257,6 @@ pg-types@1.*:
     postgres-date "~1.0.0"
     postgres-interval "^1.1.0"
 
-pg-types@1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/pg-types/-/pg-types-1.6.0.tgz#3872a0f199143025497f4ee2a65fdaf00d7ea8b3"
-
 pg@^7.1.0:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/pg/-/pg-7.1.0.tgz#9da3f09d3983521521c1d8369b6d9a1306cfe9fe"
@@ -4369,25 +4268,6 @@ pg@^7.1.0:
     pg-types "1.*"
     pgpass "1.x"
     semver "4.3.2"
-
-pg@~3:
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/pg/-/pg-3.6.3.tgz#8a079c8647953738eb8e48c0366142051563ef4a"
-  dependencies:
-    bindings "1.2.1"
-    buffer-writer "1.0.0"
-    generic-pool "2.1.1"
-    nan "1.3.0"
-    packet-reader "0.2.0"
-    pg-connection-string "0.1.3"
-    pg-types "1.6.0"
-    pgpass "0.0.3"
-
-pgpass@0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/pgpass/-/pgpass-0.0.3.tgz#12e67e343b3189c2f31206ebc9cc0befffcf9140"
-  dependencies:
-    split "~0.3"
 
 pgpass@1.x:
   version "1.0.2"
@@ -4619,18 +4499,6 @@ read-pkg@^2.0.0:
     normalize-package-data "^2.3.2"
     path-type "^2.0.0"
 
-readable-stream@2.2.7:
-  version "2.2.7"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.2.7.tgz#07057acbe2467b22042d36f98c5ad507054e95b1"
-  dependencies:
-    buffer-shims "~1.0.0"
-    core-util-is "~1.0.0"
-    inherits "~2.0.1"
-    isarray "~1.0.0"
-    process-nextick-args "~1.0.6"
-    string_decoder "~1.0.0"
-    util-deprecate "~1.0.1"
-
 "readable-stream@>=1.0.33-1 <1.1.0-0":
   version "1.0.34"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-1.0.34.tgz#125820e34bc842d2f2aaafafe4c2916ee32c157c"
@@ -4817,13 +4685,6 @@ require-main-filename@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/require-main-filename/-/require-main-filename-1.0.1.tgz#97f717b69d48784f5f526a6c5aa8ffdda055a4d1"
 
-require_optional@~1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/require_optional/-/require_optional-1.0.1.tgz#4cf35a4247f64ca3df8c2ef208cc494b1ca8fc2e"
-  dependencies:
-    resolve-from "^2.0.0"
-    semver "^5.1.0"
-
 resolve-dir@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/resolve-dir/-/resolve-dir-0.1.1.tgz#b219259a5602fac5c5c496ad894a6e8cc430261e"
@@ -4914,7 +4775,7 @@ semver-diff@^2.0.0:
   dependencies:
     semver "^5.0.3"
 
-"semver@2 || 3 || 4 || 5", semver@^5.0.1, semver@^5.0.3, semver@^5.1.0, semver@^5.3.0:
+"semver@2 || 3 || 4 || 5", semver@^5.0.1, semver@^5.0.3, semver@^5.3.0:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
 
@@ -5063,30 +4924,6 @@ shimmer@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/shimmer/-/shimmer-1.1.0.tgz#97d7377137ffbbab425522e429fe0aa89a488b35"
 
-should-equal@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/should-equal/-/should-equal-1.0.1.tgz#0b6e9516f2601a9fb0bb2dcc369afa1c7e200af7"
-  dependencies:
-    should-type "^1.0.0"
-
-should-format@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/should-format/-/should-format-1.0.0.tgz#0a30cdab4a3bd1427bbccb8b738567bda7290d78"
-  dependencies:
-    should-type "^1.0.0"
-
-should-type@^1.0.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/should-type/-/should-type-1.4.0.tgz#0756d8ce846dfd09843a6947719dfa0d4cff5cf3"
-
-should@^9.0.2:
-  version "9.0.2"
-  resolved "https://registry.yarnpkg.com/should/-/should-9.0.2.tgz#b550f691e71c66788e0e96e9f721d58be6920e5a"
-  dependencies:
-    should-equal "^1.0.0"
-    should-format "^1.0.0"
-    should-type "^1.0.0"
-
 sigmund@^1.0.1, sigmund@~1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/sigmund/-/sigmund-1.0.1.tgz#3ff21f198cad2175f9f3b781853fd94d0d19b590"
@@ -5173,7 +5010,7 @@ spdx-license-ids@^1.0.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/spdx-license-ids/-/spdx-license-ids-1.2.2.tgz#c9df7a3424594ade6bd11900d596696dc06bac57"
 
-split@0.3, split@~0.3:
+split@0.3:
   version "0.3.3"
   resolved "https://registry.yarnpkg.com/split/-/split-0.3.3.tgz#cd0eea5e63a211dfff7eb0f091c4133e2d0dd28f"
   dependencies:
@@ -5188,13 +5025,6 @@ split@^1.0.0:
 sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
-
-sqlite3@=3.1.4:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-3.1.4.tgz#b01176b8aebdfe9e09ce0b3faedbf305d8a64a25"
-  dependencies:
-    nan "~2.3.3"
-    node-pre-gyp "~0.6.28"
 
 sshpk@^1.7.0:
   version "1.13.1"
@@ -5775,10 +5605,6 @@ whatwg-url@^4.3.0:
   dependencies:
     tr46 "~0.0.3"
     webidl-conversions "^3.0.0"
-
-when@3.7.3:
-  version "3.7.3"
-  resolved "https://registry.yarnpkg.com/when/-/when-3.7.3.tgz#a2189a408128a9962afb0ee2c271631d0a76f44b"
 
 which-module@^1.0.0:
   version "1.0.0"

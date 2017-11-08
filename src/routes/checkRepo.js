@@ -16,6 +16,12 @@ export default function checkRepo(req, res) {
         valid: true,
         private: repoData.private,
         fork: repoData.fork,
+        parent: repoData.parent ? {
+          owner: repoData.parent.owner.login,
+          name: repoData.parent.name,
+          private: repoData.parent.private,
+          defaultBranch: repoData.parent.default_branch,
+        } : null,
         branches: branches.map(b => b.name),
       });
     }).catch(err => {

@@ -71,6 +71,88 @@ describe('link update', () => {
       assert.equal(link.name, 'Another name for my link!');
     });
   });
+  it('should update a link for a user with an unrelated repo', () => {
+    const getGenesisHistory = sinon.stub().resolves([
+      {sha: 'FIRST'}, 
+      {sha: 'SECOND'}, 
+      {sha: 'THIRD'}, 
+    ]);
+
+    return issueRequest(
+      update, [Link, isCollaboratorOfRepository, getGenesisHistory],
+      '/:linkId', user, {
+        method: 'PUT',
+        url: `/${link.id}`,
+        json: true,
+        body: {
+          name: 'Another name for my link!',
+          upstream: {
+            type: 'repo',
+            owner: 'foo',
+            repo: 'bar',
+            isFork: false,
+            branches: ['master'],
+            branch: 'master',
+          },
+          fork: {
+            type: 'unrelated-repo',
+            owner: '1egoman',
+            repo: 'backstroke',
+            branches: ['master'],
+            branch: 'master',
+          },
+        },
+      },
+    ).then(res => {
+      const body = res.body;
+      assert.equal(body.name, 'Another name for my link!');
+
+      return Link.findById(link.id);
+    }).then(link => {
+      assert.equal(link.name, 'Another name for my link!');
+    });
+  });
+  it(`should not update a link for a user with an unrelated repo because the repos don't share history`, () => {
+    // On consecutive calls to `getGenesisHistory`, return different histories to simulate
+    // repositories with different histories.
+    const getGenesisHistory = sinon.stub();
+    getGenesisHistory.onCall(0).resolves([{sha: 'FIRST'}, {sha: 'SECOND'}, {sha: 'THIRD'}]);
+    getGenesisHistory.onCall(1).resolves([{sha: 'SOMETHING'}, {sha: 'ELSE'}, {sha: 'DIFFERENT'}]);
+
+    return issueRequest(
+      update, [Link, isCollaboratorOfRepository, getGenesisHistory],
+      '/:linkId', user, {
+        method: 'PUT',
+        url: `/${link.id}`,
+        json: true,
+        body: {
+          name: 'Another name for my link!',
+          upstream: {
+            type: 'repo',
+            owner: 'foo',
+            repo: 'bar',
+            isFork: false,
+            branches: ['master'],
+            branch: 'master',
+          },
+          fork: {
+            type: 'unrelated-repo',
+            owner: '1egoman',
+            repo: 'backstroke',
+            branches: ['master'],
+            branch: 'master',
+          },
+        },
+      },
+    ).then(res => {
+      const body = res.body;
+      assert.equal(
+        body.error,
+        `Repository foo/bar cannot be merged with 1egoman/backstroke (they don't share any commit history)`
+      );
+    });
+  });
+
   it(`should update a link for a user but the user doesn't own the link`, () => {
     return issueRequest(
       update, [Link, isCollaboratorOfRepository],
@@ -245,6 +327,7 @@ describe('link update', () => {
       assert.equal(body.error, `The 'upstream' repo must be a repo, not a bunch of forks.`);
     });
   });
+
   it(`should try to update a link (the link syncs to all forks), but the user isn't a collaborator on the upstream`, () => {
     return issueRequest(
       update, [Link, () => Promise.resolve(false)],
@@ -304,4 +387,5 @@ describe('link update', () => {
       assert.equal(body.error, `You need to be a collaborator of hello/world to sync changes to that fork.`);
     });
   });
+
 });

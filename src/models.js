@@ -223,7 +223,7 @@ export const Link = schema.define('link', {
   // Store the last known SHA for the commit at the HEAD of the `upstreamBranch` branch.
   upstreamLastSHA: Sequelize.STRING,
 
-  forkType: {type: Sequelize.ENUM, values: ['repo', 'fork-all']},
+  forkType: {type: Sequelize.ENUM, values: ['repo', 'fork-all', 'unrelated-repo']},
   forkOwner: Sequelize.STRING,
   forkRepo: Sequelize.STRING,
   forkBranches: Sequelize.TEXT,

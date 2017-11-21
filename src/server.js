@@ -47,6 +47,7 @@ import { isCollaboratorOfRepository } from './routes/links/update/helpers';
 
 import linksList from './routes/links/list';
 import linksGet from './routes/links/get';
+import linksGetOperations from './routes/links/get-operations';
 import linksCreate from './routes/links/create';
 import linksDelete from './routes/links/delete';
 import linksUpdate from './routes/links/update';
@@ -207,8 +208,11 @@ app.get('/v1/whoami', whoami);
 // GET all links
 app.get('/v1/links', bodyParser.json(), assertLoggedIn, analyticsForRoute, route(linksList, [Link]));
 
-// GET a given link
+// GET a single link
 app.get('/v1/links/:id', bodyParser.json(), assertLoggedIn, analyticsForRoute, route(linksGet, [Link]));
+
+// GET all operations associated with a single link
+app.get('/v1/links/:id/operations', bodyParser.json(), assertLoggedIn, analyticsForRoute, route(linksGetOperations, [Link, WebhookStatusStore]));
 
 // Create a new link
 app.post('/v1/links', bodyParser.json(), assertLoggedIn, analyticsForRoute, route(linksCreate, [Link]));

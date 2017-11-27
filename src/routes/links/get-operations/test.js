@@ -38,28 +38,41 @@ describe('link get', () => {
     });
   });
 
-  it('should get a link for a user', () => {
-    // Grab the first model from the mock (.models is a mock-specific property)
-    const linkModel = Link.models[0];
+  it('should fetch all operations for a link in the past 24 hours', () => {
+    // Grab the most recent model from the mock (.models is a mock-specific property)
+    const linkModel = Link.models[Link.models.length - 1];
+
+    // Create a mock status store to use with this test.
+    const MockWebhookStatusStore = {
+      getOperations: sinon.stub().resolves(['adgrha', 'uyrjnh', 'brsnyi']),
+      get: sinon.stub().resolves({status: 'ok'}),
+    };
 
     return issueRequest(
-      get, [Link],
-      '/:id', user, {
+      get, [Link, MockWebhookStatusStore],
+      '/operations/:id', user, {
         method: 'GET',
-        url: `/${linkModel.id}`,
+        url: `/operations/${linkModel.id}`,
         json: true,
       }
     ).then(res => {
       const body = res.body;
-      assert.equal(body.id, linkModel.id);
+      assert.deepEqual(body, ['adgrha', 'uyrjnh', 'brsnyi']);
+
+      // Assert that `.get` wasn't called.
+      assert.equal(MockWebhookStatusStore.getOperations.callCount, 1);
+      assert.equal(MockWebhookStatusStore.get.callCount, 0);
     });
   });
-  it('should try to get a link but fail', () => {
-    // Grab the first model from the mock (.models is a mock-specific property)
-    const linkModel = Link.models[0];
+  it('should try to fetch all operations for a link, but fail if the link id is bad', () => {
+    // Create a mock status store to use with this test.
+    const MockWebhookStatusStore = {
+      getOperations: sinon.stub().resolves(['adgrha', 'uyrjnh', 'brsnyi']),
+      get: sinon.stub().resolves({status: 'ok'}),
+    };
 
     return issueRequest(
-      get, [Link],
+      get, [Link, MockWebhookStatusStore],
       '/:id', user, {
         method: 'GET',
         url: `/13527501385710357139f313`, // Bogus id
@@ -68,22 +81,91 @@ describe('link get', () => {
     ).then(res => {
       const body = res.body;
       assert.equal(body.error, 'No such link.');
+
+      // Assert that both functions weren't called.
+      assert.equal(MockWebhookStatusStore.getOperations.callCount, 0);
+      assert.equal(MockWebhookStatusStore.get.callCount, 0);
     });
   });
-  it('should try to get a link but the link is not owned by the authed user', () => {
-    // Grab the first model from the mock (.models is a mock-specific property)
-    const linkModel = Link.models[0];
+  it('should try to fetch all operations for a link, but fail when the redis call fails', () => {
+    // Grab the most recent model from the mock (.models is a mock-specific property)
+    const linkModel = Link.models[Link.models.length - 1];
+
+    // Create a mock status store to use with this test.
+    const MockWebhookStatusStore = {
+      getOperations: sinon.stub().rejects(new Error('Boom!')),
+      get: sinon.stub().resolves({status: 'ok'}),
+    };
 
     return issueRequest(
-      get, [Link],
-      '/:id', null, {
+      get, [Link, MockWebhookStatusStore],
+      '/operations/:id', user, {
         method: 'GET',
-        url: `/13527501385710357139f313`, // Bogus id
+        url: `/operations/${linkModel.id}`,
         json: true,
       }
     ).then(res => {
       const body = res.body;
-      assert.equal(body.error, 'No such link.');
+      assert.equal(body.error, 'Boom!');
+
+      // Assert that `.get` wasn't called.
+      assert.equal(MockWebhookStatusStore.getOperations.callCount, 1);
+      assert.equal(MockWebhookStatusStore.get.callCount, 0);
+    });
+  });
+  it('should fetch all operations for a link in the past 24 hours, with ?detail=true param', () => {
+    // Grab the most recent model from the mock (.models is a mock-specific property)
+    const linkModel = Link.models[Link.models.length - 1];
+
+    // Create a mock status store to use with this test.
+    const MockWebhookStatusStore = {
+      getOperations: sinon.stub().resolves(['adgrha', 'uyrjnh', 'brsnyi']),
+      get: sinon.stub().resolves({status: 'OK'}),
+    };
+
+    return issueRequest(
+      get, [Link, MockWebhookStatusStore],
+      '/operations/:id', user, {
+        method: 'GET',
+        url: `/operations/${linkModel.id}?detail=true`,
+        json: true,
+      }
+    ).then(res => {
+      const body = res.body;
+      assert.deepEqual(body, [
+        {id: 'adgrha', status: 'OK'},
+        {id: 'uyrjnh', status: 'OK'},
+        {id: 'brsnyi', status: 'OK'},
+      ]);
+
+      // Assert that `.getOperations` was called once and `.get` was called three times.
+      assert.equal(MockWebhookStatusStore.getOperations.callCount, 1);
+      assert.equal(MockWebhookStatusStore.get.callCount, 3);
+    });
+  });
+  it('should try to fetch all operations for a link with ?detail=true param, but fail when the redis call fails', () => {
+    // Grab the most recent model from the mock (.models is a mock-specific property)
+    const linkModel = Link.models[Link.models.length - 1];
+
+    // Create a mock status store to use with this test.
+    const MockWebhookStatusStore = {
+      getOperations: sinon.stub().resolves(['adgrha', 'uyrjnh', 'brsnyi']),
+      get: sinon.stub().rejects(new Error('Boom!')),
+    };
+
+    return issueRequest(
+      get, [Link, MockWebhookStatusStore],
+      '/operations/:id', user, {
+        method: 'GET',
+        url: `/operations/${linkModel.id}?detail=TRUE`,
+        json: true,
+      }
+    ).then(res => {
+      const body = res.body;
+      assert.equal(body.error, 'Boom!');
+
+      assert.equal(MockWebhookStatusStore.getOperations.callCount, 1);
+      assert.equal(MockWebhookStatusStore.get.callCount, 3);
     });
   });
 });

@@ -13,7 +13,7 @@ const User = new MockModel(),
 
 Link.methods.display = function() { return this; }
 
-describe('link get', () => {
+describe('link get operations', () => {
   let user, link, link2;
 
   beforeEach(async function() {

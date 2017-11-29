@@ -3,9 +3,6 @@ import debug from 'debug';
 import uuid from 'uuid';
 import fetch from 'node-fetch';
 
-import { webhookJob } from './jobs/webhook-dispatcher';
-import fetchSHAForUpstreamBranch from './jobs/webhook-dispatcher/fetch-sha-for-upstream-branch';
-
 import Redis from 'redis';
 const redis = Redis.createClient(process.env.REDIS_URL);
 import RedisMQ from 'rsmq';
@@ -15,8 +12,9 @@ const redisQueue = new RedisMQ({
 });
 
 const ONE_HOUR_IN_SECONDS = 60 * 60;
+const LINK_OPERATION_EXPIRY_TIME_IN_SECONDS = 24 * ONE_HOUR_IN_SECONDS;
 export const WebhookStatusStore = {
-  set(webhookId, status, expiresIn=24*ONE_HOUR_IN_SECONDS) {
+  set(webhookId, status, expiresIn=LINK_OPERATION_EXPIRY_TIME_IN_SECONDS) {
     return new Promise((resolve, reject) => {
       redis.set(`webhook:status:${webhookId}`, JSON.stringify(status), 'EX', expiresIn, (err, id) => {
         if (err) {
@@ -28,16 +26,57 @@ export const WebhookStatusStore = {
       });
     });
   },
-  get(webhookId) {
+  get(webhookId, hideSensitiveKeys=true) {
     return new Promise((resolve, reject) => {
       redis.get(`webhook:status:${webhookId}`, (err, data) => {
         if (err) {
           reject(err);
         } else {
           // Resolves the cached data.
-          resolve(JSON.parse(data));
+          const parsed = JSON.parse(data);
+          if (hideSensitiveKeys) {
+            if (parsed) {
+              // Remove access token from response.
+              resolve({
+                ...parsed,
+                link: {
+                  ...(parsed.link || {}),
+                  owner: {
+                    ...(parsed.link ? parsed.link.owner : {}),
+                    accessToken: undefined,
+                  },
+                },
+              });
+            } else {
+              // No operation id was found
+              return null;
+            }
+          } else {
+            resolve(parsed);
+          }
         }
       });
+    });
+  },
+  getOperations(linkId) {
+    return new Promise((resolve, reject) => {
+      // Get unix epoch timestamp in seconds.
+      // FIXME: should use redis time. We're not accounting for any sort of server time drift here.
+      const timestamp = Math.floor(new Date().getTime() / 1000);
+
+      // Return all operations associated with a given link that have happened in the last 24 hours.
+      redis.zrangebyscore(
+        `webhook:operations:${linkId}`,
+        timestamp - LINK_OPERATION_EXPIRY_TIME_IN_SECONDS,
+        timestamp,
+        (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data);
+          }
+        }
+      );
     });
   },
 };
@@ -298,13 +337,5 @@ if (require.main === module) {
 
     // From https://stackoverflow.com/questions/33673999/passing-context-to-interactive-node-shell-leads-to-typeerror-sandbox-argument
     Object.assign(repl.start(options).context, context);
-  } else if (process.argv[2] == 'manual-job') {
-    webhookJob(Link, User, WebhookQueue, fetchSHAForUpstreamBranch).then(resp => {
-      console.log('Completed. Response:');
-      console.log(resp);
-    }).catch(err => {
-      console.error('Error:');
-      console.error(error);
-    });
   }
 }

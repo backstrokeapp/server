@@ -18,6 +18,8 @@ export default function analyticsForRoute(req, res, next) {
     mixpanel.track('Visited Route', {
       distinct_id: req.user.id,
       url: req.url,
+      method: req.method,
+      request: req.headers['x-request-id'],
     });
   }
 

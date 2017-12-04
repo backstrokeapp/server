@@ -1,6 +1,25 @@
 import express from 'express';
 const app = express();
 
+// ----------------------------------------------------------------------------
+// Log requests as they are received.
+// ----------------------------------------------------------------------------
+import morgan from 'morgan';
+app.use(morgan((tokens, req, res) => {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms',
+    // Add request id to logs
+    req.headers['x-request-id'] ? `id=>${req.headers['x-request-id']}` : null,
+  ].join(' ');
+}));
+
+// ----------------------------------------------------------------------------
+// Define Cross Origin Resource Sharing rules.
+// ----------------------------------------------------------------------------
 import cors from 'cors';
 const corsHandler = cors({
   origin(origin, callback) {
@@ -53,21 +72,9 @@ import linksEnable from './routes/links/enable';
 
 import { Link, User, WebhookQueue, WebhookStatusStore } from './models';
 
-/* app.use((err, req, res, next) => { */
-/*   if (err.name === 'ValidationError') { */
-/*     res.status(err.statusCode).send({ */
-/*       ok: false, */
-/*       error: 'validation', */
-/*       context: err.context, */
-/*       issues: err.codes, */
-/*     }); */
-/*   } else { */
-/*     console.error(err.stack); */
-/*     res.status(500).send(err.stack); */
-/*   }; */
-/* }) */
-
-// Use sentry in production
+// ----------------------------------------------------------------------------
+// Use sentry in production to report errors
+// ----------------------------------------------------------------------------
 import Raven from 'raven';
 if (process.env.SENTRY_CONFIG) {
   Raven.config(process.env.SENTRY_CONFIG).install();
@@ -92,9 +99,10 @@ app.use(passport.session());
 passport.use(strategy(User));
 serialize(User, passport);
 
+// ----------------------------------------------------------------------------
+// User authentication flow routes
+// ----------------------------------------------------------------------------
 import bodyParser from 'body-parser';
-import morgan from 'morgan';
-app.use(morgan('tiny'));
 
 // Authenticate a user
 app.get('/setup/login', passport.authenticate('github', {
@@ -189,6 +197,10 @@ function authedGithubInstance(req, res, next) {
   return next();
 }
 
+// ----------------------------------------------------------------------------
+// User authentication flow routes
+// ----------------------------------------------------------------------------
+
 // Redirect calls to `/api/v1` => `/v1`
 app.all(/^\/api\/v1\/.*$/, (req, res) => res.redirect(req.url.replace(/^\/api/, '')));
 
@@ -210,19 +222,19 @@ app.post('/v1/links', bodyParser.json(), assertLoggedIn, analyticsForRoute, rout
 // delete a link
 app.delete('/v1/links/:id', assertLoggedIn, analyticsForRoute, route(linksDelete, [Link]));
 
-// return the branches for a given repo
-app.get('/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, authedGithubInstance, checkRepo);
-
 // POST link updates
 app.post('/v1/links/:linkId', bodyParser.json(), assertLoggedIn, analyticsForRoute, route(linksUpdate, [Link, isCollaboratorOfRepository]));
 
-// enable or disable a repository
+// enable or disable a link
 app.post('/v1/links/:linkId/enable', bodyParser.json(), assertLoggedIn, analyticsForRoute, route(linksEnable, [Link]));
+
+// return the branches for a given repo
+app.get('/v1/repos/:provider/:user/:repo', bodyParser.json(), assertLoggedIn, authedGithubInstance, checkRepo);
 
 // the new webhook route - both the condensed verson meant to be called by a user and the interal
 // variant that follows REST a bit closer.
 app.all('/_:linkId', route(manual, [Link, User, WebhookQueue]));
-// app.post('/v1/webhooks/:linkId/update', assertLoggedIn, route(manual, [Link, User, WebhookQueue]));
+app.post('/v1/links/:linkId/sync', assertLoggedIn, route(manual, [Link, User, WebhookQueue]));
 
 // check to see how a link operation is doing after it has been kicked off
 app.get('/v1/operations/:operationId', route(status, [WebhookStatusStore]));

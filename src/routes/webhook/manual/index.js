@@ -18,6 +18,9 @@ export default async function webhook(req, res, Link, User, WebhookQueue) {
       type: MANUAL,
       user: link.owner,
       link,
+
+      // Link a manual link in the queue back to the request that spawned it.
+      fromRequest: req.headers['x-request-id'] || null,
     });
 
     res.status(201).send({

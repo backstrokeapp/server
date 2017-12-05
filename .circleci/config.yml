@@ -1,10 +1,8 @@
 version: 2
-
 jobs:
-  build:
+  test:
     docker:
-      - image: circleci/node:7.10
-
+      - image: circleci/node:8.9
     steps:
       - checkout
 
@@ -28,3 +26,33 @@ jobs:
       - run:
           name: "Run tests"
           command: yarn test-ci
+
+  build:
+    docker:
+      - image: circleci/node:8.9
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      # Build docker container for backstroke server
+      - run:
+          name: Build container image
+          command: 'docker build -t backstroke/server:latest .'
+      - run:
+          name: Login to Docker Hub
+          command: "docker login -u $DOCKER_USER -p $DOCKER_PASS"
+      - run:
+          name: Push container image
+          command: 'docker push backstroke/server:latest'
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master

@@ -79,10 +79,43 @@ describe('webhook tests', function() {
         method: 'POST',
         url: `/_${link.webhookId}`,
         json: true,
+        headers: { 'x-request-id': 'AC120001:C5A6_AC120009:0050_5A229DF8_0004:0007' },
       }
     ).then(res => {
       // Assert an item has been put into the queue.
       assert.equal(MockWebhookQueue.queue.length, 1);
+
+      // Assert the item contains the right request id.
+      assert.equal(
+        MockWebhookQueue.queue[0].item.fromRequest,
+        'AC120001:C5A6_AC120009:0050_5A229DF8_0004:0007'
+      );
+
+      // And that the response was correct.
+      const enqueuedAs = MockWebhookQueue.queue[0].id;
+      assert.equal(res.statusCode, 201);
+      assert.deepEqual(res.body, {
+        message: 'Scheduled webhook.',
+        enqueuedAs,
+        statusUrl: `http://localhost:8000/v1/operations/${enqueuedAs}`,
+      });
+    });
+  });
+  it('should add to the queue with null as request id', function() {
+    return issueRequest(
+      webhook, [Link, User, MockWebhookQueue],
+      '/_:linkId', null, {
+        method: 'POST',
+        url: `/_${link.webhookId}`,
+        json: true,
+        headers: { /* no request id */ },
+      }
+    ).then(res => {
+      // Assert an item has been put into the queue.
+      assert.equal(MockWebhookQueue.queue.length, 1);
+
+      // Assert the item contains the right request id.
+      assert.equal(MockWebhookQueue.queue[0].fromRequest, null);
 
       // And that the response was correct.
       const enqueuedAs = MockWebhookQueue.queue[0].id;

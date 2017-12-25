@@ -49,9 +49,9 @@
     "test-ci": "NODE_ENV=test CI=true jest",
     "coverage": "NODE_ENV=test nyc --all --reporter=lcov --reporter=text npm test",
     "coverageopen": "open coverage/lcov-report/index.html",
-    "migrate": "babel-node src/models.js migrate",
-    "shell": "babel-node src/models.js shell",
-    "manual-job": "babel-node src/models.js manual-job"
+    "migrate": "babel-node src/models/index.js migrate",
+    "shell": "babel-node src/models/index.js shell",
+    "manual-job": "babel-node src/models/index.js manual-job"
   },
   "babel": {
     "presets": [

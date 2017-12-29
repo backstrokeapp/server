@@ -1,5 +1,6 @@
 import Sequelize from 'sequelize';
 import debug from 'debug';
+import fetch from 'node-fetch';
 
 module.exports = schema => {
   const User = schema.define('user', {
@@ -91,4 +92,6 @@ module.exports = schema => {
       });
     }
   }
+
+  return User;
 }

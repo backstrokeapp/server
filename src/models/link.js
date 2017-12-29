@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import uuid from 'uuid';
 
 module.exports = schema => {
   const Link = schema.define('link', {

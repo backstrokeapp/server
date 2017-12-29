@@ -1,12 +1,16 @@
-import {paginateRequest} from './helpers';
+import {paginateRequest} from '../helpers';
 
-export default function checkRepo(req, res) {
-  // Get repo details, and associated branches
-  return req.github.user.reposGet({
+export default function checkRepo(req, res, GitHubApi) {
+  const github = new GitHubApi({});
+  github.authenticate({ type: 'oauth', token: req.user.accessToken });
+
+  // Get repo details
+  return github.repos.get({
     owner: req.params.user,
     repo: req.params.repo,
   }).then(repoData => {
-    return paginateRequest(req.github.user.reposGetBranches, {
+    // Also get associated branches.
+    return paginateRequest(github.repos.getBranches, {
       owner: req.params.user,
       repo: req.params.repo,
       per_page: 100,
@@ -24,8 +28,6 @@ export default function checkRepo(req, res) {
         } : null,
         branches: branches.map(b => b.name),
       });
-    }).catch(err => {
-      throw err;
     });
   }).catch(err => {
     // repo doesn't exist.

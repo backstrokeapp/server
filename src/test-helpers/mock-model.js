@@ -1,5 +1,3 @@
-import Promise from 'bluebird';
-
 // A mock model that is used for testing. Extend your custom model from this and use it when testing
 // in place of the real model.
 export default class MockModel {

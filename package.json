@@ -13,7 +13,6 @@
     "babel-preset-es2017": "^6.24.1",
     "babel-preset-react": "^6.11.1",
     "babelify": "^7.3.0",
-    "bluebird": "^3.4.3",
     "body-parser": "^1.15.2",
     "bootstrap": "^3.3.6",
     "cors": "^2.8.3",

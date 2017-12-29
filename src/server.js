@@ -34,10 +34,6 @@ const corsHandler = cors({
 app.use(corsHandler);
 app.options('*', corsHandler);
 
-// Polyfill promise with bluebird.
-import Promise from 'bluebird';
-global.Promise = Promise;
-
 import GithubApi from 'github';
 
 // How should we redirect to other origins? If unset, add some mocks to this app to use as those

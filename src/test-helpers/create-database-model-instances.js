@@ -1,6 +1,5 @@
 import faker from 'faker';
 import {Schema} from 'jugglingdb';
-import Promise from 'bluebird';
 
 import linkBuilder from '../../src/models/Link';
 import userBuilder from '../../src/models/User';
@@ -75,7 +74,7 @@ export default {
       });
     }
 
-    return Promise.props(operations).then(({fork, upstream}) => {
+    return Promise.all([operations.fork, operations.upstream]).then(([fork, upstream]) => {
       return Link.create({
         name: name || faker.internet.userName(),
         enabled: enabled || false,

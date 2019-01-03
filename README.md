@@ -1,3 +1,18 @@
+# I don't have the bandwidth to maintain Backstroke anymore.
+
+It's a project that has done fairly well, and many people use it and find it helpful. But, it's also a project that does too much for a single person to maintain, and it's got a number of moving parts that all have a tendency to break at the worst time (usually when I'm away from a computer). For a while, I found it fun to maintain, but over the past year it's turned into a chore, and I don't really have an interest in keeping it running.
+
+Normally, when people shut things down, an alternative is usually provided. Backstroke doesn't really have any alternatives that I know of (though someone can recommend one and it seems decent, I'll gladly edit this README with a link), so I'd say that if Backstroke is really something you need, the best "upgrade path" I can think of (and what I'd recommend) is to set up a small server that either listens for a webhook (like backstroke classic) or polls the main branch on an upstream for changes. Then, use the Github API to create a new pull request. Backstroke classic, an example of this sort of approach, can be found here: https://github.com/backstrokeapp/legacy
+
+If anyone has an interest in either taking over the project, please let me know. I'd be more than willing to pass it off to you and walk you through setting it up for development and deployment. If there isn't any interest, I'll likely shut it off later in the year once Backstroke's sponsored digitalocean credit runs out.
+
+Sorry for this being so abrupt. To be honest, I've been thinking about doing this for a while and I should have been a bit more honest in mentioning this earlier.
+
+- Ryan, @1egoman
+
+---
+
+
 ![Backstroke](https://backstroke.us/assets/img/logo.png)
 Backstroke
 ===
